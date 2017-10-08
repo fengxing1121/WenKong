@@ -107,7 +107,7 @@ namespace Logs
         /// <returns></returns>
         public static bool Op(string msg)
         {
-            lock(_Locker)
+            lock (_Locker)
             {
                 try
                 {
@@ -123,15 +123,15 @@ namespace Logs
                     _writer.Close();
                     Debug.WriteLine(DateTime.Now.ToString() + "    " + msg);
                 }
-                catch(System.Exception ex)
+                catch (System.Exception ex)
                 {
                     Debug.WriteLine("写入日志文件 " + _fileOp + " 失败！");
                     _writer.Close();
                     return false;
                 }
-                
+
             }
-            
+
             return true;
         }
 

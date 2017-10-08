@@ -1,6 +1,6 @@
-﻿namespace TemperatureControl
+﻿namespace TemperatureControl2
 {
-    partial class Form_main
+    partial class FormMain
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -48,12 +48,13 @@
             this.checkBox_curveS = new System.Windows.Forms.CheckBox();
             this.checkBox_paramS = new System.Windows.Forms.CheckBox();
             this.checkBox_logS = new System.Windows.Forms.CheckBox();
+            this.textBox_tempM = new System.Windows.Forms.TextBox();
+            this.textBox_tempS = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // checkBox_elect
             // 
             this.checkBox_elect.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_elect.AutoCheck = false;
             this.checkBox_elect.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_elect.Location = new System.Drawing.Point(599, 272);
             this.checkBox_elect.Name = "checkBox_elect";
@@ -115,7 +116,7 @@
             this.checkBox_mainHeat.Text = "主槽控温";
             this.checkBox_mainHeat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_mainHeat.UseVisualStyleBackColor = true;
-            this.checkBox_mainHeat.CheckedChanged += new System.EventHandler(this.checkBox_mainHeat_CheckedChanged);
+            this.checkBox_mainHeat.Click += new System.EventHandler(this.checkBox_mainHeat_Click);
             // 
             // checkBox_mainCoolF
             // 
@@ -128,7 +129,7 @@
             this.checkBox_mainCoolF.Text = "主槽快冷";
             this.checkBox_mainCoolF.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_mainCoolF.UseVisualStyleBackColor = true;
-            this.checkBox_mainCoolF.CheckedChanged += new System.EventHandler(this.checkBox_mainCoolF_CheckedChanged);
+            this.checkBox_mainCoolF.Click += new System.EventHandler(this.checkBox_mainCoolF_Click);
             // 
             // checkBox_subHeat
             // 
@@ -141,7 +142,7 @@
             this.checkBox_subHeat.Text = "辅槽控温";
             this.checkBox_subHeat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subHeat.UseVisualStyleBackColor = true;
-            this.checkBox_subHeat.CheckedChanged += new System.EventHandler(this.checkBox_subHeat_CheckedChanged);
+            this.checkBox_subHeat.Click += new System.EventHandler(this.checkBox_subHeat_Click);
             // 
             // checkBox_subCoolF
             // 
@@ -154,7 +155,7 @@
             this.checkBox_subCoolF.Text = "辅槽快冷";
             this.checkBox_subCoolF.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCoolF.UseVisualStyleBackColor = true;
-            this.checkBox_subCoolF.CheckedChanged += new System.EventHandler(this.checkBox_subCoolF_CheckedChanged);
+            this.checkBox_subCoolF.Click += new System.EventHandler(this.checkBox_subCoolF_Click);
             // 
             // checkBox_subCool
             // 
@@ -167,7 +168,7 @@
             this.checkBox_subCool.Text = "辅槽制冷";
             this.checkBox_subCool.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCool.UseVisualStyleBackColor = true;
-            this.checkBox_subCool.CheckedChanged += new System.EventHandler(this.checkBox_subCool_CheckedChanged);
+            this.checkBox_subCool.Click += new System.EventHandler(this.checkBox_subCool_Click);
             // 
             // checkBox_waterIn
             // 
@@ -180,7 +181,7 @@
             this.checkBox_waterIn.Text = "海水进";
             this.checkBox_waterIn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_waterIn.UseVisualStyleBackColor = true;
-            this.checkBox_waterIn.CheckedChanged += new System.EventHandler(this.checkBox_waterIn_CheckedChanged);
+            this.checkBox_waterIn.Click += new System.EventHandler(this.checkBox_waterIn_Click);
             // 
             // checkBox_subCircle
             // 
@@ -193,7 +194,7 @@
             this.checkBox_subCircle.Text = "辅槽循环";
             this.checkBox_subCircle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCircle.UseVisualStyleBackColor = true;
-            this.checkBox_subCircle.CheckedChanged += new System.EventHandler(this.checkBox_subCircle_CheckedChanged);
+            this.checkBox_subCircle.Click += new System.EventHandler(this.checkBox_subCircle_Click);
             // 
             // checkBox_waterOut
             // 
@@ -206,35 +207,38 @@
             this.checkBox_waterOut.Text = "海水出";
             this.checkBox_waterOut.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_waterOut.UseVisualStyleBackColor = true;
-            this.checkBox_waterOut.CheckedChanged += new System.EventHandler(this.checkBox_waterOut_CheckedChanged);
+            this.checkBox_waterOut.Click += new System.EventHandler(this.checkBox_waterOut_Click);
             // 
             // checkBox_startM
             // 
             this.checkBox_startM.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_startM.Location = new System.Drawing.Point(85, 322);
+            this.checkBox_startM.Location = new System.Drawing.Point(85, 292);
             this.checkBox_startM.Name = "checkBox_startM";
             this.checkBox_startM.Size = new System.Drawing.Size(75, 35);
             this.checkBox_startM.TabIndex = 32;
             this.checkBox_startM.Text = "启动";
             this.checkBox_startM.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_startM.UseVisualStyleBackColor = true;
+            this.checkBox_startM.Click += new System.EventHandler(this.checkBox_startM_Click);
             // 
             // checkBox_curveM
             // 
             this.checkBox_curveM.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_curveM.Location = new System.Drawing.Point(197, 322);
+            this.checkBox_curveM.AutoCheck = false;
+            this.checkBox_curveM.Location = new System.Drawing.Point(197, 292);
             this.checkBox_curveM.Name = "checkBox_curveM";
             this.checkBox_curveM.Size = new System.Drawing.Size(75, 35);
             this.checkBox_curveM.TabIndex = 33;
             this.checkBox_curveM.Text = "曲线";
             this.checkBox_curveM.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_curveM.UseVisualStyleBackColor = true;
+            this.checkBox_curveM.Click += new System.EventHandler(this.checkBox_curveM_Click);
             // 
             // checkBox_paramM
             // 
             this.checkBox_paramM.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_paramM.AutoCheck = false;
-            this.checkBox_paramM.Location = new System.Drawing.Point(309, 322);
+            this.checkBox_paramM.Location = new System.Drawing.Point(309, 292);
             this.checkBox_paramM.Name = "checkBox_paramM";
             this.checkBox_paramM.Size = new System.Drawing.Size(75, 35);
             this.checkBox_paramM.TabIndex = 34;
@@ -246,7 +250,8 @@
             // checkBox_logM
             // 
             this.checkBox_logM.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_logM.Location = new System.Drawing.Point(421, 322);
+            this.checkBox_logM.AutoCheck = false;
+            this.checkBox_logM.Location = new System.Drawing.Point(421, 292);
             this.checkBox_logM.Name = "checkBox_logM";
             this.checkBox_logM.Size = new System.Drawing.Size(75, 35);
             this.checkBox_logM.TabIndex = 35;
@@ -257,18 +262,20 @@
             // checkBox_startS
             // 
             this.checkBox_startS.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_startS.Location = new System.Drawing.Point(85, 615);
+            this.checkBox_startS.Location = new System.Drawing.Point(85, 630);
             this.checkBox_startS.Name = "checkBox_startS";
             this.checkBox_startS.Size = new System.Drawing.Size(75, 35);
             this.checkBox_startS.TabIndex = 36;
             this.checkBox_startS.Text = "启动";
             this.checkBox_startS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_startS.UseVisualStyleBackColor = true;
+            this.checkBox_startS.Click += new System.EventHandler(this.checkBox_startS_Click);
             // 
             // checkBox_curveS
             // 
             this.checkBox_curveS.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_curveS.Location = new System.Drawing.Point(197, 614);
+            this.checkBox_curveS.AutoCheck = false;
+            this.checkBox_curveS.Location = new System.Drawing.Point(197, 629);
             this.checkBox_curveS.Name = "checkBox_curveS";
             this.checkBox_curveS.Size = new System.Drawing.Size(75, 35);
             this.checkBox_curveS.TabIndex = 37;
@@ -280,7 +287,7 @@
             // 
             this.checkBox_paramS.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_paramS.AutoCheck = false;
-            this.checkBox_paramS.Location = new System.Drawing.Point(309, 613);
+            this.checkBox_paramS.Location = new System.Drawing.Point(309, 628);
             this.checkBox_paramS.Name = "checkBox_paramS";
             this.checkBox_paramS.Size = new System.Drawing.Size(75, 35);
             this.checkBox_paramS.TabIndex = 38;
@@ -292,7 +299,8 @@
             // checkBox_logS
             // 
             this.checkBox_logS.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_logS.Location = new System.Drawing.Point(421, 612);
+            this.checkBox_logS.AutoCheck = false;
+            this.checkBox_logS.Location = new System.Drawing.Point(421, 627);
             this.checkBox_logS.Name = "checkBox_logS";
             this.checkBox_logS.Size = new System.Drawing.Size(75, 35);
             this.checkBox_logS.TabIndex = 39;
@@ -300,12 +308,32 @@
             this.checkBox_logS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_logS.UseVisualStyleBackColor = true;
             // 
-            // Form_main
+            // textBox_tempM
+            // 
+            this.textBox_tempM.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox_tempM.Location = new System.Drawing.Point(173, 142);
+            this.textBox_tempM.Name = "textBox_tempM";
+            this.textBox_tempM.Size = new System.Drawing.Size(310, 71);
+            this.textBox_tempM.TabIndex = 40;
+            this.textBox_tempM.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // textBox_tempS
+            // 
+            this.textBox_tempS.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox_tempS.Location = new System.Drawing.Point(173, 455);
+            this.textBox_tempS.Name = "textBox_tempS";
+            this.textBox_tempS.Size = new System.Drawing.Size(310, 71);
+            this.textBox_tempS.TabIndex = 41;
+            this.textBox_tempS.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(992, 767);
+            this.Controls.Add(this.textBox_tempS);
+            this.Controls.Add(this.textBox_tempM);
             this.Controls.Add(this.checkBox_logS);
             this.Controls.Add(this.checkBox_paramS);
             this.Controls.Add(this.checkBox_curveS);
@@ -326,11 +354,10 @@
             this.Controls.Add(this.checkBox_dataChk);
             this.Controls.Add(this.checkBox_auto);
             this.Controls.Add(this.checkBox_elect);
-            this.Name = "Form_main";
+            this.Name = "FormMain";
             this.Text = "TemperatureControl";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -355,6 +382,8 @@
         private System.Windows.Forms.CheckBox checkBox_curveS;
         private System.Windows.Forms.CheckBox checkBox_paramS;
         private System.Windows.Forms.CheckBox checkBox_logS;
+        private System.Windows.Forms.TextBox textBox_tempM;
+        private System.Windows.Forms.TextBox textBox_tempS;
     }
 }
 

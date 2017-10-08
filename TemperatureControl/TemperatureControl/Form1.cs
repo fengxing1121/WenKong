@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Device;
 using Logs;
 
@@ -14,6 +15,16 @@ namespace TemperatureControl
 {
     public partial class Form_main : Form
     {
+        ///////////////////////////////////////
+        #region 用户自定义成员变量部分 by wghou
+        private Device.TempDevice tpDeviceM;
+        private Device.TempDevice tpDeviceS;
+        private Device.RelayDevice ryDevice;
+        private FormSetting formStM;
+        private FormSetting formStS;
+        #endregion
+
+
         public Form_main()
         {
             InitializeComponent();
@@ -22,16 +33,18 @@ namespace TemperatureControl
             this.tpDeviceM = new Device.TempDevice();
             this.tpDeviceS = new Device.TempDevice();
             this.ryDevice = new Device.RelayDevice();
-            this.tpDeviceM.InitCom("COM1");
-            this.tpDeviceS.InitCom("COM2");
-            this.ryDevice.InitCom("COM3");
+            //this.tpDeviceM.InitCom("COM1");
+            //this.tpDeviceS.InitCom("COM2");
+            //this.ryDevice.InitCom("COM3");
 
+
+            this.ryDevice.DeviceUpdate += HandleDeviceUpdateEvent;
         }
 
         // 起始
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         // 结束
@@ -44,52 +57,95 @@ namespace TemperatureControl
         // 自动
         private void checkBox_auto_CheckedChanged(object sender, EventArgs e)
         {
+            if (checkBox_auto.Checked == true)
+            {
+                Logger.Op("自动      开始");
+            }
 
+            if (checkBox_auto.Checked == false)
+            {
+                Logger.Op("自动      停止");
+            }
         }
 
 
         // 手动
         private void checkBox_man_CheckedChanged(object sender, EventArgs e)
         {
+            if (checkBox_man.Checked == true)
+            {
+                Logger.Op("手动      开始");
+            }
 
+            if (checkBox_man.Checked == false)
+            {
+                Logger.Op("手动      停止");
+            }
+            
         }
 
 
         // 数据查询
         private void checkBox_dataChk_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("E:\\");
             Logger.Op("数据查询");
+            System.Diagnostics.Process.Start(System.IO.Directory.GetCurrentDirectory()+"/Logs");
+        }
+
+
+        // Device Update Event Handle
+        void HandleDeviceUpdateEvent(object sender, RelayDevice.RelayDeviceEventArgs e)
+        {
+            if(e.Sucess == true)
+            {
+                this.BeginInvoke(new System.Threading.ThreadStart(delegate ()
+                {
+                    this.checkBox_elect.CheckState = this.checkBox_elect.CheckState == CheckState.Checked ? CheckState.Unchecked : CheckState.Checked;
+                }));
+                MessageBox.Show(ryDevice.paraChNames[e.Index] + "操作成功！");
+            }
+            else
+            {
+                MessageBox.Show(ryDevice.paraChNames[e.Index] + "操作失败！");
+            }
         }
 
 
         // 1 - 总电源
-        private void checkBox_elect_CheckStateChanged(object sender, EventArgs e)
+        private void checkBox_elect_Click(object sender, EventArgs e)
         {
-            if(checkBox_elect.Checked == true)
+            if(checkBox_elect.CheckState == CheckState.Unchecked)
             {
-                ryDevice.openElect();
-            }  
-
-            if (checkBox_elect.Checked == false)
-            {
-                ryDevice.closeElect();
+                Logger.Op("总电源  开");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    ryDevice.setParam(RelayDevice.Paras_r.Elect, true);
+                }));
             }
-              
-        }
+            else
+            {
+                Logger.Op("总电源  关");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    ryDevice.setParam(RelayDevice.Paras_r.Elect, false);
+                }));
+            }
 
+        }
 
         // 2 - 主槽控温
         private void checkBox_mainHeat_CheckedChanged(object sender, EventArgs e)
         {
             if(checkBox_mainHeat.Checked == true)
             {
-                ryDevice.openMainHeat();
+                Logger.Op("主槽控温  开");
+                
             }
 
             if(checkBox_mainHeat.Checked == false)
             {
-                ryDevice.closeMainHeat();
+                Logger.Op("主槽控温  关");
+                
             }
         }
 
@@ -99,12 +155,14 @@ namespace TemperatureControl
         {
             if(checkBox_subHeat.Checked == true)
             {
-                ryDevice.openSubHeat();
+                Logger.Op("辅槽控温  开");
+                
             }
 
             if (checkBox_subHeat.Checked == false)
             {
-                ryDevice.closeSubHeat();
+                Logger.Op("辅槽控温  关");
+                
             }
         }
 
@@ -114,12 +172,14 @@ namespace TemperatureControl
         {
             if(checkBox_subCool.Checked == true)
             {
-                ryDevice.openSubCool();
+                Logger.Op("辅槽制冷  开");
+                
             }
 
             if (checkBox_subCool.Checked == false)
             {
-                ryDevice.closeSubCool();
+                Logger.Op("辅槽制冷  关");
+               
             }
         }
 
@@ -129,12 +189,14 @@ namespace TemperatureControl
         {
             if (checkBox_subCircle.Checked == true)
             {
-                ryDevice.openSubCircle();
+                Logger.Op("辅槽循环  开");
+                
             }
 
             if (checkBox_subCircle.Checked == false)
             {
-                ryDevice.closeSubCircle();
+                Logger.Op("辅槽循环  关");
+                
             }
         }
 
@@ -144,12 +206,14 @@ namespace TemperatureControl
         {
             if (checkBox_mainCoolF.Checked == true)
             {
-                ryDevice.openMainCoolF();
+                Logger.Op("主槽快冷  开");
+                
             }
 
             if (checkBox_mainCoolF.Checked == false)
             {
-                ryDevice.closeMainCoolF();
+                Logger.Op("主槽快冷  关");
+                
             }
         }
 
@@ -159,12 +223,14 @@ namespace TemperatureControl
         {
             if (checkBox_subCoolF.Checked == true)
             {
-                ryDevice.openSubCoolF();
+                Logger.Op("辅槽快冷  开");
+               
             }
 
             if (checkBox_subCoolF.Checked == false)
             {
-                ryDevice.closeSubCoolF();
+                Logger.Op("辅槽快冷  关");
+                
             }
         }
 
@@ -174,12 +240,14 @@ namespace TemperatureControl
         {
             if (checkBox_waterIn.Checked == true)
             {
-                ryDevice.openWaterIn();
+                Logger.Op("海水进    开");
+                
             }
 
             if (checkBox_waterIn.Checked == false)
             {
-                ryDevice.closeWaterIn();
+                Logger.Op("海水进    关");
+                
             }
         }
 
@@ -189,14 +257,35 @@ namespace TemperatureControl
         {
             if (checkBox_waterOut.Checked == true)
             {
-                ryDevice.openWaterOut();
+                Logger.Op("海水出    开");
+                
             }
 
             if (checkBox_waterOut.Checked == false)
             {
-                ryDevice.closeWaterOut();
+                Logger.Op("海水出    关");
+                
             }
         }
 
+        private void checkBox_paramM_Click(object sender, EventArgs e)
+        {
+            if(formStM == null || formStM.IsDisposed)
+            {
+                formStM = new FormSetting(ref tpDeviceM);
+                formStM.Text = "主槽控温";
+            }
+            formStM.Show();
+            formStM.Activate();
+            //formStM.ShowDialog();
+        }
+
+
+        private void checkBox_paramS_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }

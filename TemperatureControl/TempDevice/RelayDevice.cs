@@ -8,350 +8,85 @@ using System.Diagnostics;
 
 namespace Device
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public enum RelayDeviceError
+    public class RelayDevice
     {
-        NOERROR = 0,
-        CODEERROR,
-        COMERROR,
-        ERROR
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public class RelayCmd
-    {
-
-    }
-
-
-    /// <summary>
-    /// 继电器
-    /// </summary>
-    public class RelayDevice : RelayCmd
-    {
-        private readonly object _Locker = new object();
-        private string _portName = string.Empty;
-        private SerialPort _sPort = null;
-
-        /// <summary>
-        /// 新建串口
-        /// </summary>
-        /// <param name="portName"></param>
-        /// <returns></returns>
-        public RelayDeviceError InitCom(string portName)
+        #region Device Update Event
+        public class RelayDeviceEventArgs :EventArgs
         {
-            try
+            public RelayDeviceEventArgs( int para_index, bool sucess)
             {
-                _portName = portName;
-                _sPort = new SerialPort(portName, 2400, Parity.None, 8, StopBits.One);
-                // 设置读取超时 500ms
-                _sPort.ReadTimeout = 500;
-                _sPort.Open();
+                index = para_index; suc = sucess;
             }
-            catch (System.IO.IOException ex)
-            {
-                Debug.WriteLine("新建串口 "+ portName + " 失败！");
-                return RelayDeviceError.COMERROR;
-            }
-            return RelayDeviceError.NOERROR;
+            private int index;
+            private bool suc;
+
+            public int Index { get { return index; } }
+            public bool Sucess { get { return suc; } }
         }
 
+        public event EventHandler<RelayDeviceEventArgs> DeviceUpdate;
+        #endregion
 
-        /// <summary>
-        /// 关闭串口
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError CloseCom()
+        public enum Paras_r
         {
-            if (_sPort == null)
-                return RelayDeviceError.NOERROR;
+            Elect = 0,
+            MainHeat,
+            MainCoolF,
+            SubHeat,
+            SubCoolF,
+            SubCool,
+            WaterIn,
+            SubCircle,
+            WaterOut
+        };
 
-            try
-            {
-                _sPort.Close();
-                _sPort = null;
-            }
-            catch (System.IO.IOException ex)
-            {
-                Debug.WriteLine("关闭串口 " + _portName  + " 失败！");
-                return RelayDeviceError.COMERROR;
-            }
-            return RelayDeviceError.NOERROR;
-        }
+        #region Protocol
+        private RelayProtocol ryProtocol = new RelayProtocol();
+        #endregion
 
+        #region Device Members
+        // 线程安全
+        private object locker = new object();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openElect()
+        // Device value
+        private DateTime ctrlStartTime;
+        public bool[] paraValues = { false, false, false, false, false, false, false, false, false };
+        public string[] paraChNames =
+            { "总电源", "主槽控温", "辅槽控温", "辅槽制冷  ", "辅槽循环  ", "主槽快冷  ", "辅槽快冷  ", "海水进", "海水出  " };
+
+        // Device Name
+        private string deviceName = string.Empty;
+        private string portName = string.Empty;
+        #endregion
+
+        #region Public Methods
+        public bool setParam(Paras_r param, bool status)
         {
-            lock (_Locker)
+            Err_t err = Err_t.NoError;
+            lock(locker)
             {
-
+                err = ryProtocol.SetRelay((RelayProtocol.Cmd_r)param, status);
+                if (err == Err_t.NoError)
+                    paraValues[(int)param] = status;
             }
 
-            return RelayDeviceError.NOERROR;
+            // 触发 Device Update Event
+            RelayDeviceEventArgs ev = new RelayDeviceEventArgs((int)param, err == Err_t.NoError);
+            OnRaiseDeviceUpdateEvent(ev);
+
+            return (err == Err_t.NoError);
         }
+        #endregion
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeElect()
+        #region Private Method
+        private void OnRaiseDeviceUpdateEvent(RelayDeviceEventArgs e)
         {
-            lock (_Locker)
+            EventHandler<RelayDeviceEventArgs> handler = DeviceUpdate;
+            if(handler !=null)
             {
-
+                handler(this, e);
             }
-
-            return RelayDeviceError.NOERROR;
         }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openMainHeat()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeMainHeat()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openMainCoolF()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeMainCoolF()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openSubHeat()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeSubHeat()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openSubCoolF()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeSubCoolF()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openSubCool()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeSubCool()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openWaterIn()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeWaterIn()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openSubCircle()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeSubCircle()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError openWaterOut()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RelayDeviceError closeWaterOut()
-        {
-            lock (_Locker)
-            {
-
-            }
-
-            return RelayDeviceError.NOERROR;
-        }
+        #endregion
     }
 }
