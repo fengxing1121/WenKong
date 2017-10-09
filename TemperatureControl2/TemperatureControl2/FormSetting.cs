@@ -137,10 +137,8 @@ namespace TemperatureControl2
                     return;
                 }
 
-                if(Math.Abs(newVal - tpDev.tpParam[i]) > 10e-5)
-                {
-                    tpDev.tpParam[i] = newVal;
-                }
+                // 将参数写入参数设置缓存
+                tpDev.tpParamToSet[i] = newVal;
             }
 
             // 向硬件设备更新参数

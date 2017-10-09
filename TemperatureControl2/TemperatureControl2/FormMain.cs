@@ -33,8 +33,7 @@ namespace TemperatureControl2
             checkBox_ryDevices[8] = checkBox_waterOut;
 
             // 温度数据读取 - 定时器事件
-            deviceAll.TpTemperatureUpdateTimerEvent += tpDeviceM_TpTemperatureUpdateTimerEvent;
-            deviceAll.TpTemperatureUpdateTimerEvent += tpDeviceS_TpTemperatureUpdateTimerEvent;
+            deviceAll.TpTemperatureUpdateTimerEvent += tpDevice_TpTemperatureUpdateTimerEvent;
         }
 
         

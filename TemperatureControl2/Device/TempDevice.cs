@@ -17,6 +17,7 @@ namespace Device
         TempProtocol tpDevice = new TempProtocol();
         // 设备参数
         public float[] tpParam = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
+        public float[] tpParamToSet = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
         public readonly string[] tpParamFormat = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0.000" };
         public readonly string[] tpParamNames =
             { "设定值    ", "调整值    ", "超前调整值", "模糊系数  ", "比例系数  ", "积分系数  ", "功率系数  ", "波动度阈值", "温度阈值  " };
@@ -82,12 +83,19 @@ namespace Device
         public void UpdateParamToDevice()
         {
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
+
+            // 更新 xx 阈值
+            tpParam[7] = tpParamToSet[7];
+            tpParam[8] = tpParamToSet[8];
+
+            // 更新硬件设备参数
             int i = 0;
             for(i = 0;i<7;i++)
             {
                 lock(tpLocker)
                 {
-                    err = tpDevice.SendData((TempProtocol.Cmd_t)i, tpParam[i]);
+                    if(Math.Abs(tpParam[i] - tpParamToSet[i]) > 10e-5)
+                        err = tpDevice.SendData((TempProtocol.Cmd_t)i, tpParam[i]);
                 }
 
                 // 调试信息

@@ -1,0 +1,49 @@
+﻿1、上位机程序主界面为 FormMain ，代码由 FormMain.cs / FormMain.Designer.cs / FormMain.FlowControl.cs / FormMain.RelayDevice.cs / FormMain.System.cs / FormMain.TempDevice.cs 等几部分组成
+各部分包含了主界面中相应部分的操作代码
+当前主要有	继电器控制部分 - FormMain.RelayDevice.cs
+			控温槽控制部分 - FormMain.TempDevice.cs
+
+注：MainForm 定义了设备总体类型 Devices 类型的实例 deviceAll ，包含了所有下位机设备
+
+2、继电器控制部分 - FormMain.RelayDevice.cs
+点击按键时，将按键状态写入 deviceAll.ryDevice.ryStatusToSet[] ; 然后异步调用继电器设备 RelayDevice 的状态更新函数 UpdateStatusToDevice() 将新的继电器状态写入下位机
+
+错误及处理：
+（待完成）
+对于如何处理继电器状态写入错误，还未编写相应代码，不过应该也可以通过触发事件的方式进行
+
+3、控温槽控制部分 - FormMain.TempDevice.cs
+主槽 / 辅槽控温表 参数设置按键 - 弹出参数设置窗口 FormSetting
+主槽 / 辅槽控温表 绘制曲线按键 - 弹出温度曲线窗口 FormChart
+主槽 / 辅槽控温表 启动按键 - 调用 allDevice.startTemperatureUpdateM() 函数打开 / 关闭相应的定时器，从而开始 / 停止从控温设备读取温度 / 功率值
+当定时器函数执行完成后，执行主窗口 FormMain 中的函数 tpDevice_TpTemperatureUpdateTimerEvent() ,将最新的温度 / 功率值显示到主界面中
+操作日志 - 暂未实现相应功能
+
+4、控温槽参数设置窗口 - FormSetting
+加载窗口后，注册 TempDevice.ParamUpdatedFromDeviceEvent 以及 TempDevice.ParamUpdatedToDeviceEvent 事件，分别用于设备参数读取 / 设置完成后，将最新的值显示在界面中，并处理错误信息
+加载窗口后，异步调用温控设备的读取参数函数 TempDevice.UpdateParamFromDevice()
+按键 查询参数 - 异步调用温控设备的读取参数函数 TempDevice.UpdateParamFromDevice()，从设备读取参数到 TempDevice.tpParam[]
+按键 更新参数 - 首先将界面中的参数值写入 TempDevice.tpParamToSet[] 中，再异步调用温控设备的写入参数函数 TempDevice.UpdateParamToDevice()，将参数写入设备
+读取 / 写入完成过后触发相应的事件
+写入事件处理函数 - 主要是显示错误信息
+读取事件处理函数 - 将读取到的最新参数值显示在界面中，并显示错误信息
+注：关闭界面时应注销事件处理函数
+
+5、温度曲线界面
+将温度值 TempDevice.temperatures 中的值绘制在界面中
+（未完成）
+思路：通过注册 Devices 类中的定时器函数执行事件，使得每次读取到新的函数值的时候，都能实时更新曲线
+注：关闭界面时应注销事件处理函数
+
+
+
+/////////////////////////////////////////////////////////////////////////
+总体思路说明：
+
+在 TempProtocol 和 RelayProtocol 类中实现上位机与下位机之间的通信功能
+在 TempDevice 和 RelayDevice 类中存放下位机设备的参数值等状态信息，并给出所实现功能对应的函数
+将所有设备打包在 Devices 中，并在 Devices 类中定义定时器及定时器函数，用于每隔一定时间间隔完成相应的操作
+
+主界面通过调用 TempDevice / RelayDevice 中的函数完成相应的操作功能，并通过注册事件处理函数来处理操作完成后的结果
+
+Devices 中定时器与 操作状态列表 controlFlowList<StateFlow> 相配合，可以完成自动控制部分的全部操作

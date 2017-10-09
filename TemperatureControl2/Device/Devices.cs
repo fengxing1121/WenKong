@@ -12,6 +12,71 @@ namespace Device
     /// </summary>
     public class Devices
     {
+        struct StateFlow
+        {
+            public State flowState;
+            public bool stateChanged;
+            public float stateTemp;
+            public int stateTime;
+        }
+
+        enum State
+        {
+            TempUp = 0,
+            TempControl,
+            TempStable,
+            Measure,
+            TempDown,
+            Finish,
+            Start
+        }
+
+        List<StateFlow> controlFlowList = new List<StateFlow>();
+        StateFlow currentState;
+
+        void controlFlowTime_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            switch(currentState.flowState)
+            {
+                // 温度上升
+                case State.TempUp:
+                    {
+                        // 状态初次改变
+                        if(currentState.stateChanged == true)
+                        {
+                            currentState.stateChanged = false;
+                            // 设置继电器状态
+                            // wghou
+                            // code
+
+                            // 读取温度数据
+                            // wghou
+                            // code
+                        }
+                        // 状态持续中
+                        else
+                        {
+                            // 读取温度数据
+                            // wghou
+                            // code
+
+
+                            // 如果温度达到设定温度值，则进入下一个状态
+                            // wghou
+                            // code
+                            currentState = controlFlowList[0]; // 下一个状态
+                        }
+                    }
+                    break;
+
+
+                case State.TempControl:
+
+                    break;
+            }
+        }
+
+
         /// <summary>
         /// relay 继电器设备
         /// </summary>
@@ -51,8 +116,10 @@ namespace Device
                 float val1, val2;
                 tpDeviceS.GetTemperatureShow(out val1);
                 tpDeviceS.GetPowerShow(out val2);
+                Debug.WriteLine("温度显示值： " + val1.ToString());
             }
 
+            // 触发事件 - 错误状态为 false - 没有发生错误
             TpTemperatureUpdateTimerEvent(false);
         }
 

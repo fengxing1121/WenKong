@@ -66,6 +66,7 @@ namespace TemperatureControl2
         #endregion
 
 
+        // 主槽控温表 - 温度曲线
         private void checkBox_curveM_Click(object sender, EventArgs e)
         {
             bool formExist = false;
@@ -91,49 +92,58 @@ namespace TemperatureControl2
         }
 
 
-        // 主槽控温设备开始读取温度值
+        // 主槽控温设备 - 开始读取温度值
         private void checkBox_startM_Click(object sender, EventArgs e)
         {
             deviceAll.startTemperatureUpdateM(checkBox_startM.Checked);
         }
 
-        private void tpDeviceM_TpTemperatureUpdateTimerEvent(bool err)
-        {
-            if (err == false)
-            {
-                this.Invoke(new EventHandler(delegate
-                {
-                    if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
-                        this.textBox_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString() + "℃";
-                    else
-                    {
-                        Debug.WriteLine("未读到温度数据");
-                        this.textBox_tempM.Text = "0.000℃";
-                    }
-                }));
-            }
-        }
-
-        // 辅槽控温设备开始读取温度值
+        // 辅槽控温设备 - 开始读取温度值
         private void checkBox_startS_Click(object sender, EventArgs e)
         {
             deviceAll.startTemperatureUpdateS(checkBox_startS.Checked);
         }
 
-        private void tpDeviceS_TpTemperatureUpdateTimerEvent(bool err)
+
+        // 控温设备更新温度值 - 事件处理函数 - 将温度值从 TempDevice 更新到界面
+        private void tpDevice_TpTemperatureUpdateTimerEvent(bool err)
         {
             if (err == false)
             {
                 this.Invoke(new EventHandler(delegate
                 {
-                    if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                        this.textBox_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString() + "℃";
-                    else
+                    // 更新主槽控温温度 / 功率值
+                    if (this.deviceAll.tpMainStart == true)
                     {
-                        Debug.WriteLine("未读到温度数据");
-                        this.textBox_tempS.Text = "0.000℃";
+                        if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
+                            this.textBox_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString() + "℃";
+                        else
+                        {
+                            Debug.WriteLine("未读到温度数据");
+                            this.textBox_tempM.Text = "0.000℃";
+                        }
                     }
+
+                    // 更新辅槽控温温度 / 功率值该
+                    if(this.deviceAll.tpSubStart == true)
+                    {
+                        if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
+                            this.textBox_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString() + "℃";
+                        else
+                        {
+                            Debug.WriteLine("未读到温度数据");
+                            this.textBox_tempS.Text = "0.000℃";
+                        }
+                    }
+                    
                 }));
+            }
+            else
+            {
+                // 更新数据错误
+                // wghou
+                // code
+
             }
         }
     }
