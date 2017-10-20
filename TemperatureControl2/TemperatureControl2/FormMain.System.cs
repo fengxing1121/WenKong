@@ -10,20 +10,6 @@ namespace TemperatureControl2
     /// </summary>
     public partial class FormMain
     {
-        // 自动
-        private void checkBox_auto_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        // 手动
-        private void checkBox_man_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
         // 数据查询
         private void checkBox_dataChk_Click(object sender, EventArgs e)
         {

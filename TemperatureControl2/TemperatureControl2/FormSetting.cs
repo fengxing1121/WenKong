@@ -27,7 +27,7 @@ namespace TemperatureControl2
         {
             InitializeComponent();
 
-            // 设备对象
+            // 温控设备对象
             tpDev = dev;
 
             // 温控设备参数控件
@@ -49,37 +49,74 @@ namespace TemperatureControl2
         // 在 TempDevice 初始化的过程中，已经将硬件中的参数读取到了 tpParam 中，因此，不再直接从硬件中读取参数
         private void FormSetting_Load(object sender, EventArgs e)
         {
+            // 注册温控设备参数更新 / 设置事件处理函数
             this.tpDev.ParamUpdatedFromDeviceEvent += TpDev_ParamUpdatedFromDeviceEvent;
             this.tpDev.ParamUpdatedToDeviceEvent += TpDev_ParamUpdatedToDeviceEvent;
 
             // 从硬件设备读取参数
-            TempGetParamHandler getTempParam = new TempGetParamHandler(this.tpDev.UpdateParamFromDevice);
+            TempGetSetParamHandler getTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamFromDevice);
             getTempParam.BeginInvoke(null, null);
-
-            
         }
 
-        private void TpDev_ParamUpdatedToDeviceEvent(bool st, Device.TempProtocol.Err_t err)
+
+        // 窗体关闭事件 - 处理函数
+        // 设置窗口关闭时，注销相应的事件
+        private void FormSetting_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if(st == false)
-            {
-                this.Invoke(new EventHandler(delegate
-                {
-                    MessageBox.Show("向温控设备更新参数失败! \r错误状态：" + err.ToString());
-                }));
-            }
-            else
-            {
-                this.Invoke(new EventHandler(delegate
-                {
-                    MessageBox.Show("向温控设备更新参数成功!");
-                }));
-            }
+            // 注销温控设备参数更新 / 设置事件处理函数
+            this.tpDev.ParamUpdatedFromDeviceEvent -= TpDev_ParamUpdatedFromDeviceEvent;
+            this.tpDev.ParamUpdatedToDeviceEvent -= TpDev_ParamUpdatedToDeviceEvent;
         }
 
-        private void TpDev_ParamUpdatedFromDeviceEvent(bool st, Device.TempProtocol.Err_t err)
+
+        /// <summary>读取温控设备参数 - 委托 - 用于开辟新的线程读取设备参数 </summary>
+        private delegate void TempGetSetParamHandler();
+
+        // 按键 click 事件 - 处理函数
+        // 参数读取按键
+        private void BntRead_Click(object sender, EventArgs e)
         {
-            if (st == true)
+            // 从硬件设备读取参数
+            TempGetSetParamHandler getTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamFromDevice);
+            getTempParam.BeginInvoke(null, null);
+        }
+
+
+        // 按键 click 事件 - 处理函数
+        // 参数设置按键
+        private void BntUpdate_Click(object sender, EventArgs e)
+        {
+            // 设置温控设备参数
+            for (int i = 0; i < 9; i++)
+            {
+                float newVal = 0.0f;
+
+                if (float.TryParse(this.tpParam[i].Text, out newVal) != true)
+                {
+                    // 参数数据格式错误哦
+                    MessageBox.Show("参数 " + tpDev.tpParamNames[i] + " 格式错误！");
+                    return;
+                }
+
+                // 将参数写入参数设置缓存
+                tpDev.tpParamToSet[i] = newVal;
+            }
+
+            // 向硬件设备更新参数
+            TempGetSetParamHandler setTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamToDevice);
+            setTempParam.BeginInvoke(null, null);
+        }
+
+
+        /// <summary>
+        /// 从设备读取参数完成事件处理函数
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="err"></param>
+        private void TpDev_ParamUpdatedFromDeviceEvent(Device.TempProtocol.Err_t err)
+        {
+            // 从下位机读取参数成功
+            if (err == Device.TempProtocol.Err_t.NoError)
             {
                 this.Invoke(new EventHandler(delegate
                 {
@@ -92,6 +129,7 @@ namespace TemperatureControl2
                 }));
 
             }
+            // 从下位机读取参数失败
             else
             {
                 this.Invoke(new EventHandler(delegate
@@ -101,55 +139,32 @@ namespace TemperatureControl2
             }
         }
 
-        /// <summary>
-        /// 读取温控设备参数 - 委托 - 用于开辟新的线程读取设备参数
-        /// </summary>
-        /// <param name="cmd"></param>
-        private delegate void TempGetParamHandler();
-
-        private void BntRead_Click(object sender, EventArgs e)
-        {
-            // 从硬件设备读取参数
-            TempGetParamHandler getTempParam = new TempGetParamHandler(this.tpDev.UpdateParamFromDevice);
-            getTempParam.BeginInvoke(null, null);
-        }
-
 
         /// <summary>
-        /// 温控设备参数设置 - 委托 - 用于开辟新的线程设置参数
+        /// 向下位机写入参数完成事件处理函数
         /// </summary>
-        /// <param name="cmd"></param>
-        /// <param name="val"></param>
-        private delegate void TempSetParamHandler();
-
-        // 参数设置按键
-        private void BntUpdate_Click(object sender, EventArgs e)
+        /// <param name="st">参数是否写入成功</param>
+        /// <param name="err">错误代码</param>
+        private void TpDev_ParamUpdatedToDeviceEvent(Device.TempProtocol.Err_t err)
         {
-            // 设置温控设备参数
-            for(int i = 0;i<9;i++)
+            // 向下位机写入参数成功
+            if (err == Device.TempProtocol.Err_t.NoError)
             {
-                float newVal = 0.0f;
-
-                if(float.TryParse(this.tpParam[i].Text, out newVal) != true)
+                this.Invoke(new EventHandler(delegate
                 {
-                    // 参数数据格式错误哦
-                    MessageBox.Show("参数 " + tpDev.tpParamNames[i] +" 格式错误！");
-                    return;
-                }
-
-                // 将参数写入参数设置缓存
-                tpDev.tpParamToSet[i] = newVal;
+                    MessageBox.Show("向温控设备更新参数成功!");
+                }));
             }
-
-            // 向硬件设备更新参数
-            TempSetParamHandler setTempParam = new TempSetParamHandler(this.tpDev.UpdateParamToDevice);
-                    setTempParam.BeginInvoke(null, null);
+            // 向下位机写入参数失败
+            else
+            {
+                this.Invoke(new EventHandler(delegate
+                {
+                    MessageBox.Show("向温控设备更新参数失败! \r错误状态：" + err.ToString());
+                }));
+            }
         }
+        // end
 
-        private void FormSetting_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            this.tpDev.ParamUpdatedFromDeviceEvent -= TpDev_ParamUpdatedFromDeviceEvent;
-            this.tpDev.ParamUpdatedToDeviceEvent -= TpDev_ParamUpdatedToDeviceEvent;
-        }
     }
 }

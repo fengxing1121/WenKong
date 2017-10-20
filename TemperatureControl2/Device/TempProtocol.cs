@@ -106,7 +106,7 @@ namespace Device
 
         #region Public Methods
         /// <summary>
-        /// 新建串口
+        /// 新建串口，并设置串口名称
         /// </summary>
         /// <param name="portName">串口名称</param>
         /// <returns></returns>
@@ -118,6 +118,10 @@ namespace Device
                 if (portNames.Contains(portName.ToUpper()))
                 {
                     sPort.PortName = portName;
+                    // 串口打开 / 关闭测试
+                    sPort.Open();
+                    Thread.Sleep(intervalOfWR);
+                    sPort.Close();
                     return true;
                 }
                 else
@@ -136,7 +140,7 @@ namespace Device
 
 
         /// <summary>
-        /// 向温控设备写入数据
+        /// 向温控设备写入数据，返回错误代码
         /// </summary>
         /// <param name="cmd">参数指令符</param>
         /// <param name="value">参数值</param>
@@ -185,7 +189,7 @@ namespace Device
 
 
         /// <summary>
-        /// 从温控设备读取数据
+        /// 从温控设备读取数据，返回错误代码
         /// </summary>
         /// <param name="cmd">参数指令符</param>
         /// <param name="value">参数值</param>

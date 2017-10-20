@@ -11,12 +11,16 @@ namespace Device
         // 温控设备
         #region Members
         // 设备
-        public bool tpDeviceInited = false;
         public string tpDeviceName = string.Empty;
         public string tpDevicePortName = string.Empty;
         TempProtocol tpDevice = new TempProtocol();
-        // 设备参数
+        /// <summary>
+        /// 设备参数值
+        /// </summary>
         public float[] tpParam = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
+        /// <summary>
+        /// 设备参数设定值
+        /// </summary>
         public float[] tpParamToSet = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
         public readonly string[] tpParamFormat = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0.000" };
         public readonly string[] tpParamNames =
@@ -40,8 +44,14 @@ namespace Device
         #endregion
 
         #region Event
-        public delegate void ParamUpdatedEventHandler(bool st, TempProtocol.Err_t err);
+        public delegate void ParamUpdatedEventHandler(TempProtocol.Err_t err);
+        /// <summary>
+        /// 温控设备向下位机写入参数完成事件
+        /// </summary>
         public event ParamUpdatedEventHandler ParamUpdatedToDeviceEvent;
+        /// <summary>
+        /// 温控设备从下位机读取参数完成事件
+        /// </summary>
         public event ParamUpdatedEventHandler ParamUpdatedFromDeviceEvent;
         #endregion
 
@@ -50,36 +60,33 @@ namespace Device
         #region Public Methods
 
         /// <summary>
-        /// 温控设备初始化，触发 tpInitDeviceEvent 事件
+        /// 温控设备初始化，并设置串口名称
         /// </summary>
-        /// <param name="init">初始化状态，false 则表示关闭设备</param>
-        public void InitTempDevice(bool init)
+        /// <param name="init">初始化状态，false 则表示初始化失败</param>
+        /// <returns>返回设置状态</returns>
+        public bool SetDevicePortName(string portName)
         {
-            TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
             // 线程锁
             lock (tpLocker)
             {
                 // 先主动关闭串口
+                // wghou
+                // 这句话可能会抛出异常
                 tpDevice.sPort.Close();
 
-                // 初始化设备
-                if (init == true)
-                {
-                    if (tpDevice.SetPort("COM1"))
-                        tpDeviceInited = true;
-                    else
-                        tpDeviceInited = false;
-                }
-                // 关闭设备
-                else
-                {
-                    tpDevice.sPort.Close();
-                    tpDeviceInited = false;
-                }
+                // 设置设备串口
+                tpDevicePortName = portName;
+                return tpDevice.SetPort(portName);
             }
 
         }
 
+
+        /// <summary>
+        /// 将 tpParamToSet[] 中的参数值写入下位机；
+        /// 如发生错误，则立即停止并触发参数写入事件（附带错误信息）；
+        /// 如成功，则触发参数写入事件（附带 NoError 信息）
+        /// </summary>
         public void UpdateParamToDevice()
         {
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
@@ -89,84 +96,70 @@ namespace Device
             tpParam[8] = tpParamToSet[8];
 
             // 更新硬件设备参数
-            int i = 0;
-            for(i = 0;i<7;i++)
+            lock(tpLocker)
             {
-                lock(tpLocker)
+                for ( int i = 0; i < 7; i++)
                 {
-                    if(Math.Abs(tpParam[i] - tpParamToSet[i]) > 10e-5)
-                        err = tpDevice.SendData((TempProtocol.Cmd_t)i, tpParam[i]);
+                    // 如果参数未改变，则跳过
+                    if (Math.Abs(tpParam[i] - tpParamToSet[i]) < 10e-5)
+                        continue;
+
+                    // 向设备写入参数
+                    err = tpDevice.SendData((TempProtocol.Cmd_t)i, tpParam[i]);
+
+                    // 调试信息
+                    Debug.WriteLineIf(err == TempProtocol.Err_t.NoError, "温控设备参数设置成功!  " + tpParamNames[i] + ": " + tpParam[i].ToString());
+                    Debug.WriteLineIf(err != TempProtocol.Err_t.NoError, "温控设备参数设置失败!  " + tpParamNames[i] + ": " + err.ToString());
+
+                    // 如发生错误，则结束 for 循环
+                    if (err != TempProtocol.Err_t.NoError)
+                        break;
                 }
-
-                // 调试信息
-                Debug.WriteLineIf(err == TempProtocol.Err_t.NoError,"温控设备参数设置成功!  " + tpParamNames[i] + ": " + tpParam[i].ToString());
-                Debug.WriteLineIf(err != TempProtocol.Err_t.NoError, "温控设备参数设置失败!  " + tpParamNames[i] + ": " + err.ToString());
-
-                // 如发生错误，则结束
-                if (err != TempProtocol.Err_t.NoError)
-                    break;
             }
-
+            
             // 结果处理 - 事件
-            if(err == TempProtocol.Err_t.NoError)
-            {
-                // wghou
-                // 参数设置成功
-                ParamUpdatedToDeviceEvent(true, TempProtocol.Err_t.NoError);
-            }
-            else
-            {
-                // wghou
-                // 参数设置失败
-                ParamUpdatedToDeviceEvent(false, err);
-            }
-
-        }
-
-
-        public void UpdateParamFromDevice()
-        {
-            TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
-            int i = 0;
-            float val = 0.0f;
-            for (i = 0; i < 7; i++)
-            {
-                lock (tpLocker)
-                {
-                    err = tpDevice.ReadData((TempProtocol.Cmd_t)i, out val);
-                }
-
-                // 调试信息
-                Debug.WriteLineIf(err == TempProtocol.Err_t.NoError, "温控设备参数读取成功!  " + tpParamNames[i] + ": " + tpParam[i].ToString());
-                Debug.WriteLineIf(err != TempProtocol.Err_t.NoError, "温控设备参数读取失败!  " + tpParamNames[i] + ": " + err.ToString());
-
-                // 如发生错误，则结束
-                if (err != TempProtocol.Err_t.NoError)
-                    break;
-
-                // 如果没有发生错误，则在上位机更新数据
-                tpParam[i] = val;
-            }
-
-            // 结果处理 - 事件
-            if (err == TempProtocol.Err_t.NoError)
-            {
-                // wghou
-                // 参数设置成功
-                ParamUpdatedFromDeviceEvent(true, TempProtocol.Err_t.NoError);
-            }
-            else
-            {
-                // wghou
-                // 参数设置失败
-                ParamUpdatedFromDeviceEvent(false, err);
-            }
-
+            ParamUpdatedToDeviceEvent(err);
         }
 
 
         /// <summary>
-        /// 从温控设备硬件读取温度显示值，发生错误则返回上一个状态时的温度值
+        /// 从下位机读取参数值到 tpParam[] 中；
+        /// 如发生错误，则立即停止并触发参数读取事件（附带错误信息）
+        /// 如读取成功，则触发参数读取事件（附带 NoError 信息）
+        /// </summary>
+        public void UpdateParamFromDevice()
+        {
+            TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
+
+            lock(tpLocker)
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    // 从下位机读取参数值
+                    float val = 0.0f;
+                    err = tpDevice.ReadData((TempProtocol.Cmd_t)i, out val);
+
+                    // 调试信息
+                    Debug.WriteLineIf(err == TempProtocol.Err_t.NoError, "温控设备参数读取成功!  " + tpParamNames[i] + ": " + tpParam[i].ToString());
+                    Debug.WriteLineIf(err != TempProtocol.Err_t.NoError, "温控设备参数读取失败!  " + tpParamNames[i] + ": " + err.ToString());
+
+                    // 如发生错误，则立即结束 for 循环
+                    if (err != TempProtocol.Err_t.NoError)
+                        break;
+
+                    // 如果没有发生错误，则在上位机更新数据
+                    tpParam[i] = val;
+                }
+            }
+            
+            // 结果处理 - 事件
+            ParamUpdatedFromDeviceEvent(err);
+        }
+
+
+        /// <summary>
+        /// 从温控设备硬件读取温度显示值，发生错误则返回上一个状态时的温度值；
+        /// 错误信息处理（未实现）
         /// </summary>
         /// <param name="val">温度显示值</param>
         public void GetTemperatureShow( out float val)
@@ -174,14 +167,17 @@ namespace Device
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
             lock (tpLocker)
             {
+                // 从下位机读取温度显示值
                 err = tpDevice.ReadData(TempProtocol.Cmd_t.TempShow, out val);
+
                 if(err == TempProtocol.Err_t.NoError)
                 {
-                    // 未发生错误
+                    // 未发生错误，则加入到 temperatures 列表中
                     AddTemperature(val);
                 }
                 else
                 {
+                    // 如发生错误，则不向列表中添加新的数据，返回上一时刻的温度显示
                     if (temperatures.Count > 0)
                         val = temperatures.Last();
                     else
@@ -198,7 +194,8 @@ namespace Device
 
 
         /// <summary>
-        /// 从温控设备硬件读取功率显示值，如发生错误，则返回上一状态时的功率值
+        /// 从温控设备硬件读取功率显示值，如发生错误，则返回上一状态时的功率值；
+        /// 错误信息处理（未实现）
         /// </summary>
         /// <param name="val">功率显示值</param>
         public void GetPowerShow( out float val)
@@ -206,7 +203,9 @@ namespace Device
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
             lock (tpLocker)
             {
+                // 从下位机读取功率显示值
                 err = tpDevice.ReadData(TempProtocol.Cmd_t.PowerShow, out val);
+
                 if (err == TempProtocol.Err_t.NoError)
                 {
                     // 未发生错误
@@ -214,6 +213,7 @@ namespace Device
                 }
                 else
                 {
+                    // 如发生错误，则返回上一个时刻的功率显示值
                     val = tpPowerShow;
                 }
             }
@@ -226,7 +226,7 @@ namespace Device
         }
 
         /// <summary>
-        /// 获取温度波动值
+        /// 计算并获取温度波动值
         /// </summary>
         /// <param name="count">温度监测次数</param>
         /// <param name="fluctuation">温度波动值</param>

@@ -42,12 +42,19 @@
     <Compile Include="Devices.cs" />
     <Compile Include="RelayDevice.cs" />
     <Compile Include="RelayProtocol.cs" />
+    <Compile Include="SensorDevice.cs" />
     <Compile Include="TempDevice.cs" />
     <Compile Include="TempProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="说明 - Device.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{665e85e4-8da9-4e1d-b628-767814c15df3}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

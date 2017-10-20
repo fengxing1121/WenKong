@@ -48,11 +48,13 @@
             this.checkBox_curveS = new System.Windows.Forms.CheckBox();
             this.checkBox_paramS = new System.Windows.Forms.CheckBox();
             this.checkBox_logS = new System.Windows.Forms.CheckBox();
-            this.textBox_tempM = new System.Windows.Forms.TextBox();
-            this.textBox_tempS = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label_tempM = new System.Windows.Forms.Label();
+            this.label_tempS = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // checkBox_elect
@@ -79,7 +81,7 @@
             this.checkBox_auto.Text = "自动";
             this.checkBox_auto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_auto.UseVisualStyleBackColor = true;
-            this.checkBox_auto.CheckedChanged += new System.EventHandler(this.checkBox_auto_CheckedChanged);
+            this.checkBox_auto.Click += new System.EventHandler(this.checkBox_auto_Click);
             // 
             // checkBox_dataChk
             // 
@@ -106,7 +108,7 @@
             this.checkBox_man.Text = "手动";
             this.checkBox_man.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_man.UseVisualStyleBackColor = true;
-            this.checkBox_man.CheckedChanged += new System.EventHandler(this.checkBox_man_CheckedChanged);
+            this.checkBox_man.Click += new System.EventHandler(this.checkBox_man_Click);
             // 
             // checkBox_mainHeat
             // 
@@ -285,6 +287,7 @@
             this.checkBox_curveS.Text = "曲线";
             this.checkBox_curveS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_curveS.UseVisualStyleBackColor = true;
+            this.checkBox_curveS.Click += new System.EventHandler(this.checkBox_curveS_Click);
             // 
             // checkBox_paramS
             // 
@@ -311,60 +314,81 @@
             this.checkBox_logS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_logS.UseVisualStyleBackColor = true;
             // 
-            // textBox_tempM
+            // label_tempM
             // 
-            this.textBox_tempM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_tempM.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox_tempM.Location = new System.Drawing.Point(173, 101);
-            this.textBox_tempM.Name = "textBox_tempM";
-            this.textBox_tempM.Size = new System.Drawing.Size(310, 71);
-            this.textBox_tempM.TabIndex = 40;
-            this.textBox_tempM.Text = "0.000℃";
-            this.textBox_tempM.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.label_tempM.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_tempM.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label_tempM.Location = new System.Drawing.Point(172, 79);
+            this.label_tempM.Name = "label_tempM";
+            this.label_tempM.Size = new System.Drawing.Size(310, 71);
+            this.label_tempM.TabIndex = 45;
+            this.label_tempM.Text = "0.000℃";
+            this.label_tempM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBox_tempS
+            // label_tempS
             // 
-            this.textBox_tempS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_tempS.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox_tempS.Location = new System.Drawing.Point(173, 449);
-            this.textBox_tempS.Name = "textBox_tempS";
-            this.textBox_tempS.Size = new System.Drawing.Size(310, 71);
-            this.textBox_tempS.TabIndex = 41;
-            this.textBox_tempS.Text = "0.000℃";
-            this.textBox_tempS.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.label_tempS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_tempS.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label_tempS.Location = new System.Drawing.Point(172, 414);
+            this.label_tempS.Name = "label_tempS";
+            this.label_tempS.Size = new System.Drawing.Size(310, 71);
+            this.label_tempS.TabIndex = 46;
+            this.label_tempS.Text = "0.000℃";
+            this.label_tempS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBox1
+            // label1
             // 
-            this.textBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox1.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox1.Location = new System.Drawing.Point(382, 196);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 30);
-            this.textBox1.TabIndex = 42;
-            this.textBox1.Text = "00%";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(380, 196);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(102, 30);
+            this.label1.TabIndex = 47;
+            this.label1.Text = "00%";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBox2
+            // label2
             // 
-            this.textBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox2.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox2.Location = new System.Drawing.Point(382, 543);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 30);
-            this.textBox2.TabIndex = 43;
-            this.textBox2.Text = "00%";
-            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label2.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(380, 535);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(102, 30);
+            this.label2.TabIndex = 48;
+            this.label2.Text = "00%";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBox3
+            // label3
             // 
-            this.textBox3.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox3.Font = new System.Drawing.Font("宋体", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox3.Location = new System.Drawing.Point(599, 101);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(316, 125);
-            this.textBox3.TabIndex = 44;
-            this.textBox3.Text = "当前操作流程：";
+            this.label3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label3.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.Location = new System.Drawing.Point(172, 196);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(102, 30);
+            this.label3.TabIndex = 49;
+            this.label3.Text = "0.000℃";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label4
+            // 
+            this.label4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label4.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(172, 535);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(102, 30);
+            this.label4.TabIndex = 50;
+            this.label4.Text = "0.000℃";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label5
+            // 
+            this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label5.Font = new System.Drawing.Font("宋体", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(599, 79);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(316, 147);
+            this.label5.TabIndex = 51;
+            this.label5.Text = "当前操作流程：";
             // 
             // FormMain
             // 
@@ -372,11 +396,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(992, 767);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.textBox_tempS);
-            this.Controls.Add(this.textBox_tempM);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_tempS);
+            this.Controls.Add(this.label_tempM);
             this.Controls.Add(this.checkBox_logS);
             this.Controls.Add(this.checkBox_paramS);
             this.Controls.Add(this.checkBox_curveS);
@@ -399,8 +425,8 @@
             this.Controls.Add(this.checkBox_elect);
             this.Name = "FormMain";
             this.Text = "TemperatureControl";
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -425,11 +451,13 @@
         private System.Windows.Forms.CheckBox checkBox_curveS;
         private System.Windows.Forms.CheckBox checkBox_paramS;
         private System.Windows.Forms.CheckBox checkBox_logS;
-        private System.Windows.Forms.TextBox textBox_tempM;
-        private System.Windows.Forms.TextBox textBox_tempS;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label_tempM;
+        private System.Windows.Forms.Label label_tempS;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 

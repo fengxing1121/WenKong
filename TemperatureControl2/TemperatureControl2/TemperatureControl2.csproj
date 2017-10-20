@@ -48,13 +48,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DrawChart.cs" />
+    <Compile Include="FormAutoSet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAutoSet.Designer.cs">
+      <DependentUpon>FormAutoSet.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormChart.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormChart.Designer.cs">
       <DependentUpon>FormChart.cs</DependentUpon>
     </Compile>
+	<Compile Include="DrawChart.cs" >
+	  <DependentUpon>FormChart.cs</DependentUpon>
+	</Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +93,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormAutoSet.resx">
+      <DependentUpon>FormAutoSet.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormChart.resx">
       <DependentUpon>FormChart.cs</DependentUpon>
     </EmbeddedResource>
@@ -119,10 +130,6 @@
     <ProjectReference Include="..\Device\Device.csproj">
       <Project>{b8901c67-8982-4780-a52c-8b449a0989f2}</Project>
       <Name>Device</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Logs\Logs.csproj">
-      <Project>{5e636b32-6723-4f47-a6ac-d401f0be5c79}</Project>
-      <Name>Logs</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -34,8 +34,37 @@ namespace TemperatureControl2
 
             // 温度数据读取 - 定时器事件
             deviceAll.TpTemperatureUpdateTimerEvent += tpDevice_TpTemperatureUpdateTimerEvent;
+            deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEvent;
         }
 
-        
+
+        /// <summary>
+        /// 主窗体载入时，进行设备的初始化及自检
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            // 给出配置文件的路径
+            if(!deviceAll.Configure(@"./config.ini"))
+            {
+                MessageBox.Show("设备配置错误，请检查硬件连接，并重新运行程序！");
+                this.Close();
+                return;
+            }
+
+            if(!deviceAll.DeviceSelfCheck())
+            {
+                MessageBox.Show("设备自检错误，请检查硬件连接，并重新运行程序！");
+                this.Close();
+                return;
+            }
+
+            for(int i = 1;i<checkBox_ryDevices.Length;i++)
+            {
+                this.checkBox_ryDevices[i].Enabled = false;
+            }
+        }
+
     }
 }

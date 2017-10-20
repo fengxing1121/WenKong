@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemperatureControl2", "Temp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Device", "Device\Device.csproj", "{B8901C67-8982-4780-A52C-8B449A0989F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logs", "Logs\Logs.csproj", "{5E636B32-6723-4F47-A6AC-D401F0BE5C79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{665E85E4-8DA9-4E1D-B628-767814C15DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{B8901C67-8982-4780-A52C-8B449A0989F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8901C67-8982-4780-A52C-8B449A0989F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8901C67-8982-4780-A52C-8B449A0989F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E636B32-6723-4F47-A6AC-D401F0BE5C79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E636B32-6723-4F47-A6AC-D401F0BE5C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E636B32-6723-4F47-A6AC-D401F0BE5C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E636B32-6723-4F47-A6AC-D401F0BE5C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{665E85E4-8DA9-4E1D-B628-767814C15DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{665E85E4-8DA9-4E1D-B628-767814C15DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{665E85E4-8DA9-4E1D-B628-767814C15DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{665E85E4-8DA9-4E1D-B628-767814C15DF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

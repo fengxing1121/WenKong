@@ -15,13 +15,34 @@ namespace TemperatureControl2
     /// </summary>
     public partial class FormMain
     {
-        /// <summary>
-        /// 设置继电器设备状态 - 委托
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <param name="status"></param>
-        private delegate void RySetHandler();
+        // 继电器设备状态写入下位机事件处理函数
+        void RyDev_StatusUpdateEvent(Device.RelayProtocol.Err_r err)
+        {
+            // 继电器状态设置完成，刷新界面
+            // 不论是否发生错误，RelayDevice.ryStatus[] 中始终存放继电器的正确状态，故全部更新
+            this.Invoke(new EventHandler(delegate
+            {
+                for (int i = 0; i < this.checkBox_ryDevices.Length; i++)
+                {
+                    this.checkBox_ryDevices[i].Checked = this.deviceAll.ryDevice.ryStatus[i];
+                }
+            }));
 
+            // 继电器状态设置成功
+            if (err == Device.RelayProtocol.Err_r.NoError)
+            {
+                Debug.WriteLine("继电器状态写入成功！");
+            }
+            // 继电器状态设置失败
+            else
+            {
+                Debug.WriteLine("继电器状态写入失败！ " + err.ToString());
+                MessageBox.Show("继电器状态写入失败！\rerr:  " + err.ToString());
+            }
+        }
+
+        /// <summary> 设置继电器设备状态 - 委托 </summary>
+        private delegate void RySetHandler();
 
         // 1 - 总电源
         private void checkBox_elect_Click(object sender, EventArgs e)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
-namespace Logs
+namespace Utils
 {
     public static class Logger
     {
