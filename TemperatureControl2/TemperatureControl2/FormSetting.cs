@@ -118,7 +118,7 @@ namespace TemperatureControl2
             // 从下位机读取参数成功
             if (err == Device.TempProtocol.Err_t.NoError)
             {
-                this.Invoke(new EventHandler(delegate
+                this.BeginInvoke(new EventHandler(delegate
                 {
                     // 从 TempDevice.tpParam 中读取参数值
                     for (int i = 0; i < 9; i++)
@@ -132,7 +132,7 @@ namespace TemperatureControl2
             // 从下位机读取参数失败
             else
             {
-                this.Invoke(new EventHandler(delegate
+                this.BeginInvoke(new EventHandler(delegate
                 {
                     MessageBox.Show("从温控设备读取参数失败! \r错误状态：" + err.ToString());
                 }));
@@ -150,7 +150,7 @@ namespace TemperatureControl2
             // 向下位机写入参数成功
             if (err == Device.TempProtocol.Err_t.NoError)
             {
-                this.Invoke(new EventHandler(delegate
+                this.BeginInvoke(new EventHandler(delegate
                 {
                     MessageBox.Show("向温控设备更新参数成功!");
                 }));
@@ -158,7 +158,7 @@ namespace TemperatureControl2
             // 向下位机写入参数失败
             else
             {
-                this.Invoke(new EventHandler(delegate
+                this.BeginInvoke(new EventHandler(delegate
                 {
                     MessageBox.Show("向温控设备更新参数失败! \r错误状态：" + err.ToString());
                 }));

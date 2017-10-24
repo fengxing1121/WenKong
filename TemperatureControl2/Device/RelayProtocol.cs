@@ -14,13 +14,13 @@ namespace Device
 
         #region Serial Port
         /// <summary>串口</summary>
-        private const int baudrate = 2400;
+        private const int baudrate = 9600;
         private const int dataBits = 8;
         private const StopBits stopBits = StopBits.One;
         private const Parity parity = Parity.None;
         private const int readBufferSize = 64;
         private const int writeBufferSize = 64;
-        private const int readTimeout = 500;
+        private const int readTimeout = 200;
         /// <summary>串口</summary>
         internal SerialPort sPort = new SerialPort()
         {
@@ -41,7 +41,7 @@ namespace Device
         /// <summary>
         /// Relay 设备错误代码
         /// </summary>
-        public enum Err_r
+        public enum Err_r : int
         {
             /// <summary>无错误</summary>
             NoError = 0,
@@ -58,7 +58,7 @@ namespace Device
         /// <summary>
         /// Relay 设备指令代码
         /// </summary>
-        public enum Cmd_r
+        public enum Cmd_r : int
         {
             /// <summary>总电源</summary>
             Elect = 0,
@@ -103,28 +103,33 @@ namespace Device
         {
             try
             {
+                // 先主动关闭串口
+                try { sPort.Close(); } catch { }
+
                 string[] portNames = SerialPort.GetPortNames();
                 if (portNames.Contains(portName.ToUpper()))
                 {
                     sPort.PortName = portName;
-                    // 串口打开 / 关闭测试
-                    sPort.Open();
-                    Thread.Sleep(intervalOfWR);
-                    sPort.Close();
-                    return true;
                 }
                 else
                 {
                     return false;
                 }
+                // 串口打开 / 关闭测试
+                if(!sPort.IsOpen)
+                    sPort.Open();
+                Thread.Sleep(intervalOfWR);
+                if(sPort.IsOpen)
+                    sPort.Close();
+                return true;
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("新建串口失败!");
+                Debug.WriteLine("继电器设备新建串口时发生异常：" + ex.Message);
                 return false;
             }
-            return true;
+
         }
 
         /// <summary>
@@ -135,18 +140,17 @@ namespace Device
         /// <returns></returns>
         internal Err_r WriteRelayStatus(Cmd_r cmd, bool status)
         {
-            sPort.Close();
-
             byte[] data = new byte[8];
             byte[] dataBack = new byte[8];
+
             data[0] = cmdDeviceAddr;    // 设备地址
             data[1] = cmdOrder[1];      // 写入
             data[2] = (byte)(cmdRelayAddr[(int)cmd]>>8 & 0x00ff);   // 寄存器地址 / 继电器地址
             data[3] = (byte)(cmdRelayAddr[(int)cmd] & 0x00ff);
             if (status == true)
-                data[4] = 0x00;
-            else
                 data[4] = 0xff;
+            else
+                data[4] = 0x00;
             data[5] = 0x00;
 
             // 生成 CRC16 校验码
@@ -154,23 +158,42 @@ namespace Device
 
             try
             {
-                sPort.Open();
+                // 打开串口
+                if(!sPort.IsOpen)
+                    sPort.Open();
+
+                // 写入数据
                 sPort.Write(data, 0, data.Length);
                 Thread.Sleep(intervalOfWR);
 
                 // 读取返回数据
-                sPort.Read(dataBack, 0, dataBack.Length);
+                // 这里不知道为什么，用 Read 读不到正确的返回数据，只能用 for 循环单个字节读取了
+                // 有待改进
+                // wghou
+                //sPort.Read(dataBack, 0, dataBack.Length);
+                for(int i = 0;i<dataBack.Length;i++)
+                {
+                    dataBack[i] =  (Byte)sPort.ReadByte();
+                }
+
+                // 关闭端口
+                sPort.Close();
 
                 // 判断返回值是否正确（返回值应与写入值完全一样）
-                for(int i = 0;i<data.Length;i++ )
+                for (int i = 0;i<data.Length;i++ )
                     if(data[i] != dataBack[i])
                     {
+                        //Debug.WriteLine("继电器设备 " + cmd.ToString() + " 写入状态时发生校验错误!");
                         return Err_r.CRCError;
                     }
             }
             catch(Exception ex)
             {
-                Debug.WriteLine("继电器设备写入继电器状态错误！");
+                // 当读取返回值时，如果返回错误代码的长度不够 8 位，则会抛出超时异常，也视为串口错误
+                //Debug.WriteLine("继电器设备 " + cmd.ToString() + " 写入继电器状态错误！");
+                Debug.WriteLine("继电器设备 " + cmd.ToString() + " 写入状态时异常：" + ex.Message);
+                // 关闭串口
+                try { sPort.Close(); } catch { }
                 return Err_r.ComError;
             }
 
@@ -199,7 +222,9 @@ namespace Device
 
             try
             {
-                sPort.Open();
+                if(!sPort.IsOpen)
+                    sPort.Open();
+
                 sPort.Write(data, 0, data.Length);
                 Thread.Sleep(intervalOfWR);
 
@@ -212,6 +237,9 @@ namespace Device
                 byte[] crc = { dataBack[5], dataBack[6] };
                 genCRC16(ref dataBack);
 
+                // 关闭端口
+                sPort.Close();
+
                 if (crc[0] == dataBack[5] && crc[1] == dataBack[6])
                     return Err_r.NoError;
                 else
@@ -220,11 +248,13 @@ namespace Device
             catch (Exception ex)
             {
                 status = 0x0000;
-                Debug.WriteLine("继电器设备读取继电器状态错误！");
+                //Debug.WriteLine("继电器设备读取继电器状态错误！");
+                Debug.WriteLine("继电器设备读取状态时异常：" + ex.Message);
+                // 关闭串口
+                try { sPort.Close(); } catch { }
                 return Err_r.ComError;
             }
 
-            return Err_r.NoError;
         }
 
         #endregion

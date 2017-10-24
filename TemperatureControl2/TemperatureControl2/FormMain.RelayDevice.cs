@@ -20,11 +20,17 @@ namespace TemperatureControl2
         {
             // 继电器状态设置完成，刷新界面
             // 不论是否发生错误，RelayDevice.ryStatus[] 中始终存放继电器的正确状态，故全部更新
-            this.Invoke(new EventHandler(delegate
+            this.BeginInvoke(new EventHandler(delegate
             {
+#if false
                 for (int i = 0; i < this.checkBox_ryDevices.Length; i++)
                 {
                     this.checkBox_ryDevices[i].Checked = this.deviceAll.ryDevice.ryStatus[i];
+                }
+#endif
+                foreach(Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                {
+                    this.checkBox_ryDevice[cmd].Checked = this.deviceAll.ryDevice.ryStatus[(int)cmd];
                 }
             }));
 
@@ -37,7 +43,10 @@ namespace TemperatureControl2
             else
             {
                 Debug.WriteLine("继电器状态写入失败！ " + err.ToString());
-                MessageBox.Show("继电器状态写入失败！\rerr:  " + err.ToString());
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    MessageBox.Show("继电器状态写入失败！\rerr:  " + err.ToString());
+                }));
             }
         }
 
@@ -49,7 +58,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[0] = this.checkBox_elect.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -60,7 +69,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[1] = this.checkBox_mainHeat.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.MainHeat] = this.checkBox_mainHeat.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -71,7 +80,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[2] = this.checkBox_subHeat.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubHeat] = this.checkBox_subHeat.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -82,7 +91,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[3] = this.checkBox_subCool.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCool] = this.checkBox_subCool.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -93,7 +102,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[4] = this.checkBox_subCircle.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCircle] = this.checkBox_subCircle.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -104,7 +113,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[5] = this.checkBox_mainCoolF.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.MainCoolF] = this.checkBox_mainCoolF.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -115,7 +124,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[6] = this.checkBox_subCoolF.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCoolF] = this.checkBox_subCoolF.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -126,7 +135,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[7] = this.checkBox_waterIn.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.WaterIn] = this.checkBox_waterIn.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }
@@ -137,7 +146,7 @@ namespace TemperatureControl2
         {
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
-            deviceAll.ryDevice.ryStatusToSet[8] = this.checkBox_waterOut.Checked;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.WaterOut] = this.checkBox_waterOut.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
         }

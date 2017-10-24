@@ -84,7 +84,7 @@ namespace TemperatureControl2
 
             if (!formExist)
             {
-                FormChart fm = new FormChart(deviceAll.tpDeviceM);
+                FormChart fm = new FormChart(deviceAll,deviceAll.tpDeviceM);
                 fm.Name = "FormChartM";
                 fm.Text = "主槽温度曲线";
                 fm.Show();
@@ -110,7 +110,7 @@ namespace TemperatureControl2
 
             if (!formExist)
             {
-                FormChart fm = new FormChart(deviceAll.tpDeviceS);
+                FormChart fm = new FormChart(deviceAll, deviceAll.tpDeviceS);
                 fm.Name = "FormChartS";
                 fm.Text = "辅槽温度曲线";
                 fm.Show();
@@ -118,51 +118,39 @@ namespace TemperatureControl2
         }
 
 
-        // 主槽控温设备 - 开始读取温度值
-        private void checkBox_startM_Click(object sender, EventArgs e)
-        {
-            deviceAll.startTemperatureUpdateM(checkBox_startM.Checked);
-        }
-
-        // 辅槽控温设备 - 开始读取温度值
-        private void checkBox_startS_Click(object sender, EventArgs e)
-        {
-            deviceAll.startTemperatureUpdateS(checkBox_startS.Checked);
-        }
-
-
-        // 控温设备更新温度值 - 事件处理函数 - 将温度值从 TempDevice 更新到界面
-        private void tpDevice_TpTemperatureUpdateTimerEvent(bool err)
+        /// <summary>
+        /// 控温设备更新温度值 - 事件处理函数 - 将温度值从 TempDevice 更新到界面
+        /// </summary>
+        /// <param name="err"></param>
+        private void tpDevice_TpTemperatureUpdateTimerEvent(Device.TempProtocol.Err_t err)
         {
             // false 表示从下位机读取温度值时没有错误发生
-            if (err == false)
+            if (err == Device.TempProtocol.Err_t.NoError)
             {
-                this.Invoke(new EventHandler(delegate
+                this.BeginInvoke(new EventHandler(delegate
                 {
-                    // 更新主槽控温温度 / 功率值
-                    if (this.deviceAll.tpMainStart == true)
+                    // 更新主槽控温表温度 / 功率值
+                    if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
+                        this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString() + "℃";
+                    else
                     {
-                        if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
-                            this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString() + "℃";
-                        else
-                        {
-                            Debug.WriteLine("未读到温度数据");
-                            this.label_tempM.Text = "0.000℃";
-                        }
+                        Debug.WriteLine("未读到温度数据");
+                        this.label_tempM.Text = "0.000℃";
                     }
+                    // 功率系数
+                    this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0.000") + "%";
 
-                    // 更新辅槽控温温度 / 功率值该
-                    if(this.deviceAll.tpSubStart == true)
+                    // 更新辅槽控温温度 / 功率值
+                    if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
+                        this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.") + "℃";
+                    else
                     {
-                        if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                            this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString() + "℃";
-                        else
-                        {
-                            Debug.WriteLine("未读到温度数据");
-                            this.label_tempS.Text = "0.000℃";
-                        }
+                        Debug.WriteLine("未读到温度数据");
+                        this.label_tempS.Text = "0.000℃";
                     }
-                    
+                    // 功率系数
+                    this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString() + "%";
+
                 }));
             }
             // true 表示从下位机读取温度值时发生了错误
@@ -171,8 +159,28 @@ namespace TemperatureControl2
                 // 更新数据错误
                 // wghou
                 // code
-
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    MessageBox.Show("读取温控设备温度显示值/功率系数时发生错误！/r错误代码：" + err.ToString());
+                }));
             }
+        }
+
+
+        /// <summary>
+        /// 主槽控温设备参数更新 / 写入 - 事件处理函数 - 需要更新主界面中的温度设定值
+        /// </summary>
+        /// <param name="err"></param>
+        private void TpDeviceM_ParamUpdatedToDeviceEvent(Device.TempProtocol.Err_t err)
+        {
+            // 不论有没有错误发生，都更新主界面中的温度设定值
+            // 因为 tpParam[] 中始终存放有参数的正确值
+            // 如果温度设定值写入 / 读取正确，而后面的其他参数发生了错误，同样会返回错误标志位
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.000");
+                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.000");
+            }));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Device
         private const Parity parity = Parity.None;
         private const int readBufferSize = 64;
         private const int writeBufferSize = 64;
-        private const int readTimeout = 500;
+        private const int readTimeout = 200;
         /// <summary>串口</summary>
         internal SerialPort sPort = new SerialPort()
         {
@@ -41,7 +41,7 @@ namespace Device
         /// <summary>
         /// 温控设备错误代码
         /// </summary>
-        public enum Err_t
+        public enum Err_t : int
         {
             /// <summary>无错误</summary>
             NoError = 0,
@@ -68,7 +68,7 @@ namespace Device
         /// <summary>
         /// 温控设备指令代码
         /// </summary>
-        public enum Cmd_t
+        public enum Cmd_t : int
         {
             /// <summary>温度设定值</summary>
             TempSet = 0,
@@ -114,28 +114,35 @@ namespace Device
         {
             try
             {
+                try { sPort.Close(); } catch { }
+
                 string[] portNames = SerialPort.GetPortNames();
                 if (portNames.Contains(portName.ToUpper()))
                 {
                     sPort.PortName = portName;
-                    // 串口打开 / 关闭测试
-                    sPort.Open();
-                    Thread.Sleep(intervalOfWR);
-                    sPort.Close();
-                    return true;
                 }
                 else
                 {
                     return false;
                 }
-                    
+
+                // 串口打开 / 关闭测试
+                // 不知道为什么，Thread.Sleep() 会引发 System.EntryPointNotFoundException 异常
+                // 但是，并不会被 catch 到
+                // 串口打开 / 关闭测试
+                if (!sPort.IsOpen)
+                    sPort.Open();
+                Thread.Sleep(intervalOfWR);
+                if (sPort.IsOpen)
+                    sPort.Close();
+
+                return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("新建串口失败!");
+                Debug.WriteLine("继电器设备新建串口时发生异常：" + ex.Message);
                 return false;
             }
-            return true;
         }
 
 
@@ -147,8 +154,6 @@ namespace Device
         /// <returns></returns>
         internal Err_t SendData(Cmd_t cmd, float val)
         {
-            this.sPort.Close();
-
             // 不支持这四条指令
             Debug.Assert(cmd != Cmd_t.TempShow);
             Debug.Assert(cmd != Cmd_t.PowerShow);
@@ -167,8 +172,10 @@ namespace Device
             // 从串口发送指令
             try
             {
+                if(!sPort.IsOpen)
+                    this.sPort.Open();
+
                 // 写入数据
-                this.sPort.Open();
                 this.sPort.Write(command);
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
@@ -180,6 +187,9 @@ namespace Device
             catch(Exception ex)
             {
                 // 串口发生错误！
+                Debug.WriteLine("温控设备写入参数 " + cmd.ToString() + " 异常: " + ex.Message);
+                // 关闭串口
+                try { sPort.Close(); } catch { }
                 return Err_t.ComError;
             }
 
@@ -196,8 +206,6 @@ namespace Device
         /// <returns></returns>
         internal Err_t ReadData(Cmd_t cmd, out float val)
         {
-            this.sPort.Close();
-
             // 读取 温度设定值 / 温度调整值 / 超前调整值 / 模糊系数 / 比例系数 / 积分系数 / 功率系数 / 温度显示值 / 功率显示值
             // 创建指令
             string command = ConstructCommand(cmd, 0.0f, false);
@@ -206,8 +214,10 @@ namespace Device
 
             try
             {
+                if(!sPort.IsOpen)
+                    this.sPort.Open();
+
                 // 写入数据
-                this.sPort.Open();
                 this.sPort.Write(command);
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
@@ -219,6 +229,9 @@ namespace Device
             catch(Exception ex)
             {
                 val = 0.0f;
+                Debug.WriteLine("温控设备读取参数 " + cmd.ToString() + " 异常: " + ex.Message);
+                // 关闭串口
+                try { sPort.Close(); } catch { }
                 return Err_t.ComError;
             }
 
@@ -228,18 +241,19 @@ namespace Device
             {
                 // 发生错误
                 val = 0.0f;
-                return err;
             }
             else
             {
                 // 未发生错误
-                val = float.Parse(data.Substring(5));
-                return Err_t.NoError;
+                // 如果格式转化错误，则返回 ComErr
+                if (!float.TryParse(data.Substring(5), out val))
+                    err = Err_t.ComError;
             }
 
-            return Err_t.NoError;
+            return err;
         }
         #endregion
+
 
         #region Private Methods
         /// <summary>
@@ -248,14 +262,14 @@ namespace Device
         /// <returns>Is Error?</returns>
         private Err_t IsError(string cmd)
         {
-            Err_t error = Err_t.NoError;
+            Err_t err = Err_t.NoError;
 
             if (cmd[3] == errorFlag)
             {
-                error = (Err_t)(Array.IndexOf(errorWords, cmd[4].ToString()) + 1);
+                err = (Err_t)(Array.IndexOf(errorWords, cmd[4].ToString()) + 1);
             }
 
-            return error;
+            return err;
         }
 
 

@@ -20,6 +20,17 @@ namespace Device
 
 
         /// <summary>
+        /// 传感器设备自检
+        /// </summary>
+        /// <returns></returns>
+        public bool SelfCheck()
+        {
+
+            return true;
+        }
+
+
+        /// <summary>
         /// 获取传感器的值
         /// </summary>
         /// <param name="val"></param>

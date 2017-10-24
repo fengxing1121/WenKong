@@ -13,17 +13,30 @@ namespace TemperatureControl2
     {
         DrawChart mDrawChart;
         Device.TempDevice tpDevice;
-        public FormChart( Device.TempDevice dev)
+        Device.Devices deviceAll;
+        public FormChart(Device.Devices devAll, Device.TempDevice dev)
         {
             InitializeComponent();
             tpDevice = dev;
+            deviceAll = devAll;
             mDrawChart = new DrawChart(dev,TempPic.Height, TempPic.Width, 11, 7);
         }
 
         private void TemperatureChart_Load(object sender, EventArgs e)
         {
             TempPic.Image = mDrawChart.Draw();
-            
+            deviceAll.TpTemperatureUpdateTimerEvent += DeviceAll_TpTemperatureUpdateTimerEvent;
+        }
+
+        private void DeviceAll_TpTemperatureUpdateTimerEvent(Device.TempProtocol.Err_t err)
+        {
+            if (err == Device.TempProtocol.Err_t.NoError)
+            {
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    TempPic.Image = mDrawChart.Draw();
+                }));
+            }
         }
 
         private void BtnClear_Click(object sender, EventArgs e)
@@ -34,6 +47,7 @@ namespace TemperatureControl2
         private void TemperatureChart_FormClosing(object sender, FormClosingEventArgs e)
         {
             mDrawChart.Dispose();
+            deviceAll.TpTemperatureUpdateTimerEvent -= DeviceAll_TpTemperatureUpdateTimerEvent;
         }
     }
 }
