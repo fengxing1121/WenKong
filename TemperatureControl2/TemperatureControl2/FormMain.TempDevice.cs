@@ -34,8 +34,12 @@ namespace TemperatureControl2
                 FormSetting fm = new FormSetting(deviceAll.tpDeviceM);
                 fm.Name = "FormSettingM";
                 fm.Text = "主槽控温参数设置";
+                fm.Location = new System.Drawing.Point(600,300);
                 fm.Show();
             }
+
+            Utils.Logger.Sys("打开主槽控温设备参数设置界面!");
+            Utils.Logger.Op("打开主槽控温设备参数设置界面!");
         }
 
 
@@ -60,8 +64,12 @@ namespace TemperatureControl2
                 FormSetting fm = new FormSetting(deviceAll.tpDeviceS);
                 fm.Name = "FormSettingS";
                 fm.Text = "辅槽控温参数设置";
+                fm.Location = new System.Drawing.Point(600, 500);
                 fm.Show();
             }
+
+            Utils.Logger.Sys("打开辅槽控温设备参数设置界面!");
+            Utils.Logger.Op("打开辅槽控温设备参数设置界面!");
         }
         #endregion
 
@@ -76,7 +84,6 @@ namespace TemperatureControl2
                 {
                     // Avoid form being minimized
                     fm.WindowState = FormWindowState.Normal;
-
                     fm.BringToFront();
                     formExist = true;
                 }
@@ -85,10 +92,14 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll,deviceAll.tpDeviceM);
+                fm.Location = new System.Drawing.Point(50, 250);
                 fm.Name = "FormChartM";
                 fm.Text = "主槽温度曲线";
                 fm.Show();
             }
+
+            Utils.Logger.Sys("打开主槽控温设备温度曲线界面!");
+            Utils.Logger.Op("打开主槽控温设备温度曲线界面!");
         }
 
 
@@ -111,10 +122,14 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll, deviceAll.tpDeviceS);
+                fm.Location = new System.Drawing.Point(50, 300);
                 fm.Name = "FormChartS";
                 fm.Text = "辅槽温度曲线";
                 fm.Show();
             }
+
+            Utils.Logger.Sys("打开辅槽控温设备温度曲线界面!");
+            Utils.Logger.Op("打开辅槽控温设备温度曲线界面!");
         }
 
 
@@ -131,27 +146,37 @@ namespace TemperatureControl2
                 {
                     // 更新主槽控温表温度 / 功率值
                     if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
-                        this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString() + "℃";
+                        this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
                     else
                     {
                         Debug.WriteLine("未读到温度数据");
                         this.label_tempM.Text = "0.000℃";
                     }
                     // 功率系数
-                    this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0.000") + "%";
+                    this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
 
                     // 更新辅槽控温温度 / 功率值
                     if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                        this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.") + "℃";
+                        this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
                     else
                     {
                         Debug.WriteLine("未读到温度数据");
                         this.label_tempS.Text = "0.000℃";
                     }
                     // 功率系数
-                    this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString() + "%";
+                    this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
+
+                    // 当前状态提示
+                    // wghou
+                    float fluc = 0.0f;
+                    if (deviceAll.tpDeviceM.GetFluc(5, out fluc))// 3*60*1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
+                        this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃";
+                    else
+                        this.label_fluc.Text = "主控温槽波动度：****"; 
 
                 }));
+
+                //Utils.Logger.Sys("从温控设备成功读到了温度 / 功率等数据.");
             }
             // true 表示从下位机读取温度值时发生了错误
             else
@@ -163,6 +188,8 @@ namespace TemperatureControl2
                 {
                     MessageBox.Show("读取温控设备温度显示值/功率系数时发生错误！/r错误代码：" + err.ToString());
                 }));
+
+                Utils.Logger.Sys("读取温控设备温度显示值/功率系数时发生错误!  ErrorCode：" + err.ToString());
             }
         }
 
@@ -178,8 +205,8 @@ namespace TemperatureControl2
             // 如果温度设定值写入 / 读取正确，而后面的其他参数发生了错误，同样会返回错误标志位
             this.BeginInvoke(new EventHandler(delegate
             {
-                this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.000");
-                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.000");
+                this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
+                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
             }));
         }
     }

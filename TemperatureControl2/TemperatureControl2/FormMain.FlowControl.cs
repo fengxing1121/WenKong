@@ -22,6 +22,11 @@ namespace TemperatureControl2
             if(this.checkBox_auto.Checked == true)
             {
                 Form fm = new FormAutoSet(deviceAll);
+                fm.Location = new System.Drawing.Point(400,500);
+
+                Utils.Logger.Op("点击自动控温按键，开始设置自动控温流程...");
+                Utils.Logger.Sys("点击自动控温按键，开始设置自动控温流程...");
+
                 DialogResult dr = fm.ShowDialog();
                 if(dr == DialogResult.OK)
                 {
@@ -38,7 +43,10 @@ namespace TemperatureControl2
                             this.deviceAll.controlFlowList.RemoveAt(0);
                             deviceAll.autoStart = true;
                         }
-                        
+
+                        // 当前状态提示
+                        this.label_controlState.Text = "自动控温流程启动";
+
                     }
                     else
                     {
@@ -61,6 +69,9 @@ namespace TemperatureControl2
                         deviceAll.autoStart = false;
                         this.deviceAll.currentState = new Device.Devices.StateFlow() { flowState = Device.Devices.State.Idle };
                     }
+
+                    Utils.Logger.Op("取消了自动控温流程设置...");
+                    Utils.Logger.Sys("取消了自动控温流程设置...");
                 }
             }
             else
@@ -68,7 +79,7 @@ namespace TemperatureControl2
                 DialogResult dr = MessageBox.Show("确定要停止运行？", "推出系统",MessageBoxButtons.OKCancel);
                 if(dr == DialogResult.OK)
                 {
-                    Debug.WriteLine("停止了系统运行!");
+                    Debug.WriteLine("已暂停了当前的自动控温流程!");
                     this.checkBox_man.Enabled = true;
 
                     // 保证流程单步已经执行完成或还没有开始
@@ -84,6 +95,10 @@ namespace TemperatureControl2
                             this.deviceAll.currentState.flowState = Device.Devices.State.Idle;
                         }
                     }
+
+                    this.label_controlState.Text = "自动控温流程停止";
+                    Utils.Logger.Op("已暂停了当前的自动控温流程.");
+                    Utils.Logger.Sys("已暂停了当前的自动控温流程.");
 
                 }
                 else
@@ -109,6 +124,10 @@ namespace TemperatureControl2
                 // 所有继电器按键全部启用
                 foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
                     checkBox_ryDevice[cmd].Enabled = true;
+
+                this.label_controlState.Text = "手动模式开启";
+                Utils.Logger.Op("开启手动模式.");
+                Utils.Logger.Sys("开启手动模式.");
             }
 
             // 关闭手动模式
@@ -124,8 +143,30 @@ namespace TemperatureControl2
                 foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
                     checkBox_ryDevice[cmd].Enabled = false;
                 checkBox_ryDevice[Device.RelayProtocol.Cmd_r.Elect].Enabled = true;
+
+                this.label_controlState.Text = "手动模式关闭";
+                Utils.Logger.Op("关闭手动模式.");
+                Utils.Logger.Sys("关闭手动模式.");
             }
         }
+
+        /// <summary>
+        /// 自动控温流程执行完毕事件 - 处理函数
+        /// </summary>
+        /// <param name="st"></param>
+        private void DeviceAll_FlowControlFinishEvent(Device.Devices.State st)
+        {
+            Utils.Logger.Sys("自动控温流程运行结束，测量数据已保存到相应文件中!");
+            // 弹出对话框
+            // wghou
+            // 应该如何处理，特别是各个继电器应该怎么操作啊？？
+            // 是否要转入手动模式？？
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                MessageBox.Show("自动控温流程执行完毕！");
+            }));
+        }
+
 
 
         /// <summary>
@@ -136,7 +177,24 @@ namespace TemperatureControl2
         {
             this.BeginInvoke(new EventHandler(delegate
             {
-                this.label_controlState.Text = deviceAll.StateName[(int)deviceAll.currentState.flowState];
+                // 当前状态提示
+                this.label_controlState.Text = "自动控温流程： " + deviceAll.StateName[(int)deviceAll.currentState.flowState];
+            }));
+
+            Utils.Logger.Sys("自动控温流程进入 " + deviceAll.StateName[(int)deviceAll.currentState.flowState] + " 状态.");
+        }
+
+
+        /// <summary>
+        /// 主槽控温报警及故障判断 - 故障发生时处理函数
+        /// </summary>
+        /// <param name="fCode"></param>
+        private void DeviceAll_FlowControlFaultOccurEvent(Device.Devices.FaultCode fCode)
+        {
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                
+                //MessageBox.Show("主槽故障报警：" + fCode.ToString());
             }));
         }
     }

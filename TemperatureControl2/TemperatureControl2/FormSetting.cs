@@ -22,6 +22,8 @@ namespace TemperatureControl2
         /// </summary>
         private TextBox[] tpParam = new TextBox[9];
 
+        private TextBox tx = null;
+
         // 窗体构造函数
         public FormSetting(Device.TempDevice dev)
         {
@@ -54,8 +56,12 @@ namespace TemperatureControl2
             this.tpDev.ParamUpdatedToDeviceEvent += TpDev_ParamUpdatedToDeviceEvent;
 
             // 从硬件设备读取参数
-            TempGetSetParamHandler getTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamFromDevice);
-            getTempParam.BeginInvoke(null, null);
+            //TempGetSetParamHandler getTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamFromDevice);
+            //getTempParam.BeginInvoke(null, null);
+            for(int i = 0;i<tpParam.Length;i++)
+            {
+                tpParam[i].Text = tpDev.tpParam[i].ToString(tpDev.tpParamFormat[i]);
+            }
         }
 
 
@@ -79,6 +85,9 @@ namespace TemperatureControl2
             // 从硬件设备读取参数
             TempGetSetParamHandler getTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamFromDevice);
             getTempParam.BeginInvoke(null, null);
+
+            Utils.Logger.Op("点击 查询参数 按键，从 " + tpDev.tpDeviceName + " 中读取温控设备的参数!");
+            Utils.Logger.Sys("点击 查询参数 按键，从 " + tpDev.tpDeviceName + " 中读取温控设备的参数!");
         }
 
 
@@ -105,6 +114,9 @@ namespace TemperatureControl2
             // 向硬件设备更新参数
             TempGetSetParamHandler setTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamToDevice);
             setTempParam.BeginInvoke(null, null);
+
+            Utils.Logger.Op("点击 更新参数 按键，向 " + tpDev.tpDeviceName + " 中写入温控设备的参数!");
+            Utils.Logger.Sys("点击 更新参数 按键，向 " + tpDev.tpDeviceName + " 中写入温控设备的参数!");
         }
 
 
@@ -121,9 +133,9 @@ namespace TemperatureControl2
                 this.BeginInvoke(new EventHandler(delegate
                 {
                     // 从 TempDevice.tpParam 中读取参数值
-                    for (int i = 0; i < 9; i++)
+                    for (int i = 0; i < tpParam.Length; i++)
                     {
-                        tpParam[i].Text = tpDev.tpParam[i].ToString();
+                        tpParam[i].Text = tpDev.tpParam[i].ToString(tpDev.tpParamFormat[i]);
                     }
                     MessageBox.Show("从温控设备读取参数成功!");
                 }));
@@ -136,6 +148,8 @@ namespace TemperatureControl2
                 {
                     MessageBox.Show("从温控设备读取参数失败! \r错误状态：" + err.ToString());
                 }));
+
+                Utils.Logger.Sys("从 " + tpDev.tpDeviceName + " 中读取温控设备的参数失败  ErrorCode: !" + err.ToString());
             }
         }
 
@@ -163,7 +177,420 @@ namespace TemperatureControl2
                     MessageBox.Show("向温控设备更新参数失败! \r错误状态：" + err.ToString());
                 }));
             }
+
+            Utils.Logger.Sys("向 " + tpDev.tpDeviceName + " 中写入温控设备的参数失败  ErrorCode: !" + err.ToString());
         }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+
+        #region 焦点
+        // 焦点
+        private void TxtTempSet_Enter(object sender, EventArgs e)
+        {
+            if(tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtTempSet;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtTempCorrect_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtTempCorrect;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtLeadAdjust_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtLeadAdjust;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtFuzzy_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtFuzzy;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtRatio_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtRatio;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtIntegral_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtIntegral;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtPower_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtPower;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtFlucThr_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtFlucThr;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void TxtTempThr_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.TxtTempThr;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+        }
+        #endregion
+
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if(tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "9";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-9";
+                }
+                else
+                {
+                    tx.Text += "9";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "8";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-8";
+                }
+                else
+                {
+                    tx.Text += "8";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "7";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-7";
+                }
+                else
+                {
+                    tx.Text += "7";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "6";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-6";
+                }
+                else
+                {
+                    tx.Text += "6";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "5";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-5";
+                }
+                else
+                {
+                    tx.Text += "5";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "4";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-4";
+                }
+                else
+                {
+                    tx.Text += "4";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "3";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-3";
+                }
+                else
+                {
+                    tx.Text += "3";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "2";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-2";
+                }
+                else
+                {
+                    tx.Text += "2";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if(tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "1";
+                }
+                else if(tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-1";
+                }
+                else
+                {
+                    tx.Text += "1";
+                }
+                
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void button0_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if(tx.Text.Length == 2 && tx.Text == "-0")
+                {
+
+                }
+                else if(tx.Text.Length != 1|| tx.Text == "-" || int.Parse(tx.Text) !=0 )
+                {
+                    tx.Text += "0";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void buttonNegtive_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if(tx.Text == "")
+                {
+                    tx.Text = "-";
+                }
+                else if(tx.Text[0] == '-')
+                {
+                    tx.Text = tx.Text.Remove(0, 1);
+                }
+                else
+                {
+                    tx.Text = tx.Text.Insert(0, "-");
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void buttonPoint_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if(!tx.Text.Contains("."))
+                {
+                    if(tx.Text.Length == 0)
+                    {
+                        tx.Text = "0.";
+                    }
+                    else if(tx.Text.Length == 1 && tx.Text == "-")
+                    {
+                        tx.Text = "-0.";
+                    }
+                    else
+                    {
+                        tx.Text += ".";
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void buttonBack_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (tx.Text.Length > 0)
+                    tx.Text = tx.Text.Substring(0, tx.Text.Length - 1);
+            }
+            //else
+            //{
+            //    MessageBox.Show("请先选定设定项!");
+            //}
+        }
+
+        private void buttonClear_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.Text = "";
+            }
+            //else
+            //{
+            //    MessageBox.Show("请先选定设定项!");
+            //}
+        }
+
         // end
 
     }

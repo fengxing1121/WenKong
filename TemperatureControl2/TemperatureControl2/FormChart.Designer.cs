@@ -49,7 +49,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.label1.Location = new System.Drawing.Point(25, 556);
             this.label1.Name = "label1";
@@ -60,7 +60,7 @@
             // LblCtrlTimeShow
             // 
             this.LblCtrlTimeShow.AutoSize = true;
-            this.LblCtrlTimeShow.Font = new System.Drawing.Font("Microsoft YaHei", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LblCtrlTimeShow.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.LblCtrlTimeShow.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.LblCtrlTimeShow.Location = new System.Drawing.Point(124, 556);
             this.LblCtrlTimeShow.Name = "LblCtrlTimeShow";
@@ -70,7 +70,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft YaHei", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.label2.Location = new System.Drawing.Point(294, 556);
             this.label2.Name = "label2";
@@ -81,7 +81,7 @@
             // LblFlucShow
             // 
             this.LblFlucShow.AutoSize = true;
-            this.LblFlucShow.Font = new System.Drawing.Font("Microsoft YaHei", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LblFlucShow.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.LblFlucShow.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.LblFlucShow.Location = new System.Drawing.Point(423, 556);
             this.LblFlucShow.Name = "LblFlucShow";
@@ -90,16 +90,16 @@
             // 
             // BtnClear
             // 
-            this.BtnClear.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.BtnClear.Location = new System.Drawing.Point(663, 554);
+            this.BtnClear.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.BtnClear.Location = new System.Drawing.Point(666, 547);
             this.BtnClear.Name = "BtnClear";
-            this.BtnClear.Size = new System.Drawing.Size(101, 25);
+            this.BtnClear.Size = new System.Drawing.Size(100, 35);
             this.BtnClear.TabIndex = 3;
-            this.BtnClear.Text = "清除所有数据";
+            this.BtnClear.Text = "关闭窗口";
             this.BtnClear.UseVisualStyleBackColor = true;
             this.BtnClear.Click += new System.EventHandler(this.BtnClear_Click);
             // 
-            // TemperatureChart
+            // FormChart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -112,7 +112,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TempPic);
             this.MaximizeBox = false;
-            this.Name = "TemperatureChart";
+            this.Name = "FormChart";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "温度曲线图";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TemperatureChart_FormClosing);
             this.Load += new System.EventHandler(this.TemperatureChart_Load);

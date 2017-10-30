@@ -41,7 +41,7 @@ namespace TemperatureControl2
 
         private void BtnClear_Click(object sender, EventArgs e)
         {
-
+            this.Close();
         }
 
         private void TemperatureChart_FormClosing(object sender, FormClosingEventArgs e)

@@ -116,6 +116,8 @@ namespace ComTest
             //Console.WriteLine(dataRev);
         }
 
+        static float tst = 0.0f;
+
         // 主槽控温设备数据交换
         private static void SPortM_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -138,7 +140,9 @@ namespace ComTest
                 long tick = DateTime.Now.Ticks;
                 Random ran = new Random((int)(tick & 0xffffffffL) | (int)(tick >> 32));
                 float temp = 12.0f * (float)ran.NextDouble();
-                dataRev += temp.ToString("0.000");
+
+                tst += 0.5f;
+                dataRev += tst.ToString("0.000");
                 dataRev += ":";
                 sPortM.WriteLine(dataRev);
             }

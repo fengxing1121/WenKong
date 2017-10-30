@@ -16,6 +16,8 @@ namespace TemperatureControl2
         // 自动控制流程的温度点
         BindingCollection<TemptState> BList = new BindingCollection<TemptState>();
 
+        private TextBox tx = null;
+
         public FormAutoSet(Device.Devices dev)
         {
             InitializeComponent();
@@ -41,7 +43,19 @@ namespace TemperatureControl2
                 if(devicesAll.controlFlowList.Count !=0 )
                     devicesAll.controlFlowList.First().flowState = Device.Devices.State.TempUp;
             }
-            
+
+            Utils.Logger.Op("点击自动控温设置界面 开始 按键，开始执行自动控温流程...");
+            Utils.Logger.Sys("点击自动控温设置界面 开始 按键，开始执行自动控温流程...");
+
+            Utils.Logger.Op("设定的温度点有：");
+            Utils.Logger.Sys("设定的温度点有：");
+
+            foreach (var st in BList)
+            {
+                Utils.Logger.Op(st._tempt.ToString("0.0000"));
+                Utils.Logger.Sys(st._tempt.ToString("0.0000"));
+            }
+
             // 开始实验流程
             this.DialogResult = DialogResult.OK;
         }
@@ -50,6 +64,9 @@ namespace TemperatureControl2
         // 取消操作，关闭窗口
         private void button_cancel_Click(object sender, EventArgs e)
         {
+            Utils.Logger.Op("点击自动控温设置界面 取消 按键，取消了自动控温流程设置...");
+            Utils.Logger.Sys("点击自动控温设置界面 取消 按键，取消了自动控温流程设置...");
+
             // 取消操作
             this.DialogResult = DialogResult.Cancel;
         }
@@ -80,9 +97,13 @@ namespace TemperatureControl2
                 {
                     BList[i]._index = i + 1;
                 }
+                dataGridView1.ClearSelection();
 
                 // 删除列表中的温度设定值
                 textBox_tp.Text = "";
+
+                Utils.Logger.Op("添加温度设定点: " + tp.ToString("0.0000"));
+                Utils.Logger.Sys("添加温度设定点: " + tp.ToString("0.0000"));
             }
             else
             {
@@ -97,13 +118,14 @@ namespace TemperatureControl2
             for(int i = dataGridView1.Rows.Count; i>0;i--)
             {
                 if (dataGridView1.Rows[i -1].Selected == true)
+                {
+                    
+
                     BList.RemoveAt(i-1);
+                }
+                    
             }
-            // 计算编号
-            for (int i = 0; i < BList.Count; i++)
-            {
-                BList[i]._index = i + 1;
-            }
+            
         }
 
 
@@ -135,74 +157,351 @@ namespace TemperatureControl2
 
             // 排序
             BList.Sort(null, ListSortDirection.Descending);
+
+            // 默认选中
+            tx = textBox_tp;
+            tx.BackColor = System.Drawing.SystemColors.Window;
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-            
-            this.textBox_tp.Text += "9";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "9";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-9";
+                }
+                else
+                {
+                    tx.Text += "9";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "8";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "8";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-8";
+                }
+                else
+                {
+                    tx.Text += "8";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "7";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "7";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-7";
+                }
+                else
+                {
+                    tx.Text += "7";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "6";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "6";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-6";
+                }
+                else
+                {
+                    tx.Text += "6";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "5";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "5";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-5";
+                }
+                else
+                {
+                    tx.Text += "5";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "4";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "4";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-4";
+                }
+                else
+                {
+                    tx.Text += "4";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "3";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "3";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-3";
+                }
+                else
+                {
+                    tx.Text += "3";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "2";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "2";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-2";
+                }
+                else
+                {
+                    tx.Text += "2";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.textBox_tp.Text += "1";
+            if (tx != null)
+            {
+                if (tx.Text.Length == 1 && tx.Text == "0")
+                {
+                    tx.Text = "1";
+                }
+                else if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
+                    tx.Text = "-1";
+                }
+                else
+                {
+                    tx.Text += "1";
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void button0_Click(object sender, EventArgs e)
         {
-            // 不能出现 00 
-            if ((this.textBox_tp.Text.Length == 1) && this.textBox_tp.Text == "0")
-                return;
+            if (tx != null)
+            {
+                if (tx.Text.Length == 2 && tx.Text == "-0")
+                {
 
-            this.textBox_tp.Text += "0";
+                }
+                else if (tx.Text.Length != 1 || tx.Text == "-" || int.Parse(tx.Text) != 0)
+                {
+                    tx.Text += "0";
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
-        private void buttonp_Click(object sender, EventArgs e)
+        private void buttonNegtive_Click(object sender, EventArgs e)
         {
-            float val;
-            if(float.TryParse(this.textBox_tp.Text + ".", out val))
-                this.textBox_tp.Text += ".";
+            if (tx != null)
+            {
+                if (tx.Text == "")
+                {
+                    tx.Text = "-";
+                }
+                else if (tx.Text[0] == '-')
+                {
+                    tx.Text = tx.Text.Remove(0, 1);
+                }
+                else
+                {
+                    tx.Text = tx.Text.Insert(0, "-");
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
+        }
+
+        private void buttonPoint_Click(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                if (!tx.Text.Contains("."))
+                {
+                    if (tx.Text.Length == 0)
+                    {
+                        tx.Text = "0.";
+                    }
+                    else if (tx.Text.Length == 1 && tx.Text == "-")
+                    {
+                        tx.Text = "-0.";
+                    }
+                    else
+                    {
+                        tx.Text += ".";
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选定设定项!");
+            }
         }
 
         private void buttonBack_Click(object sender, EventArgs e)
         {
-            if(this.textBox_tp.Text.Length != 0)
-                this.textBox_tp.Text = this.textBox_tp.Text.Remove(this.textBox_tp.Text.Length - 1);
+            if (tx != null)
+            {
+                if (tx.Text.Length > 0)
+                    tx.Text = tx.Text.Substring(0, tx.Text.Length - 1);
+            }
+            //else
+            //{
+            //    MessageBox.Show("请先选定设定项!");
+            //}
+        }
+
+        private void buttonClear_Click(object sender, EventArgs e)
+        {
+            // 删除选中的温度点
+            for(int i = BList.Count; i>0;i--)
+            {
+                if (dataGridView1.Rows[i - 1].Selected == true)
+                {
+                    Utils.Logger.Op("删除了温度设定点: " + BList[i - 1]._tempt.ToString("0.0000"));
+                    Utils.Logger.Sys("删除了温度设定点: " + BList[i - 1]._tempt.ToString("0.0000"));
+
+                    BList.RemoveAt(i - 1);
+                }
+            }
+
+            // 计算编号
+            for (int i = 0; i < BList.Count; i++)
+            {
+                BList[i]._index = i + 1;
+            }
+
+            // 删除文本框中的文本
+            if (tx != null)
+            {
+                tx.Text = "";
+            }
+        }
+
+
+        // 编辑文本时，取消表格行的选中
+        private void textBox_tp_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_tp;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+
+        // 选中表格行时，取消编辑文本
+        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+                tx = null;
+            }
         }
     }
 
@@ -216,13 +515,13 @@ namespace TemperatureControl2
         /// <summary>
         /// 编号
         /// </summary>
-        public string Index { get { return _index.ToString(); } }
+        public string Index { get { return _index.ToString("0"); } }
 
         public float _tempt;
         /// <summary>
         /// 温度值
         /// </summary>
-        public string Tempt { get { return _tempt.ToString(); } }
+        public string Tempt { get { return _tempt.ToString("0.0000"); } }
 
         /// <summary>
         /// 是否是高级设置

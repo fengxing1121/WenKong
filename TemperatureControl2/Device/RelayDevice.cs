@@ -18,11 +18,11 @@ namespace Device
         /// <summary>
         /// Relay 设备各继电器状态
         /// </summary>
-        public bool[] ryStatus = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+        public bool[] ryStatus = { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         /// <summary>
         /// Relay 设备各继电器将要设置的状态，调用 SetRelayStatusAll 后将更新继电器状态
         /// </summary>
-        public bool[] ryStatusToSet = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+        public bool[] ryStatusToSet = { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         /// <summary>
         /// 设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）
         /// </summary>
@@ -157,6 +157,13 @@ namespace Device
             err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.WaterOut, false);
             if (err != RelayProtocol.Err_r.NoError)
                 return err;
+            Thread.Sleep(1000);
+
+            //////////////////////////
+            // 最后，打开总电源
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.Elect, true);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
 
             return RelayProtocol.Err_r.NoError;
         }
@@ -179,6 +186,8 @@ namespace Device
                         continue;
 
                     err = ryDeviceProtocol.WriteRelayStatus(cmd, ryStatusToSet[(int)cmd]);
+                    // 暂停一段时间
+                    Thread.Sleep(20);
                     // 调试信息
                     Debug.WriteLineIf(err == RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新成功!  " + ryStatusToSet[(int)cmd].ToString());
                     Debug.WriteLineIf(err != RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新失败!  " + err.ToString());

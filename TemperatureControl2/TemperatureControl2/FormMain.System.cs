@@ -14,6 +14,8 @@ namespace TemperatureControl2
         private void checkBox_dataChk_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(System.IO.Directory.GetCurrentDirectory());
+            Utils.Logger.Sys("查询数据!");
+            Utils.Logger.Op("查询数据!");
         }
     }
 }

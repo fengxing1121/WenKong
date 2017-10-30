@@ -15,7 +15,10 @@ namespace TemperatureControl2
     /// </summary>
     public partial class FormMain
     {
-        // 继电器设备状态写入下位机事件处理函数
+        /// <summary>
+        /// 继电器设备状态写入下位机事件处理函数 - 发生错误则弹出对话框
+        /// </summary>
+        /// <param name="err"></param>
         void RyDev_StatusUpdateEvent(Device.RelayProtocol.Err_r err)
         {
             // 继电器状态设置完成，刷新界面
@@ -38,11 +41,16 @@ namespace TemperatureControl2
             if (err == Device.RelayProtocol.Err_r.NoError)
             {
                 Debug.WriteLine("继电器状态写入成功！");
+
+                Utils.Logger.Sys("成功向下位机写入了继电器状态!");
             }
             // 继电器状态设置失败
             else
             {
                 Debug.WriteLine("继电器状态写入失败！ " + err.ToString());
+
+                Utils.Logger.Sys("向下位机写入了继电器状态失败!  ErrorCode: " + err.ToString());
+
                 this.BeginInvoke(new EventHandler(delegate
                 {
                     MessageBox.Show("继电器状态写入失败！\rerr:  " + err.ToString());
@@ -61,6 +69,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if(checkBox_elect.Checked == true)
+            {
+                Utils.Logger.Sys("打开总电源!");
+                Utils.Logger.Op("打开总电源!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭总电源!");
+                Utils.Logger.Op("关闭总电源!");
+            }
         }
 
 
@@ -72,6 +91,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.MainHeat] = this.checkBox_mainHeat.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_mainHeat.Checked == true)
+            {
+                Utils.Logger.Sys("打开主槽控温!");
+                Utils.Logger.Op("打开主槽控温!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭主槽控温!");
+                Utils.Logger.Op("关闭主槽控温!");
+            }
         }
 
 
@@ -83,6 +113,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubHeat] = this.checkBox_subHeat.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_subHeat.Checked == true)
+            {
+                Utils.Logger.Sys("打开辅槽控温!");
+                Utils.Logger.Op("打开辅槽控温!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭辅槽控温!");
+                Utils.Logger.Op("关闭辅槽控温!");
+            }
         }
 
 
@@ -94,6 +135,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCool] = this.checkBox_subCool.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_subCool.Checked == true)
+            {
+                Utils.Logger.Sys("打开辅槽制冷!");
+                Utils.Logger.Op("打开辅槽制冷!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭辅槽制冷!");
+                Utils.Logger.Op("关闭辅槽制冷!");
+            }
         }
 
 
@@ -105,6 +157,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCircle] = this.checkBox_subCircle.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_subCircle.Checked == true)
+            {
+                Utils.Logger.Sys("打开辅槽循环!");
+                Utils.Logger.Op("打开辅槽循环!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭辅槽循环!");
+                Utils.Logger.Op("关闭辅槽循环!");
+            }
         }
 
 
@@ -116,6 +179,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.MainCoolF] = this.checkBox_mainCoolF.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_mainCoolF.Checked == true)
+            {
+                Utils.Logger.Sys("打开主槽快冷!");
+                Utils.Logger.Op("打开主槽快冷!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭主槽快冷!");
+                Utils.Logger.Op("关闭主槽快冷!");
+            }
         }
 
 
@@ -127,6 +201,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCoolF] = this.checkBox_subCoolF.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_subCoolF.Checked == true)
+            {
+                Utils.Logger.Sys("打开辅槽快冷!");
+                Utils.Logger.Op("打开辅槽快冷!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭辅槽快冷!");
+                Utils.Logger.Op("关闭辅槽快冷!");
+            }
         }
 
 
@@ -138,6 +223,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.WaterIn] = this.checkBox_waterIn.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_waterIn.Checked == true)
+            {
+                Utils.Logger.Sys("打开海水进!");
+                Utils.Logger.Op("打开海水进!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭海水进!");
+                Utils.Logger.Op("关闭海水进!");
+            }
         }
 
 
@@ -149,6 +245,17 @@ namespace TemperatureControl2
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.WaterOut] = this.checkBox_waterOut.Checked;
             RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
             setRyStatus.BeginInvoke(null, null);
+
+            if (checkBox_waterOut.Checked == true)
+            {
+                Utils.Logger.Sys("打开海水出!");
+                Utils.Logger.Op("打开海水出!");
+            }
+            else
+            {
+                Utils.Logger.Sys("关闭海水出!");
+                Utils.Logger.Op("关闭海水出!");
+            }
         }
 
     }

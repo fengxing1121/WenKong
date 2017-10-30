@@ -16,11 +16,11 @@ namespace Device
         public string tpDevicePortName = string.Empty;
         TempProtocol tpDevice = new TempProtocol();
         /// <summary>
-        /// 设备参数值
+        /// 设备参数值 - 9个
         /// </summary>
         public float[] tpParam = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
         /// <summary>
-        /// 设备参数设定值
+        /// 设备参数设定值 - 9个
         /// </summary>
         public float[] tpParamToSet = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
         public readonly string[] tpParamFormat = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0.000" };
@@ -36,7 +36,7 @@ namespace Device
         public int tempMaxLen = 1000;
         public int readTempInterval = 1000;
         public readonly string powerShowFormat = "0";
-        public readonly string tempShowFormat = "0.000";
+        public readonly string tempShowFormat = "0.0000";
 
         /// <summary>
         /// 温控设备设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）

@@ -53,7 +53,7 @@ namespace TemperatureControl2
         private const int tempChartFixLen = 661;    // Count of point used in chart, 
                                                     // 661 is suitable for 800*? chart
                                                     // Use for saving temperature data only for chart drawing
-        private List<float> tempListForChart;
+        private List<float> tempListForChart;// 所有要绘制的温度数据
         #endregion
 
         #region constructor
@@ -117,6 +117,7 @@ namespace TemperatureControl2
         /// </summary>
         private void MoveTempLocal()
         {
+            // 将温度数据从 Device.TempDevice.temperatures 中读取到 tempListForChart 中
             if (tpDevice.temperatures.Count < tempChartFixLen)
             {
                 tempListForChart = tpDevice.temperatures.GetRange(0, tpDevice.temperatures.Count);
@@ -127,6 +128,7 @@ namespace TemperatureControl2
                     (tpDevice.temperatures.Count - tempChartFixLen, tempChartFixLen);
             }
 
+            // 计算温度值大小的范围
             // Calculate the Max and Min
             if (tempListForChart.Count > 0)
             {
@@ -197,6 +199,7 @@ namespace TemperatureControl2
         /// <returns></returns>
         public Bitmap Draw()
         {
+            // 将温度值读取到了 DrawChart.tempListForChart 中
             MoveTempLocal();
 
             float mid = (max + min) / 2;

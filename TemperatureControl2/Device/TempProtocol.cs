@@ -94,9 +94,11 @@ namespace Device
         private const string cmdHead_W = "@35W";
         private const string cmdHead_R = "@35R";
         private readonly string[] cmdWords = { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
-        private readonly string[] cmdFormats = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0" };
+        //private readonly string[] cmdFormats = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0" };
+        private readonly string[] cmdFormats = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.0000", "0" };
         private const string cmdFinish = ":";
-        private const string cmdEnd = "\r"; // Todo: The endflag may be \r\n, check it.
+        //private const string cmdEnd = "\r"; // Todo: The endflag may be \r\n, check it.
+        private const string cmdEnd = "\r\n"; // Todo: The endflag may be \r\n, check it.
         private readonly string[] cmdRW = { "w", "w", "w", "w", "w", "w", "w", "r", "r" };
         #endregion
 
@@ -177,6 +179,7 @@ namespace Device
 
                 // 写入数据
                 this.sPort.Write(command);
+                //this.sPort.Write(command + "\r\n");
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
                 data = this.sPort.ReadTo(cmdFinish);
@@ -219,6 +222,7 @@ namespace Device
 
                 // 写入数据
                 this.sPort.Write(command);
+                //this.sPort.Write(command + "\r\n");
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
                 data = this.sPort.ReadTo(cmdFinish);
