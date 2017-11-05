@@ -1,0 +1,123 @@
+程序流程详细说明：
+
+0 - 程序启动
+
+1 - FormMain_Load()
+  1.1 配置设备端口号等参数 - deviceAll.Congigure() - 失败（比如串口号不存在）则终止程序运行
+  从配置文件 config.ini 中读取温控设备端口号、波动阈值、温度读取时间间隔、等数据；从配置文件读取继电器设备、传感器设备端口号；从配置文件读取稳定时间、波动度满足条件等数据；
+
+  1.2 设备自检 - deviceAll.DeviceSelfCheck() - 失败（如串口读写错误）则终止程序运行
+  温控设备自检 - 将下位机的所有数据都读取一遍，并存储到 TempDevice.tpParam[] TempDevice.temperatures(List) TempDevice.tpPowerShow 等上位机存储单元中
+  继电器设备自检 - 依次将所有继电器打开，然后依次将所有继电器关闭，时间间隔 1s，最后打开总电源
+  传感器设备自检 - 尚无 wghou
+
+  1.3 初始化主界面中的显示项 - InitMainFormShow()
+  将温控设备的功率系数、温度值、温度设定值 从 TempDevice.tpPowerShow TempDevice.temperatures(List) TempDevice.tpParam[0] 中读取到主界面
+  将继电器的状态从 RelayDevice.ryStatus[] 中读取到主界面，禁用所有继电器按键，启用总电源按键
+
+  1.4 注册事件处理函数 - RegisterEventHandler()
+  deviceAll.TpTemperatureUpdateTimerEvent += tpDevice_TpTemperatureUpdateTimerEvent - 定时器事件，从下位机读取完成温度等数据后，触发该事件，把温度等数据更新到主界面
+  deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEvent - 继电器状态设置事件，当某处调用继电器状态设置函数，更改继电器状态后，触发该事件，把继电器状态更新到主界面
+  deviceAll.tpDeviceM.ParamUpdatedToDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent; - 同下
+  deviceAll.tpDeviceM.ParamUpdatedFromDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent; - 同下
+  deviceAll.tpDeviceS.ParamUpdatedFromDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent; - 同下
+  deviceAll.tpDeviceS.ParamUpdatedToDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent; - 主槽 / 辅槽 参数读取 / 设置事件，当某处调用温控设备参数读取 / 更新函数后，触发该事件，把最新的温控设备参数更新到主界面（其实主要是温度设定值）
+  deviceAll.FlowControlStateChangedEvent += DeviceAll_FlowControlStateChangedEvent; - 自动控温流程中，流程状态改变事件，当自动控温进入新的流程状态后，通知主界面做相应的显示
+  deviceAll.FlowControlFaultOccurEvent += DeviceAll_FlowControlFaultOccurEvent; - 主槽报警及故障判断事件，当主槽报警（1-4种情况），外加一些其他的错误发生时，触发该事件，通知主界面显示警示窗口
+
+  1.5 打开计时器 deviceAll.tpTemperatureUpdateTimer，系统开始工作
+
+
+2 - 默认情况下程序工作流程 - 主要依赖定时器 deviceAll.tpTemperatureUpdateTimer 完成
+  2.0 程序主要工作流程为每隔一定时间间隔，执行定时器函数 TpTemperatureUpdateTimer_Elapsed()，完成绝大部分操作 - tpTemperatureUpdateTimer.Elapsed += TpTemperatureUpdateTimer_Elapsed;
+
+  2.1 读取主槽温度 / 主槽功率系数 / 辅槽温度 / 辅槽功率系数 - err = tpDeviceM.GetTemperatureShow( out val); 等等
+  2.1.0 从下位机读取数据，存放到 TempDevice.temperatures(List) TempDevice.tpPowerShow 中，返回错误信息
+
+  2.2 触发定时器函数执行事件 TpTemperatureUpdateTimerEvent(err); 如果在上述读取过程中发生错误，则将该错误传递给事件处理函数
+  2.2.0 之前在 FormMain_Load 中已经注册了事件处理函数 tpDevice_TpTemperatureUpdateTimerEvent，如果没有发生错误，则将 TempDevice.temperatures(List) TempDevice.tpPowerShow TempDevice.GetFluc() 等信息显示到主界面中
+  如果发生了错误，则 尚无 wghou
+
+  2.3 如果开启了自动控温流程，则 Device.autoStart == true, 执行 Device.cntrolFlowSchedule() 函数
+  Device.cntrolFlowSchedule() 的具体细节见后续
+
+  2.4 在 FormMain_Load 函数中注册了温控设备参数读取 / 写入事件处理函数，均为 TpDeviceM_ParamUpdatedToDeviceEvent() ，当温控设备的参数发生变化（读取/设置）时，触发该函数，将 TempDevice.tpParam[] 中的数据更新到主界面
+
+
+3 - 继电器按键及相关处理 - 主要代码位于 FormMain.RelayDevice.cs
+  3.1 点击按键后，将按键（继电器）状态写入到deviceAll.ryDevice.ryStatusToSet[] 中，然后调用 deviceAll.ryDevice.UpdateStatusToDevice() 函数，将继电器写入到下位机
+  如果写入成功，则继电器状态更新到 deviceAll.ryDevice.ryStatus[] 中
+
+  3.2 deviceAll.ryDevice.UpdateStatusToDevice() 函数执行完成后，触发 deviceAll.ryDevice.StatusUpdateToDeviceEvent 事件
+  之前已经在 FormMain_load 中注册了事件处理函数，deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEven
+  从 deviceAll.ryDevice.ryStatus[] 中读取按键的状态，更新到主界面（因为 ryStatus[] 中始终存放有按键的正确状态，无论发生错误与否）
+  如果发生了错误，则 尚无 wghou
+
+
+4 - 温控设备参数设置 - 点击主界面按键后，新建 FormSetting 界面
+  4.0 FormSetting 类中会存放温控设备对象 TempDevice tpDev
+
+  4.1 FormSetting_Load() - 窗体加载
+  注册温控设备参数更新 / 设置时间处理函数
+  this.tpDev.ParamUpdatedFromDeviceEvent += TpDev_ParamUpdatedFromDeviceEvent;
+  this.tpDev.ParamUpdatedToDeviceEvent += TpDev_ParamUpdatedToDeviceEvent;
+  并且，从 tpDev.tpParam[] 中将设备参数更新到界面中。（因为从自检开始，温控设备的参数已经读取到上位机 TempDevice.tpParam[] 中了，所以，不再从下位机读取，除非主动点击 参数读取按键）
+
+  4.2 参数读取按键 - 从下位机读取参数
+  执行 tpDev.UpdateParamFromDevice 函数，将参数从下位机读取到 TempDevice.tpParam[] 中
+  之前已在 FormSetting_Load 中注册了参数读取事件处理函数 TpDev_ParamUpdatedFromDeviceEvent，如果没有错误发生，则从 tpDev.tpParam[] 中读取参数，更新到界面，如果发生错误，则提示错误信息 MessageBox.Show()；wghou 这里的错误提示是不是重复了啊
+
+  4.3 参数设置按键 - 将参数写入到下位机中
+  先将参数写入到 tpDevice.tpParamToSet[] 中，再执行 tpDev.UpdateParamToDevice 函数，将tpDevice.tpParamToSet[] 中的参数写入到下位机中
+  之前已经在 FormSetting_Load 中注册了参数写入事件处理函数 TpDev_ParamUpdatedToDeviceEvent，如果发生错误，则提示错误信息 MessageBox.Show()；wghou 这里的错误提示是不是重复了啊，
+
+  4.4 FormSetting_FormClosed() - 窗体关闭
+  注销温控设备参数更新 / 设置事件处理函数
+  this.tpDev.ParamUpdatedFromDeviceEvent -= TpDev_ParamUpdatedFromDeviceEvent;
+  this.tpDev.ParamUpdatedToDeviceEvent -= TpDev_ParamUpdatedToDeviceEvent;
+
+
+5 - 温度曲线窗口
+  5.1 TemperatureChart_Load() 窗体加载
+  注册温控设备温度更新事件处理函数 deviceAll.TpTemperatureUpdateTimerEvent += DeviceAll_TpTemperatureUpdateTimerEvent;
+
+  5.2 当温控设备温度值更新时，执行事件处理函数 DeviceAll_TpTemperatureUpdateTimerEvent()
+  执行 TempPic.Image = mDrawChart.Draw(); 重新绘制函数曲线（因为有了新数据，所以要重新绘制一次）
+  wghou 这里应该再加上波动度读取 / 稳定时间读取等内容
+
+  5.3 TemperatureChart_FormClosing() 窗体关闭
+  deviceAll.TpTemperatureUpdateTimerEvent -= DeviceAll_TpTemperatureUpdateTimerEvent;
+  注销温控设备温度更新函数
+
+
+6 - 自动控温设定窗口
+  5.0 在自动控温设定窗口中，设置温度点、温度点对应的控温设备参数（wghou 尚未完成），向 Device.temperaturePointList(List) 中添加温度点
+  在中断自动控温流程后，再次打开该窗口，也会自动从 Device.temperaturePointList 中读取尚未完成的温度点，可修改，可删除，可添加，之后可继续运行
+
+
+7 - 自动控温流程 - Device.controlFlowSchedule() 
+  7.0 当开始自动控温流程后，Device.temperaturePointList 中存放有温度设定点，并置 Device.autoStart = trure，开始执行控温步骤
+
+  7.0+ 自动控温流程分为 TempUp TempDown TempControl TempStable Measure Finish Idel Start Undefine 等不同状态，
+  初始时设为 start ，该状态下会判断当前温度与温度点，确定应该执行升温 降温 还是控温
+  Idle 为空闲状态，为默认状态，实际不会去执行
+  Finish 为完成状态，当所有温度点都测量完成时，执行该状态，通知主界面关闭总的程序
+  Undefine 状态暂时没有
+
+  7.1 currentState 中存放有当前状态的持续时间，每个时间间隔加 1
+
+  7.2 确保 Device.temperatures.Count != 0 ,为零表明一定发生了错误，触发 FlowControlFaultOccurEvent() 事件，将 FaultCode.CodeErr 传递出去，通知主界面应立即结束程序
+
+  7.3 执行 currentState.flowState 对应的状态
+  7.3.1
+  7.3.2
+
+  7.4 故障判断及警报 - faultCheckSubStep()
+  注：故障判断只有在当控温流程进入一个新的状态一段时间后才会判断，比如，进入降温 1 分钟后，才会检查 温度不下降 警报，以防止之前是升温或控温状态，则刚进入降温之前的一段时间内，温度肯定是没有下降过的。
+  另注：判断的是一分钟内温度不下降 / 不升高 等等
+
+
+8 - 其他
+
+
+

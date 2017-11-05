@@ -14,7 +14,7 @@ namespace Device
         // 设备
         public string tpDeviceName = string.Empty;
         public string tpDevicePortName = string.Empty;
-        TempProtocol tpDevice = new TempProtocol();
+        private TempProtocol tpDevice = new TempProtocol();
         /// <summary>
         /// 设备参数值 - 9个
         /// </summary>
@@ -30,13 +30,10 @@ namespace Device
         /// <summary>
         /// 暂时未使用
         /// </summary>
-        public float tpFluc = 0.0f;
         public float tpPowerShow = 0.0f;
         public List<float> temperatures = new List<float>();
-        public int tempMaxLen = 1000;
+        private int tempMaxLen = 1000;
         public int readTempInterval = 1000;
-        public readonly string powerShowFormat = "0";
-        public readonly string tempShowFormat = "0.0000";
 
         /// <summary>
         /// 温控设备设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）

@@ -100,14 +100,12 @@ namespace TemperatureControl2
 
             // 主槽控温表 / 辅槽控温表 开始读取参数
             deviceAll.tpTemperatureUpdateTimer.Start();
-            deviceAll.tpTemperatureUpdateTimer.Interval = deviceAll.tpDeviceM.readTempInterval;
-
         }
 
 
 
         /// <summary>
-        /// 初始化主界面中的显示相
+        /// 初始化主界面中的显示项
         /// </summary>
         void InitMainFormShow()
         {
@@ -155,8 +153,6 @@ namespace TemperatureControl2
             deviceAll.tpDeviceS.ParamUpdatedToDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent;
             // 自动控制流程时，当进入新的一个状态时，通知主界面，进行相应的显示
             deviceAll.FlowControlStateChangedEvent += DeviceAll_FlowControlStateChangedEvent;
-            // 自动控温流程执行完毕事件 - 处理函数
-            deviceAll.FlowControlFinishEvent += DeviceAll_FlowControlFinishEvent;
             // 主槽报警及故障判断
             deviceAll.FlowControlFaultOccurEvent += DeviceAll_FlowControlFaultOccurEvent;
         }

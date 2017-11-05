@@ -169,7 +169,7 @@ namespace TemperatureControl2
                     // 当前状态提示
                     // wghou
                     float fluc = 0.0f;
-                    if (deviceAll.tpDeviceM.GetFluc(5, out fluc))// 3*60*1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
+                    if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTime * 1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
                         this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃";
                     else
                         this.label_fluc.Text = "主控温槽波动度：****"; 

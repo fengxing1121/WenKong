@@ -30,18 +30,14 @@ namespace TemperatureControl2
         {
             lock(devicesAll.stepLocker)
             {
-                devicesAll.controlFlowList.Clear();
+                devicesAll.temperaturePointList.Clear();
                 // 将实验流程数据写入 Devices 类中
                 for(int i = 0;i<BList.Count;i++)
                 {
-                    devicesAll.controlFlowList.Add(new Device.Devices.StateFlow() { flowState = Device.Devices.State.TempDown, stateChanged = true, stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
-                    devicesAll.controlFlowList.Add(new Device.Devices.StateFlow() { flowState = Device.Devices.State.TempControl, stateChanged = true, stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
-                    devicesAll.controlFlowList.Add(new Device.Devices.StateFlow() { flowState = Device.Devices.State.TempStable, stateChanged = true, stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
-                    devicesAll.controlFlowList.Add(new Device.Devices.StateFlow() { flowState = Device.Devices.State.Measure, stateChanged = true, stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
+                    // deviceAll.controlFlowList 中的 StateFlow.flowState 必须设置为 Undefine
+                    // 只保存温度点，不再保存
+                    devicesAll.temperaturePointList.Add(new Device.Devices.TemperaturePoint() {stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
                 }
-                // 第一项设置为升温
-                if(devicesAll.controlFlowList.Count !=0 )
-                    devicesAll.controlFlowList.First().flowState = Device.Devices.State.TempUp;
             }
 
             Utils.Logger.Op("点击自动控温设置界面 开始 按键，开始执行自动控温流程...");
@@ -137,21 +133,17 @@ namespace TemperatureControl2
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = BList;
 
-            foreach(var st in devicesAll.controlFlowList)
+            foreach(var st in devicesAll.temperaturePointList)
             {
-                if(st.flowState == Device.Devices.State.Measure)
+                if(st.advanceState == false)
                 {
-                    if(st.advanceState == false)
-                    {
-                        // 基本设置
-                        BList.Add(new TemptState(BList.Count + 1, st.stateTemp, false));
-                    }
-                    else
-                    {
-                        // 高级设置
-                        // wghou
-                    }
-                    
+                    // 基本设置
+                    BList.Add(new TemptState(BList.Count + 1, st.stateTemp, false));
+                }
+                else
+                {
+                    // 高级设置
+                    // wghou
                 }
             }
 

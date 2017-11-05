@@ -263,11 +263,11 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label9.Location = new System.Drawing.Point(30, 344);
+            this.label9.Location = new System.Drawing.Point(42, 344);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(80, 17);
+            this.label9.Size = new System.Drawing.Size(68, 17);
             this.label9.TabIndex = 1;
-            this.label9.Text = "温度度阈值：";
+            this.label9.Text = "温度阈值：";
             // 
             // buttonBack
             // 

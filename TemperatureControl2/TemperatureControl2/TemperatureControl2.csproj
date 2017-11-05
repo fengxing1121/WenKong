@@ -48,6 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormAlarm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAlarm.Designer.cs">
+      <DependentUpon>FormAlarm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormAutoSet.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +99,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormAlarm.resx">
+      <DependentUpon>FormAlarm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormAutoSet.resx">
       <DependentUpon>FormAutoSet.cs</DependentUpon>
       <SubType>Designer</SubType>

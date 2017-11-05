@@ -32,15 +32,15 @@ namespace TemperatureControl2
                 {
                     // 设置好了实验流程，开始进行实验
                     // 先检查流程格式是否正确
-                    if((deviceAll.controlFlowList.Count !=0) && ((deviceAll.controlFlowList.First().flowState == Device.Devices.State.TempUp)||(deviceAll.controlFlowList.First().flowState == Device.Devices.State.TempDown)))
+                    if(deviceAll.temperaturePointList.Count !=0)
                     {
                         // controlFlowList 不为空，且第一项为 TempUp 或者 TempDown
                         this.checkBox_man.Enabled = false;
                         lock(this.deviceAll.stepLocker)
                         {
-                            this.deviceAll.currentState = this.deviceAll.controlFlowList.First();
-                            this.deviceAll.currentState.stateChanged = true;
-                            this.deviceAll.controlFlowList.RemoveAt(0);
+                            // 设置初始运行状态
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Start, stateChanged = true, stateTime = 0, stateTemp = deviceAll.temperaturePointList.First() };
+                            // 开始运行自动测温
                             deviceAll.autoStart = true;
                         }
 
@@ -54,8 +54,10 @@ namespace TemperatureControl2
                         this.checkBox_auto.Checked = false;
                         lock(this.deviceAll.stepLocker)
                         {
+                            // 停止系统运行
                             deviceAll.autoStart = false;
-                            this.deviceAll.currentState = new Device.Devices.StateFlow() { flowState = Device.Devices.State.Idle };
+                            // 设置运行状态为空闲
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
                         }
                         MessageBox.Show("实验流程格式不正确，请重新设置!");
                     }
@@ -66,8 +68,10 @@ namespace TemperatureControl2
                     this.checkBox_auto.Checked = false;
                     lock(this.deviceAll.stepLocker)
                     {
+                        // 停止运行自动测温
                         deviceAll.autoStart = false;
-                        this.deviceAll.currentState = new Device.Devices.StateFlow() { flowState = Device.Devices.State.Idle };
+                        // 设置运行状态为空闲
+                        this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
                     }
 
                     Utils.Logger.Op("取消了自动控温流程设置...");
@@ -89,10 +93,10 @@ namespace TemperatureControl2
                         // 如果当前流程不为空闲，则将其装回到 Devices.controlFlowList 中
                         if (this.deviceAll.currentState.flowState != Device.Devices.State.Idle)
                         {
-                            this.deviceAll.currentState.stateChanged = true;
-                            this.deviceAll.controlFlowList.Insert(0, this.deviceAll.currentState);
-                            // 设置 Devices.currentState.flowState = Device.Devices.State.Idle
-                            this.deviceAll.currentState.flowState = Device.Devices.State.Idle;
+                            // 停止运行自动测温
+                            this.deviceAll.autoStart = false;
+                            // 设置运行状态为空闲
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
                         }
                     }
 
@@ -150,23 +154,6 @@ namespace TemperatureControl2
             }
         }
 
-        /// <summary>
-        /// 自动控温流程执行完毕事件 - 处理函数
-        /// </summary>
-        /// <param name="st"></param>
-        private void DeviceAll_FlowControlFinishEvent(Device.Devices.State st)
-        {
-            Utils.Logger.Sys("自动控温流程运行结束，测量数据已保存到相应文件中!");
-            // 弹出对话框
-            // wghou
-            // 应该如何处理，特别是各个继电器应该怎么操作啊？？
-            // 是否要转入手动模式？？
-            this.BeginInvoke(new EventHandler(delegate
-            {
-                MessageBox.Show("自动控温流程执行完毕！");
-            }));
-        }
-
 
 
         /// <summary>
@@ -175,13 +162,47 @@ namespace TemperatureControl2
         /// <param name="st"></param>
         private void DeviceAll_FlowControlStateChangedEvent(Device.Devices.State st)
         {
-            this.BeginInvoke(new EventHandler(delegate
+            if(st == Device.Devices.State.Finish)
             {
-                // 当前状态提示
-                this.label_controlState.Text = "自动控温流程： " + deviceAll.StateName[(int)deviceAll.currentState.flowState];
-            }));
+                // 所有温度点均已经测量完成
 
-            Utils.Logger.Sys("自动控温流程进入 " + deviceAll.StateName[(int)deviceAll.currentState.flowState] + " 状态.");
+
+                Utils.Logger.Sys("自动控温流程运行结束，测量数据已保存到相应文件中!");
+
+                // wghou
+                // 问题来了，要是在这个时候，通信出现了问题，怎么办？？
+                // 先关闭除总电源以外的所有继电器电源
+                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                    deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
+                deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = true;
+                deviceAll.ryDevice.UpdateStatusToDevice();
+
+                // 关闭所有继电器电源
+                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                    deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
+                deviceAll.ryDevice.UpdateStatusToDevice();
+
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    MessageBox.Show("自动控温流程执行完毕！");
+                }));
+            }
+            else if(st == Device.Devices.State.Idle || st == Device.Devices.State.Start || st == Device.Devices.State.Undefine)
+            {
+                // 无操作
+            }
+            else
+            {
+                // 控温流程显示
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    // 当前状态提示
+                    this.label_controlState.Text = "自动控温流程： " + deviceAll.StateName[(int)deviceAll.currentState.flowState];
+                }));
+
+                Utils.Logger.Sys("自动控温流程进入 " + deviceAll.StateName[(int)deviceAll.currentState.flowState] + " 状态.");
+            }
+            
         }
 
 
@@ -191,11 +212,49 @@ namespace TemperatureControl2
         /// <param name="fCode"></param>
         private void DeviceAll_FlowControlFaultOccurEvent(Device.Devices.FaultCode fCode)
         {
+            // 警告信息及处理时间
+            string msg = string.Empty;
+            int errTm = 600;
+
+
+            if(fCode == Device.Devices.FaultCode.CodeError)
+            {
+                // 程序错误，应立即退出整个程序
+            }
+            else if(fCode == Device.Devices.FaultCode.SensorError)
+            {
+                // 读取电桥温度错误
+            }
+            else
+            {
+                // 设备故障报警
+            }
+
             this.BeginInvoke(new EventHandler(delegate
             {
-                
-                //MessageBox.Show("主槽故障报警：" + fCode.ToString());
+                bool formExit = false;
+                foreach(Form fm in Application.OpenForms)
+                {
+                    if(fm.Name == "FormAlarm")
+                    {
+                        fm.WindowState = FormWindowState.Normal;
+
+                        fm.BringToFront();
+                        formExit = true;
+                    }
+                }
+
+                if(!formExit)
+                {
+                    FormAlarm fm = new FormAlarm(msg, errTm);
+                    fm.Name = "FormAlarm";
+                    fm.Text = "";
+                    fm.Location = new System.Drawing.Point(600, 300);
+                    fm.Show();
+                }
+
             }));
+            
         }
     }
 }
