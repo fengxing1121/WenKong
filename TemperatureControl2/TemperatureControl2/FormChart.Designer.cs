@@ -34,7 +34,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.LblFlucShow = new System.Windows.Forms.Label();
             this.BtnClear = new System.Windows.Forms.Button();
+            this.eventLog1 = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this.TempPic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.SuspendLayout();
             // 
             // TempPic
@@ -74,9 +76,9 @@
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.label2.Location = new System.Drawing.Point(294, 556);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(109, 20);
+            this.label2.Size = new System.Drawing.Size(101, 20);
             this.label2.TabIndex = 2;
-            this.label2.Text = "10分钟波动度：";
+            this.label2.Text = "5分钟波动度：";
             // 
             // LblFlucShow
             // 
@@ -99,6 +101,10 @@
             this.BtnClear.UseVisualStyleBackColor = true;
             this.BtnClear.Click += new System.EventHandler(this.BtnClear_Click);
             // 
+            // eventLog1
+            // 
+            this.eventLog1.SynchronizingObject = this;
+            // 
             // FormChart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -111,13 +117,16 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TempPic);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormChart";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "温度曲线图";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TemperatureChart_FormClosing);
             this.Load += new System.EventHandler(this.TemperatureChart_Load);
             ((System.ComponentModel.ISupportInitialize)(this.TempPic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,5 +140,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label LblFlucShow;
         private System.Windows.Forms.Button BtnClear;
+        private System.Diagnostics.EventLog eventLog1;
     }
 }

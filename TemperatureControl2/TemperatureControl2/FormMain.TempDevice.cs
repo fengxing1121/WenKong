@@ -137,60 +137,45 @@ namespace TemperatureControl2
         /// 控温设备更新温度值 - 事件处理函数 - 将温度值从 TempDevice 更新到界面
         /// </summary>
         /// <param name="err"></param>
-        private void tpDevice_TpTemperatureUpdateTimerEvent(Device.TempProtocol.Err_t err)
+        private void tpDevice_TpTemperatureUpdateTimerEvent()
         {
-            // false 表示从下位机读取温度值时没有错误发生
-            if (err == Device.TempProtocol.Err_t.NoError)
+            // 不论有没有错误发生，都会从 TempDevice 中更新数据到主界面
+            // 也就是说，不在这儿处理错误
+            this.BeginInvoke(new EventHandler(delegate
             {
-                this.BeginInvoke(new EventHandler(delegate
+                // 更新主槽控温表温度 / 功率值
+                if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
+                    this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
+                else
                 {
-                    // 更新主槽控温表温度 / 功率值
-                    if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
-                        this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
-                    else
-                    {
-                        Debug.WriteLine("未读到温度数据");
-                        this.label_tempM.Text = "0.000℃";
-                    }
-                    // 功率系数
-                    this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
+                    Debug.WriteLine("未读到温度数据");
+                    this.label_tempM.Text = "0.000℃";
+                }
+                // 功率系数
+                this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
 
-                    // 更新辅槽控温温度 / 功率值
-                    if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                        this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
-                    else
-                    {
-                        Debug.WriteLine("未读到温度数据");
-                        this.label_tempS.Text = "0.000℃";
-                    }
-                    // 功率系数
-                    this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
+                // 更新辅槽控温温度 / 功率值
+                if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
+                    this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
+                else
+                {
+                    Debug.WriteLine("未读到温度数据");
+                    this.label_tempS.Text = "0.000℃";
+                }
+                // 功率系数
+                this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
 
-                    // 当前状态提示
-                    // wghou
-                    float fluc = 0.0f;
-                    if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTime * 1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
-                        this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃";
-                    else
-                        this.label_fluc.Text = "主控温槽波动度：****"; 
-
-                }));
-
-                //Utils.Logger.Sys("从温控设备成功读到了温度 / 功率等数据.");
-            }
-            // true 表示从下位机读取温度值时发生了错误
-            else
-            {
-                // 更新数据错误
+                // 当前状态提示
                 // wghou
-                // code
-                this.BeginInvoke(new EventHandler(delegate
-                {
-                    MessageBox.Show("读取温控设备温度显示值/功率系数时发生错误！/r错误代码：" + err.ToString());
-                }));
+                float fluc = 0.0f;
+                if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTime * 1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
+                    this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃";
+                else
+                    this.label_fluc.Text = "主控温槽波动度：****"; 
 
-                Utils.Logger.Sys("读取温控设备温度显示值/功率系数时发生错误!  ErrorCode：" + err.ToString());
-            }
+            }));
+
+            //Utils.Logger.Sys("从温控设备成功读到了温度 / 功率等数据.");           
         }
 
 

@@ -141,8 +141,9 @@ namespace ComTest
                 Random ran = new Random((int)(tick & 0xffffffffL) | (int)(tick >> 32));
                 float temp = 12.0f * (float)ran.NextDouble();
 
-                tst += 0.5f;
-                dataRev += tst.ToString("0.000");
+                //tst += 0.5f;
+                //dataRev += tst.ToString("0.000");
+                dataRev += temp.ToString("0.000");
                 dataRev += ":";
                 sPortM.WriteLine(dataRev);
             }

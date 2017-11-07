@@ -17,11 +17,63 @@ namespace TemperatureControl2
         BindingCollection<TemptState> BList = new BindingCollection<TemptState>();
 
         private TextBox tx = null;
+        private TextBox[] paramTextBox = new TextBox[9];
+        private float[] paramCache = new float[9];
 
         public FormAutoSet(Device.Devices dev)
         {
             InitializeComponent();
             devicesAll = dev;
+            paramTextBox[0] = textBox_tpSet;
+            paramTextBox[1] = textBox_tpAdjust;
+            paramTextBox[2] = textBox_advance;
+            paramTextBox[3] = textBox_fuzzy;
+            paramTextBox[4] = textBox_ratio;
+            paramTextBox[5] = textBox_integ;
+            paramTextBox[6] = textBox_power;
+            paramTextBox[7] = null;
+            paramTextBox[8] = null;
+        }
+
+
+        // 窗体载入函数
+        private void FormAutoSet_Load(object sender, EventArgs e)
+        {
+            index.DataPropertyName = "Index";
+            tpSet.DataPropertyName = "TemptSet";
+            tpAdjust.DataPropertyName = "TempAdjust";
+            advance.DataPropertyName = "Advance";
+            fuzzy.DataPropertyName = "Fuzzy";
+            ratio.DataPropertyName = "Ratio";
+            integration.DataPropertyName = "Integration";
+            power.DataPropertyName = "Power";
+
+            dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.DataSource = BList;
+
+            foreach (var st in devicesAll.temperaturePointList)
+            {
+                TemptState ts = new TemptState();
+                st.paramS.CopyTo(ts.paramM, 0);
+                BList.Add(ts);
+            }
+
+            // 排序
+            BList.Sort(null, ListSortDirection.Descending);
+
+            devicesAll.tpDeviceM.tpParam.CopyTo(paramCache, 0);
+
+            // 默认选中
+            tx = textBox_tpSet;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+
+            for(int i = 1;i<7;i++)
+            {
+                if(i<3)
+                    paramTextBox[i].Text = paramCache[i].ToString("0.000");
+                else
+                    paramTextBox[i].Text = paramCache[i].ToString("0");
+            }
         }
 
 
@@ -36,7 +88,10 @@ namespace TemperatureControl2
                 {
                     // deviceAll.controlFlowList 中的 StateFlow.flowState 必须设置为 Undefine
                     // 只保存温度点，不再保存
-                    devicesAll.temperaturePointList.Add(new Device.Devices.TemperaturePoint() {stateTemp = BList[i]._tempt, advanceState = BList[i]._isAdvance });
+                    Device.Devices.TemperaturePoint tp = new Device.Devices.TemperaturePoint();
+                    BList[i].paramM.CopyTo(tp.paramM, 0);
+                    BList[i].paramM.CopyTo(tp.paramS, 0);
+                    devicesAll.temperaturePointList.Add(tp);
                 }
             }
 
@@ -48,8 +103,8 @@ namespace TemperatureControl2
 
             foreach (var st in BList)
             {
-                Utils.Logger.Op(st._tempt.ToString("0.0000"));
-                Utils.Logger.Sys(st._tempt.ToString("0.0000"));
+                Utils.Logger.Op(st.TemptSet);
+                Utils.Logger.Sys(st.TemptSet);
             }
 
             // 开始实验流程
@@ -71,40 +126,55 @@ namespace TemperatureControl2
         // 添加温度点
         private void button_add_Click(object sender, EventArgs e)
         {
-            float tp;
-            if (float.TryParse(this.textBox_tp.Text,  out tp))
+            float[] pArray = new float[9];
+            float valuef;
+            for(int i = 0;i<7;i++)
             {
-                // 判断温度点是否已经存在于 BList 中
-                foreach (TemptState st in BList)
+                if(float.TryParse(this.paramTextBox[i].Text, out valuef))
                 {
-                    if (float.Parse(st.Tempt) == tp)
-                    {
-                        MessageBox.Show("温度点已经存在！");
-                        textBox_tp.Text = "";
-                        return;
-                    }
+                    pArray[i] = valuef;
                 }
-
-                // 向 BList 中添加新数据
-                BList.Add(new TemptState(-1, tp, false));
-                BList.Sort(null, ListSortDirection.Descending);
-                // 计算编号
-                for(int i = 0;i<BList.Count;i++)
+                else
                 {
-                    BList[i]._index = i + 1;
+                    MessageBox.Show("温度点格式不正确，请检查!");
+                    return;
                 }
-                dataGridView1.ClearSelection();
-
-                // 删除列表中的温度设定值
-                textBox_tp.Text = "";
-
-                Utils.Logger.Op("添加温度设定点: " + tp.ToString("0.0000"));
-                Utils.Logger.Sys("添加温度设定点: " + tp.ToString("0.0000"));
             }
-            else
+            pArray[7] = paramCache[7];
+            pArray[8] = paramCache[8];
+
+            // 判断温度点是否已经存在于 BList 中
+            foreach (TemptState st in BList)
             {
-                MessageBox.Show("温度点格式不正确，请检查!");
+                if (float.Parse(st.TemptSet) == pArray[0])
+                {
+                    MessageBox.Show("温度点已经存在！");
+                    textBox_tpSet.Text = "";
+                    return;
+                }
             }
+
+            // 添加温度点
+            TemptState ts = new TemptState();
+            ts._index = -1;
+            pArray.CopyTo(ts.paramM, 0);
+            pArray.CopyTo(ts.paramS, 0);
+            // 向 BList 中添加新数据
+            BList.Add(ts);
+            BList.Sort(null, ListSortDirection.Descending);
+            // 计算编号
+            for (int i = 0; i < BList.Count; i++)
+            {
+                BList[i]._index = i + 1;
+            }
+            dataGridView1.ClearSelection();
+
+            // 删除列表中的温度设定值
+            textBox_tpSet.Text = "";
+
+            Utils.Logger.Op("添加温度设定点: " + ts.TemptSet);
+            Utils.Logger.Sys("添加温度设定点: " + ts.TemptSet);
+
         }
 
 
@@ -115,8 +185,6 @@ namespace TemperatureControl2
             {
                 if (dataGridView1.Rows[i -1].Selected == true)
                 {
-                    
-
                     BList.RemoveAt(i-1);
                 }
                     
@@ -125,36 +193,7 @@ namespace TemperatureControl2
         }
 
 
-        // 窗体载入函数
-        private void FormAutoSet_Load(object sender, EventArgs e)
-        {
-            index.DataPropertyName = "Index";
-            temp.DataPropertyName = "Tempt";
-            dataGridView1.AutoGenerateColumns = false;
-            dataGridView1.DataSource = BList;
-
-            foreach(var st in devicesAll.temperaturePointList)
-            {
-                if(st.advanceState == false)
-                {
-                    // 基本设置
-                    BList.Add(new TemptState(BList.Count + 1, st.stateTemp, false));
-                }
-                else
-                {
-                    // 高级设置
-                    // wghou
-                }
-            }
-
-            // 排序
-            BList.Sort(null, ListSortDirection.Descending);
-
-            // 默认选中
-            tx = textBox_tp;
-            tx.BackColor = System.Drawing.SystemColors.Window;
-        }
-
+        // 键盘操作
         private void button9_Click(object sender, EventArgs e)
         {
             if (tx != null)
@@ -451,8 +490,8 @@ namespace TemperatureControl2
             {
                 if (dataGridView1.Rows[i - 1].Selected == true)
                 {
-                    Utils.Logger.Op("删除了温度设定点: " + BList[i - 1]._tempt.ToString("0.0000"));
-                    Utils.Logger.Sys("删除了温度设定点: " + BList[i - 1]._tempt.ToString("0.0000"));
+                    Utils.Logger.Op("删除了温度设定点: " + BList[i - 1].TemptSet);
+                    Utils.Logger.Sys("删除了温度设定点: " + BList[i - 1].TemptSet);
 
                     BList.RemoveAt(i - 1);
                 }
@@ -473,18 +512,89 @@ namespace TemperatureControl2
 
 
         // 编辑文本时，取消表格行的选中
-        private void textBox_tp_Enter(object sender, EventArgs e)
+        private void textBox_tpSet_Enter(object sender, EventArgs e)
         {
             if (tx != null)
             {
                 tx.BackColor = System.Drawing.SystemColors.Control;
             }
 
-            tx = this.textBox_tp;
+            tx = this.textBox_tpSet;
             tx.BackColor = System.Drawing.SystemColors.Window;
             dataGridView1.ClearSelection();
         }
 
+        private void textBox_tpAdjust_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_tpAdjust;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+        private void textBox_advance_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_advance;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+        private void textBox_fuzzy_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_fuzzy;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+        private void textBox_ratio_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_ratio;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+        private void textBox_integ_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_integ;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
+
+        private void textBox_power_Enter(object sender, EventArgs e)
+        {
+            if (tx != null)
+            {
+                tx.BackColor = System.Drawing.SystemColors.Control;
+            }
+
+            tx = this.textBox_power;
+            tx.BackColor = System.Drawing.SystemColors.Window;
+            dataGridView1.ClearSelection();
+        }
 
         // 选中表格行时，取消编辑文本
         private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -509,37 +619,60 @@ namespace TemperatureControl2
         /// </summary>
         public string Index { get { return _index.ToString("0"); } }
 
-        public float _tempt;
+        /// <summary>
+        /// 主槽温控设备的参数值
+        /// </summary>
+        public float[] paramM = new float[9];
+        /// <summary>
+        /// 辅槽控温设备的参数值
+        /// </summary>
+        public float[] paramS = new float[9];
         /// <summary>
         /// 温度值
         /// </summary>
-        public string Tempt { get { return _tempt.ToString("0.0000"); } }
-
+        public string TemptSet { get { return paramM[0].ToString("0.0000"); } }
         /// <summary>
-        /// 是否是高级设置
+        /// 温度修订值
         /// </summary>
-        public bool _isAdvance = false;
-        public bool IsAdvance { get { return _isAdvance; } }
-
-        // 禁用该构造函数
-        private TemptState() { }
-
+        public string TempAdjust { get { return paramM[1].ToString("0.0000"); } }
         /// <summary>
-        /// 构造函数
+        /// 超前调整值
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="tempt"></param>
-        /// <param name="isAdvance"></param>
-        public TemptState(int index, float tempt, bool isAdvance) { _index = index; _tempt = tempt; _isAdvance = isAdvance; }
+        public string Advance { get { return paramM[2].ToString("0.000"); } }
+        /// <summary>
+        /// 模糊系数
+        /// </summary>
+        public string Fuzzy { get { return paramM[3].ToString("0"); } }
+        /// <summary>
+        /// 比例系数
+        /// </summary>
+        public string Ratio { get { return paramM[4].ToString("0"); } }
+        /// <summary>
+        /// 积分系数
+        /// </summary>
+        public string Integration { get { return paramM[5].ToString("0"); } }
+        /// <summary>
+        /// 功率系数
+        /// </summary>
+        public string Power { get { return paramM[6].ToString("0"); } }
+        /// <summary>
+        /// 波动度阈值
+        /// </summary>
+        public string FlucThr { get { return paramM[7].ToString("0.000"); } }
+        /// <summary>
+        /// 温度阈值
+        /// </summary>
+        public string TempThr { get { return paramM[8].ToString("0.000"); } }
+
 
         public int CompareTo(Object obj)
         {
             if (obj == null) return 1;
             TemptState otherState = obj as TemptState;
-            if(_tempt > otherState._tempt) { return 1; }
+            if(paramM[0] > otherState.paramM[0]) { return 1; }
             else
             {
-                if(_tempt == otherState._tempt) { return 0; }
+                if(paramM[0] == otherState.paramM[0]) { return 0; }
                 else { return -1; }
             }
         }

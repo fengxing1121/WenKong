@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace TemperatureControl2
 {
@@ -16,14 +17,15 @@ namespace TemperatureControl2
         //private CheckBox[] checkBox_ryDevices = new CheckBox[9];
         private Dictionary<Device.RelayProtocol.Cmd_r, CheckBox> checkBox_ryDevice = new Dictionary<Device.RelayProtocol.Cmd_r, CheckBox>();
         Device.Devices deviceAll = new Device.Devices();
+        // 闪烁等
+        Bitmap mBmp;
+        private bool flp = false;
+        private Timer timPic = new Timer();
         
         public FormMain()
         {
             // 初始化
             InitializeComponent();
-
-            // 窗口初始位置
-            this.Location = new Point(100, 100);
 
             // 继电器设备编号
             checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.Elect, checkBox_elect);
@@ -100,6 +102,31 @@ namespace TemperatureControl2
 
             // 主槽控温表 / 辅槽控温表 开始读取参数
             deviceAll.tpTemperatureUpdateTimer.Start();
+
+            // 闪烁灯
+            mBmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            timPic.Interval = 500;
+            timPic.Tick += TimPic_Tick;
+            timPic.Start();
+        }
+
+        private void TimPic_Tick(object sender, EventArgs e)
+        {
+            Graphics mGhp = Graphics.FromImage(mBmp);
+            mGhp.Clear(SystemColors.Control);
+            if(flp)
+            {
+                mGhp.Clear(SystemColors.Control);
+                flp = false;
+            }
+            else
+            {
+                mGhp.Clear(Color.Green);
+                flp = true;
+            }
+
+            pictureBox1.Image = mBmp;
+            pictureBox2.Image = mBmp;
         }
 
 
@@ -143,19 +170,47 @@ namespace TemperatureControl2
         {
             // 温度数据读取 - 定时器事件 - 将温度值从 Devices.tpDeviceM.temperatures.Last 更新到主界面
             deviceAll.TpTemperatureUpdateTimerEvent += tpDevice_TpTemperatureUpdateTimerEvent;
+
+
             // 继电器状态设置 - 状态更新事件 - 发生错误则弹出对话框
             deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEvent;
+
+
             // 主槽 / 辅槽控温设备参数更新事件
             // 当主槽 / 辅槽控温设备的参数发生变化时（更新或者写入）时，把相应参数更新到主界面
             deviceAll.tpDeviceM.ParamUpdatedToDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent;
             deviceAll.tpDeviceM.ParamUpdatedFromDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent;
             deviceAll.tpDeviceS.ParamUpdatedFromDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent;
             deviceAll.tpDeviceS.ParamUpdatedToDeviceEvent += TpDeviceM_ParamUpdatedToDeviceEvent;
+
+
             // 自动控制流程时，当进入新的一个状态时，通知主界面，进行相应的显示
             deviceAll.FlowControlStateChangedEvent += DeviceAll_FlowControlStateChangedEvent;
+
+
             // 主槽报警及故障判断
             deviceAll.FlowControlFaultOccurEvent += DeviceAll_FlowControlFaultOccurEvent;
         }
 
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 关闭继电器
+            foreach (var cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+            {
+                this.deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
+            }
+            Utils.Logger.Sys("关闭所有继电器！");
+            try
+            {
+                deviceAll.ryDevice.StatusUpdateToDeviceEvent -= RyDev_StatusUpdateEvent;
+                this.deviceAll.ryDevice.UpdateStatusToDevice();
+            }
+            catch(Exception ex)
+            {
+
+            }
+            // 关闭系统
+            Utils.Logger.Sys("关闭系统软件！");
+        }
     }
 }

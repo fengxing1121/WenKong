@@ -182,9 +182,19 @@ namespace TemperatureControl2
                     deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
                 deviceAll.ryDevice.UpdateStatusToDevice();
 
+
+                // 所有温度点全部测量完成
+                // 是否关闭计算机
                 this.BeginInvoke(new EventHandler(delegate
                 {
-                    MessageBox.Show("自动控温流程执行完毕！");
+                    FormFinish fm = new FormFinish();
+                    DialogResult rtl = fm.ShowDialog();
+                    if(rtl == DialogResult.OK)
+                    {
+                        // 60秒后关闭计算机
+                        System.Diagnostics.Process.Start("shutdown.exe", "-s -t 60");
+                        this.Close();
+                    }
                 }));
             }
             else if(st == Device.Devices.State.Idle || st == Device.Devices.State.Start || st == Device.Devices.State.Undefine)
@@ -212,11 +222,7 @@ namespace TemperatureControl2
         /// <param name="fCode"></param>
         private void DeviceAll_FlowControlFaultOccurEvent(Device.Devices.FaultCode fCode)
         {
-            // 警告信息及处理时间
-            string msg = string.Empty;
-            int errTm = 600;
-
-
+            
             if(fCode == Device.Devices.FaultCode.CodeError)
             {
                 // 程序错误，应立即退出整个程序
@@ -230,31 +236,57 @@ namespace TemperatureControl2
                 // 设备故障报警
             }
 
+            // 警告信息及处理时间
+            int errTm = 600;
             this.BeginInvoke(new EventHandler(delegate
             {
+                FormAlarm fmA = null;
                 bool formExit = false;
                 foreach(Form fm in Application.OpenForms)
                 {
                     if(fm.Name == "FormAlarm")
                     {
-                        fm.WindowState = FormWindowState.Normal;
-
-                        fm.BringToFront();
+                        fmA = (FormAlarm)fm;
                         formExit = true;
                     }
                 }
 
                 if(!formExit)
                 {
-                    FormAlarm fm = new FormAlarm(msg, errTm);
-                    fm.Name = "FormAlarm";
-                    fm.Text = "";
-                    fm.Location = new System.Drawing.Point(600, 300);
-                    fm.Show();
+                    fmA = new FormAlarm(errTm);
+                    fmA.Name = "FormAlarm";
+                    fmA.Location = new System.Drawing.Point(600, 300);
+                    fmA.shutdownSystem += FmA_shutdownSystem;
                 }
+
+                if (fmA == null)
+                    return;
+
+                if(fmA.errCount.ContainsKey(fCode))
+                {
+                    fmA.errCount[fCode] = fmA.errCount[fCode] + 1;
+                }
+                else
+                {
+                    fmA.errCount[fCode] = 1;
+                }
+
+                fmA.Show();
 
             }));
             
         }
+
+        private void FmA_shutdownSystem(object sender, EventArgs e)
+        {
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                Utils.Logger.Sys("出现错误，用户未做处理，关闭系统软件！");
+                // 60秒后关闭计算机
+                System.Diagnostics.Process.Start("shutdown.exe", "-s -t 60");
+                this.Close();
+            }));
+        }
+
     }
 }

@@ -13,19 +13,20 @@ namespace TemperatureControl2
     {
         // 显示时间
         private int errTime = 0;
+        private Timer timer1 = new Timer();
         /// <summary>
-        /// 警示信息
+        /// 警示信息统计
         /// </summary>
-        public string errMessage = string.Empty;
+        public Dictionary<Device.Devices.FaultCode, int> errCount = new Dictionary<Device.Devices.FaultCode, int>();
 
-        public EventHandler shutdownSystem;
+        public event EventHandler shutdownSystem;
 
         /// <summary>
         /// 创建警示窗口
         /// </summary>
         /// <param name="msg">警示信息</param>
         /// <param name="time">持续多久后关闭系统</param>
-        public FormAlarm(string msg, int time = 600)
+        public FormAlarm(int time = 600)
         {
             InitializeComponent();
 
@@ -41,13 +42,11 @@ namespace TemperatureControl2
                 errTime = time;
             }
 
-            // 存储并显示警示信息
-            errMessage = msg;
-            this.label_errMessage.Text = msg;
-
             // 初始化剩余时间
             this.label_errTime.Text = (errTime / 60).ToString("0") + " 分钟 " + (errTime % 60).ToString("0") + "秒后将自动关闭程序！";
             timer1.Tick += Timer1_Tick;
+            timer1.Interval = 1000;
+            timer1.Start();
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
@@ -55,8 +54,62 @@ namespace TemperatureControl2
             // 时间减一
             errTime--;
 
+            string errMsg = string.Empty;
             // 显示警示信息
-            this.label_errMessage.Text = errMessage;
+            foreach(var item in errCount)
+            {
+                switch(item.Key)
+                {
+                    case Device.Devices.FaultCode.TempError:
+                        if (item.Value != 0)
+                            errMsg = "温控设备读取温度值失败!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.TempParamSetError:
+                        if (item.Value != 0)
+                            errMsg += "\r\n温控设备写入参数值失败!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.RelayError:
+                        if (item.Value != 0)
+                            errMsg += "\r\n继电器设备写入状态失败!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.SensorError:
+                        if (item.Value != 0)
+                            errMsg += "\r\n传感器设备读取数值失败!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.TempContinueDown:
+                        if (item.Value != 0)
+                            errMsg += "\r\n温度持续下降警报!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.TempContinueUp:
+                        if (item.Value != 0)
+                            errMsg += "\r\n温度持续上升警报!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.TempFlucLarge:
+                        if (item.Value != 0)
+                            errMsg += "\r\n温度波动过大警报!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.TempNotDown:
+                        if (item.Value != 0)
+                            errMsg += "\r\n温度不下降警报!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    case Device.Devices.FaultCode.CodeError:
+                        if (item.Value != 0)
+                            errMsg += "\r\n代码错误!   " + item.Value.ToString() + " 次";
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            this.textBox_errMessage.Text = errMsg;
             // 显示剩余时间
             this.label_errTime.Text = (errTime / 60).ToString("0") + " 分钟 " + (errTime % 60).ToString("0") + "秒后将自动关闭程序！";
 
@@ -73,7 +126,7 @@ namespace TemperatureControl2
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
             this.Close();
         }

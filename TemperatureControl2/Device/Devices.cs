@@ -36,7 +36,7 @@ namespace Device
         /// </summary>
         public Timer tpTemperatureUpdateTimer = new Timer();
         // 自定义定时器事件，当执行完定时器触发函数后，触发该事件
-        public delegate void TpTemperatureUpdateTimerEventHandler(TempProtocol.Err_t err);
+        public delegate void TpTemperatureUpdateTimerEventHandler();
         /// <summary>
         /// 温度更新定时器函数中读取温度事件 - 通知主界面更新温度等数据
         /// </summary>
@@ -289,11 +289,18 @@ namespace Device
             End:
             // 触发事件 - 此时应该没有错误发生
             Debug.WriteLineIf(err == TempProtocol.Err_t.NoError, "从主 / 辅槽温控设备读取温度显示值 / 功率系数完成!");
-            TpTemperatureUpdateTimerEvent(err);
+            TpTemperatureUpdateTimerEvent();
 
+            // wghou
+            // 要不要停止，有待商榷
             // 如果温度读取发生了错误，则停止执行自动控温流程
             if (err != TempProtocol.Err_t.NoError)
+            {
+                // 如果读取参数发生了错误，则触发 FlowControlFaultOccurEvent 事件
+                FlowControlFaultOccurEvent(FaultCode.TempParamSetError);
                 return;
+            }
+
 
             // 自动运行时调度设备控制状态
             //Debug.WriteLineIf(autoStart, "执行自动运行状态调度...");
@@ -321,11 +328,7 @@ namespace Device
             /// <summary>
             /// 当前工作状态下的应达到的温度值
             /// </summary>
-            public float stateTemp = 0.0f;
-            /// <summary>
-            /// 是否为高级状态 - 即是否修改控温参数
-            /// </summary>
-            public bool advanceState = false;
+            public float stateTemp { get { return paramM[0]; } }
             /// <summary>
             /// 主槽控温表参数 - 9个
             /// </summary>
@@ -454,6 +457,18 @@ namespace Device
             /// 读电桥温度错误
             /// </summary>
             SensorError,
+            /// <summary>
+            /// 继电器设备错误
+            /// </summary>
+            RelayError,
+            /// <summary>
+            /// 温控设备错误
+            /// </summary>
+            TempError,
+            /// <summary>
+            /// 温控设备参数写入错误
+            /// </summary>
+            TempParamSetError,
             /// <summary>
             /// 其他错误
             /// </summary>
@@ -771,6 +786,8 @@ namespace Device
             }
         }
 
+
+
         /// <summary>
         /// 自动 - 升温
         /// </summary>
@@ -799,27 +816,29 @@ namespace Device
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterOut] = false;
 #endif
                 // 将继电器状态写入下位机
-                // 如果出现错误，则暂时只通过其事件触发函数，在主界面中显示错误提示，未作其他处理
-                ryDevice.UpdateStatusToDevice();
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                if (ryErr != RelayProtocol.Err_r.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.RelayError);
+                //ryDevice.UpdateStatusToDevice();
 
                 // 设置主槽 / 辅槽控温设备的参数
-                if(currentState.stateTemp.advanceState == true)
-                {
-                    // 向主槽 / 辅槽控温设备写入全部参数
-                    currentState.stateTemp.paramM.CopyTo(tpDeviceM.tpParamToSet, 0);
-                    currentState.stateTemp.paramS.CopyTo(tpDeviceS.tpParamToSet, 0);
-                    tpDeviceM.UpdateParamToDevice();
-                    tpDeviceS.UpdateParamToDevice();
-                }
-                else
-                {
-                    // 只向主槽 / 辅槽控温设备写入温度设定值
-                    tpDeviceM.tpParamToSet[(int)Device.TempProtocol.Cmd_t.TempSet] = currentState.stateTemp.stateTemp;
-                    tpDeviceM.UpdateParamToDevice();
-                    tpDeviceS.tpParamToSet[(int)Device.TempProtocol.Cmd_t.TempSet] = currentState.stateTemp.stateTemp;
-                    tpDeviceS.UpdateParamToDevice();
-                }
-                
+                // 向主槽 / 辅槽控温设备写入全部参数
+                currentState.stateTemp.paramM.CopyTo(tpDeviceM.tpParamToSet, 0);
+                currentState.stateTemp.paramS.CopyTo(tpDeviceS.tpParamToSet, 0);
+
+                // 将参数更新到下位机
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                TempProtocol.Err_t tpErr = TempProtocol.Err_t.NoError;
+                tpErr = tpDeviceM.UpdateParamToDeviceReturnErr();
+                if (tpErr != TempProtocol.Err_t.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.TempError);
+                tpErr = tpDeviceS.UpdateParamToDeviceReturnErr();
+                if (tpErr != TempProtocol.Err_t.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.TempError);
+                //tpDeviceM.UpdateParamToDevice();
+                //tpDeviceS.UpdateParamToDevice();
+
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
 
@@ -882,25 +901,31 @@ namespace Device
                 ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterIn] = false;
                 ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterOut] = false;
 #endif
-                ryDevice.UpdateStatusToDevice();
+                // 将继电器状态写入下位机
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                if (ryErr != RelayProtocol.Err_r.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.RelayError);
+                //ryDevice.UpdateStatusToDevice();
 
                 // 设置主槽 / 辅槽控温设备的参数
-                if (currentState.stateTemp.advanceState == true)
-                {
-                    // 向主槽 / 辅槽控温设备写入全部参数
-                    currentState.stateTemp.paramM.CopyTo(tpDeviceM.tpParamToSet, 0);
-                    currentState.stateTemp.paramS.CopyTo(tpDeviceS.tpParamToSet, 0);
-                    tpDeviceM.UpdateParamToDevice();
-                    tpDeviceS.UpdateParamToDevice();
-                }
-                else
-                {
-                    // 只向主槽 / 辅槽控温设备写入温度设定值
-                    tpDeviceM.tpParamToSet[(int)Device.TempProtocol.Cmd_t.TempSet] = currentState.stateTemp.stateTemp;
-                    tpDeviceM.UpdateParamToDevice();
-                    tpDeviceS.tpParamToSet[(int)Device.TempProtocol.Cmd_t.TempSet] = currentState.stateTemp.stateTemp;
-                    tpDeviceS.UpdateParamToDevice();
-                }
+                // 向主槽 / 辅槽控温设备写入全部参数
+                currentState.stateTemp.paramM.CopyTo(tpDeviceM.tpParamToSet, 0);
+                currentState.stateTemp.paramS.CopyTo(tpDeviceS.tpParamToSet, 0);
+
+
+                // 将参数更新到下位机
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                TempProtocol.Err_t tpErr = TempProtocol.Err_t.NoError;
+                tpErr = tpDeviceM.UpdateParamToDeviceReturnErr();
+                if (tpErr != TempProtocol.Err_t.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.TempError);
+                tpErr = tpDeviceS.UpdateParamToDeviceReturnErr();
+                if (tpErr != TempProtocol.Err_t.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.TempError);
+                //tpDeviceM.UpdateParamToDevice();
+                //tpDeviceS.UpdateParamToDevice();
+
 
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
@@ -969,7 +994,11 @@ namespace Device
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCoolF] = true;
 #endif
                 // 将继电器状态写入下位机
-                ryDevice.UpdateStatusToDevice();
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                if (ryErr != RelayProtocol.Err_r.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.RelayError);
+                //ryDevice.UpdateStatusToDevice();
 
                 // wghou
                 // 这里是否要再次对主槽 / 辅槽的设定温度进行写入确认？
@@ -1042,7 +1071,11 @@ namespace Device
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCoolF] = true;
 #endif
                 // 将继电器状态写入下位机
-                ryDevice.UpdateStatusToDevice();
+                // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                if (ryErr != RelayProtocol.Err_r.NoError)
+                    FlowControlFaultOccurEvent(FaultCode.RelayError);
+                //ryDevice.UpdateStatusToDevice();
 
                 // 首次进入某一状态
                 // 触发事件 - 例如，可以通知主界面执行一些操作

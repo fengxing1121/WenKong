@@ -2,6 +2,7 @@
 
 0 - 程序启动
 
+（初始过程）
 1 - FormMain_Load()
   1.1 配置设备端口号等参数 - deviceAll.Congigure() - 失败（比如串口号不存在）则终止程序运行
   从配置文件 config.ini 中读取温控设备端口号、波动阈值、温度读取时间间隔、等数据；从配置文件读取继电器设备、传感器设备端口号；从配置文件读取稳定时间、波动度满足条件等数据；
@@ -28,15 +29,16 @@
   1.5 打开计时器 deviceAll.tpTemperatureUpdateTimer，系统开始工作
 
 
+(主工作流程)
 2 - 默认情况下程序工作流程 - 主要依赖定时器 deviceAll.tpTemperatureUpdateTimer 完成
   2.0 程序主要工作流程为每隔一定时间间隔，执行定时器函数 TpTemperatureUpdateTimer_Elapsed()，完成绝大部分操作 - tpTemperatureUpdateTimer.Elapsed += TpTemperatureUpdateTimer_Elapsed;
 
   2.1 读取主槽温度 / 主槽功率系数 / 辅槽温度 / 辅槽功率系数 - err = tpDeviceM.GetTemperatureShow( out val); 等等
   2.1.0 从下位机读取数据，存放到 TempDevice.temperatures(List) TempDevice.tpPowerShow 中，返回错误信息
 
-  2.2 触发定时器函数执行事件 TpTemperatureUpdateTimerEvent(err); 如果在上述读取过程中发生错误，则将该错误传递给事件处理函数
-  2.2.0 之前在 FormMain_Load 中已经注册了事件处理函数 tpDevice_TpTemperatureUpdateTimerEvent，如果没有发生错误，则将 TempDevice.temperatures(List) TempDevice.tpPowerShow TempDevice.GetFluc() 等信息显示到主界面中
-  如果发生了错误，则 尚无 wghou
+  2.2 触发定时器函数执行事件 TpTemperatureUpdateTimerEvent(); 通知主界面从 TempDevice.tpParam[] 等中更新显示数据
+  2.2.0 之前在 FormMain_Load 中已经注册了事件处理函数 tpDevice_TpTemperatureUpdateTimerEvent，注：这里不会进行错误处理
+  定时器 deviceAll.tpTemperatureUpdateTimer 事件处理函数中的错误由 FlowControlFaultOccurEvent 事件来处理，详见 8 错误处理
 
   2.3 如果开启了自动控温流程，则 Device.autoStart == true, 执行 Device.cntrolFlowSchedule() 函数
   Device.cntrolFlowSchedule() 的具体细节见后续
@@ -44,6 +46,7 @@
   2.4 在 FormMain_Load 函数中注册了温控设备参数读取 / 写入事件处理函数，均为 TpDeviceM_ParamUpdatedToDeviceEvent() ，当温控设备的参数发生变化（读取/设置）时，触发该函数，将 TempDevice.tpParam[] 中的数据更新到主界面
 
 
+（界面按键）
 3 - 继电器按键及相关处理 - 主要代码位于 FormMain.RelayDevice.cs
   3.1 点击按键后，将按键（继电器）状态写入到deviceAll.ryDevice.ryStatusToSet[] 中，然后调用 deviceAll.ryDevice.UpdateStatusToDevice() 函数，将继电器写入到下位机
   如果写入成功，则继电器状态更新到 deviceAll.ryDevice.ryStatus[] 中
@@ -51,7 +54,7 @@
   3.2 deviceAll.ryDevice.UpdateStatusToDevice() 函数执行完成后，触发 deviceAll.ryDevice.StatusUpdateToDeviceEvent 事件
   之前已经在 FormMain_load 中注册了事件处理函数，deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEven
   从 deviceAll.ryDevice.ryStatus[] 中读取按键的状态，更新到主界面（因为 ryStatus[] 中始终存放有按键的正确状态，无论发生错误与否）
-  如果发生了错误，则 尚无 wghou
+  如果发生了错误，则 弹出对话框 - 当用户点击某按键后发生了串口读写错误，仅仅弹出一个提示对话框
 
 
 4 - 温控设备参数设置 - 点击主界面按键后，新建 FormSetting 界面
@@ -65,11 +68,13 @@
 
   4.2 参数读取按键 - 从下位机读取参数
   执行 tpDev.UpdateParamFromDevice 函数，将参数从下位机读取到 TempDevice.tpParam[] 中
-  之前已在 FormSetting_Load 中注册了参数读取事件处理函数 TpDev_ParamUpdatedFromDeviceEvent，如果没有错误发生，则从 tpDev.tpParam[] 中读取参数，更新到界面，如果发生错误，则提示错误信息 MessageBox.Show()；wghou 这里的错误提示是不是重复了啊
+  之前已在 FormSetting_Load 中注册了参数读取事件处理函数 TpDev_ParamUpdatedFromDeviceEvent，如果没有错误发生，则从 tpDev.tpParam[] 中读取参数，更新到界面
+  如果从温控设备读取参数失败，则弹出提示对话框
 
   4.3 参数设置按键 - 将参数写入到下位机中
   先将参数写入到 tpDevice.tpParamToSet[] 中，再执行 tpDev.UpdateParamToDevice 函数，将tpDevice.tpParamToSet[] 中的参数写入到下位机中
-  之前已经在 FormSetting_Load 中注册了参数写入事件处理函数 TpDev_ParamUpdatedToDeviceEvent，如果发生错误，则提示错误信息 MessageBox.Show()；wghou 这里的错误提示是不是重复了啊，
+  之前已经在 FormSetting_Load 中注册了参数写入事件处理函数 TpDev_ParamUpdatedToDeviceEvent，
+  如果向温控设备写入参数发生错误，则弹出对提示话框
 
   4.4 FormSetting_FormClosed() - 窗体关闭
   注销温控设备参数更新 / 设置事件处理函数
@@ -83,7 +88,7 @@
 
   5.2 当温控设备温度值更新时，执行事件处理函数 DeviceAll_TpTemperatureUpdateTimerEvent()
   执行 TempPic.Image = mDrawChart.Draw(); 重新绘制函数曲线（因为有了新数据，所以要重新绘制一次）
-  wghou 这里应该再加上波动度读取 / 稳定时间读取等内容
+  这里又加上波动度读取 / 稳定时间读取等内容
 
   5.3 TemperatureChart_FormClosing() 窗体关闭
   deviceAll.TpTemperatureUpdateTimerEvent -= DeviceAll_TpTemperatureUpdateTimerEvent;
@@ -91,10 +96,21 @@
 
 
 6 - 自动控温设定窗口
-  5.0 在自动控温设定窗口中，设置温度点、温度点对应的控温设备参数（wghou 尚未完成），向 Device.temperaturePointList(List) 中添加温度点
+  6.0 在自动控温设定窗口中，设置温度点、温度点对应的控温设备参数，向 Device.temperaturePointList(List) 中添加温度点
   在中断自动控温流程后，再次打开该窗口，也会自动从 Device.temperaturePointList 中读取尚未完成的温度点，可修改，可删除，可添加，之后可继续运行
 
+  6.1 窗体载入 - FormAutoSet_Load
+  打开温度点设定窗口，先将主槽控温设备的 TempDevice.tpParam[] 读取到 FormAutoSet.paramCache[] 中；作为参数的默认值
+  将 Devices.temperaturePointList(List) 中未完成的温度点读取到 设定窗体 的 BList 中
+  
+  6.2 添加 / 删除温度点
 
+  6.3 填写完成后，点击开始自动控温
+  将窗体中 BList 内的温度点信息 （包括温度点的温度设定值，修正值，比例系数，功率系数等）添加到 Devices.temperaturePointList(List) 中，并将 Devices.currentState 设置为 start
+  这样就可以判断当前水槽内的温度跟第一个温度点的温度值，执行升温 / 降温 / 或者直接开始控温
+
+
+（自动控温流程）
 7 - 自动控温流程 - Device.controlFlowSchedule() 
   7.0 当开始自动控温流程后，Device.temperaturePointList 中存放有温度设定点，并置 Device.autoStart = trure，开始执行控温步骤
 
@@ -109,15 +125,56 @@
   7.2 确保 Device.temperatures.Count != 0 ,为零表明一定发生了错误，触发 FlowControlFaultOccurEvent() 事件，将 FaultCode.CodeErr 传递出去，通知主界面应立即结束程序
 
   7.3 执行 currentState.flowState 对应的状态
-  7.3.1
-  7.3.2
+  7.3.1 TempUp - 升温
+		写入相应的继电器状态，发生错误则触发 FlowControlFaultOccurEvent 事件
+        写入温控设备的温度设定值，修正值，各种系数等参数值，发生错误则触发 FlowControlFaultOccurEvent 事件
+        如果最新一次温度值（也可以说当前温度值）大于设定温度点，则进入控温状态
+  7.3.2 TempDown - 降温
+		同上 -- 
+		如果当前温度小于设定温度点，则进入控温状态
+  7.3.3 TempControl - 控温
+		写入相应的继电器状态，发生错误则触发 FlowControlFaultOccurEvent 事件
+		如果温度设定点在 5 度以下，则开启 辅槽快冷 7 
+		检查温度波动度，时间长度为 Devices.steadyTime (默认是 300 秒)，如果稳定，则进入稳定状态
+		波动度稳定条件是 小于 Devices.flucValue(默认值是 0.001)
+  7.3.4 TempStable - 稳定
+		写入相应的继电器状态，发生错误则触发 FlowControlFaultOccurEvent 事件
+		如果温度设定点在 5 度以下，则开启 辅槽快冷 7 
+		读取电桥温度，如果错误，则触发 FlowControlFaultOccurEvent 事件
+		等待 2 分钟后，如果满足波动度条件（小于 Devices.flucValue)，则进入测量状态
+		如果不满足波动度条件，进入控温状态 （感觉不太合理的地方，这样直接返回控温，因为主槽的温度是稳定的，是不是就返回了控温，判断还是稳定的，立即就又回到了稳定状态）
+  7.3.5 TempMeasure - 测量
+		测量并记录电桥温度，如果发生错误，则触发 FlowControlFaultOccurEvent 事件
+		将已测量完成的温度点从 Devices.temperaturePointList 中删除
+		如果还有温度点未被测量，即 Devices.FlowControlFaultOccurEvent 不为空，则将新的温度点装入 Devices.currentState 中，进入降温状态
+		如果全部测量完成了，则进入 Finish 完成状态
+  7.3.6 Finish 完成
+		通过触发 Devices.FlowControlStateChangedEvent 事件，通知主界面弹出对话框，如果间隔一段时间无人操作，则关闭所有继电器，退出程序，并关机
 
-  7.4 故障判断及警报 - faultCheckSubStep()
+  7.4 当进入一个新的状态时，会触发  Devices.FlowControlStateChangedEvent ,通知主界面显示当前的工作状态
+
+  7.5 故障判断及警报 - faultCheckSubStep()
   注：故障判断只有在当控温流程进入一个新的状态一段时间后才会判断，比如，进入降温 1 分钟后，才会检查 温度不下降 警报，以防止之前是升温或控温状态，则刚进入降温之前的一段时间内，温度肯定是没有下降过的。
   另注：判断的是一分钟内温度不下降 / 不升高 等等
+  7.5.1 升温时 - 判断温度持续下降故障  /  降温时 - 判断温度不下降故障  /  控温时 - 判断温度持续下降; 温度持续上升; 波动度过大  /  稳定时 - 判断波动度过大故障
+		温度不下降 - 判断当前的温度与 1 分钟前的温度，是否下降了
+		温度持续下降 - 判断当前的温度与 1 分钟前的温度，1 分钟前的温度减去当前温度，是否大于 TempDevice.tpParam[8] 温度阈值（这里用了温度阈值，其实我不知道温度阈值是用来做什么的）
+		波动度过大 - 1 分钟内的波动度，如果大于 TempDevice.tpParam[7] 波动度阈值
+		温度持续上升 - 当前温度减去 1 分钟前的温度值，是否大于 TempDevice.tpParam[8]
+  7.5.2 只有当进入某个状态 1 分钟后，才会判断故障
 
 
-8 - 其他
+（错误处理）
+8 - 错误处理
+  8.1 界面点击操作时，出现通信错误：主界面继电器通信错误 / 温控设备设置界面参数读写通信错误
 
+  8.2 定时器中自动温度读取 / 控温流程中通信错误
+  如：Devices.TpTemperatureUpdateTimer_Elapsed 中读取温控设备温度显示值 / 功率系数等错误，触发 FlowControlFaultOccurEvent 事件
+  Devices.controlFlowSchedule() 中的状态步骤 （TempUpStep() / ControlSet() 等）中写入控温设备下位机写入参数 / 继电器设备下位机写入参数发生错，触发 FlowControlFaultOccurEvent 事件
+  故障判断中检测到故障（温度不降 / 温度持续上升 / 波动度过大等），触发 FlowControlFaultOccurEvent 事件
+  
+  8.3 故障事件处理函数  FlowControlFaultOccurEvent += DeviceAll_FlowControlFaultOccurEvent （在 FormMain 中）
+  弹出警示窗口 FormAlarm ，其中记录错误信息及发生了多少次
+  如果没有人员处理（点击确定按键），则十分钟后关闭所有继电器，退出程序，关闭计算机
 
 

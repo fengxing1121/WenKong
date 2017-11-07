@@ -239,6 +239,46 @@ namespace Device
             StatusUpdateToDeviceEvent(err);
         }
 
-#endregion
+
+        internal RelayProtocol.Err_r UpdateStatusToDeviceReturnErr()
+        {
+            RelayProtocol.Err_r err = RelayProtocol.Err_r.NoError;
+            lock (ryLocker)
+            {
+                // 遍历枚举类型 RelayProtocol.Cmd_r 中所有的值
+                foreach (RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(RelayProtocol.Cmd_r)))
+                {
+                    // 如果要设置的继电器状态与当前状态相同，则跳过
+                    if (ryStatus[(int)cmd] == ryStatusToSet[(int)cmd])
+                        continue;
+
+                    err = ryDeviceProtocol.WriteRelayStatus(cmd, ryStatusToSet[(int)cmd]);
+                    // 暂停一段时间
+                    Thread.Sleep(20);
+                    // 调试信息
+                    Debug.WriteLineIf(err == RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新成功!  " + ryStatusToSet[(int)cmd].ToString());
+                    Debug.WriteLineIf(err != RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新失败!  " + err.ToString());
+
+                    if (err == RelayProtocol.Err_r.NoError)
+                    {
+                        // 设置继电器状态成功，更新 ryStatus[] 中的值
+                        ryStatus[(int)cmd] = ryStatusToSet[(int)cmd];
+                    }
+                    else
+                    {
+                        // 设置继电器状态失败，结束 for 循环
+                        break;
+                    }
+                }
+            }
+
+
+            // 触发设备错误事件，并返回设置错误信息
+            StatusUpdateToDeviceEvent(err);
+
+            return err;
+        }
+
+        #endregion
     }
 }

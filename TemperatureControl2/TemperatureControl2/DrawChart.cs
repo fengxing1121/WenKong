@@ -224,23 +224,43 @@ namespace TemperatureControl2
             // Horizontal
             for (int i = 0; i < rowNum; i++)
                 mGhp.DrawLine(mAxisPen, startHor, startVer + i * rowInterval, endHor, startVer + i * rowInterval);
+
+            // 绘制垂直方向温度的刻度值
             // Vertical text
+#if false
             for (int i = 0; i < rowNum + 1; i++)
             {
                 mGhp.DrawString((max - i * margin / rowNum).ToString("0.000"),
                     mFont, mBrush, startText, startVer + rowInterval * i - 8);
             }
+#endif
+            float max3f = (float)Math.Round(max, 3);
+            float step3f = (float)Math.Round(margin / rowNum,3);
+            for (int i = 0; i < rowNum + 1; i++)
+            {
+                
+                mGhp.DrawString((max3f - i * step3f).ToString("0.000"),
+                    mFont, mBrush, startText, startVer + rowInterval * i - 8);
+            }
             #endregion
 
+            // 将温度数据绘制到图表中
             #region use data to draw chart
+#if false
             for (int i = 0; i < tempListForChart.Count - 1; i++)
             {
                 mGhp.DrawLine(mLinePen, startHor + i, startVer + (tempListForChart[i] - min) / margin * spaceVer,
                     startHor + (i + 1), startVer + (tempListForChart[i + 1] - min) / margin * spaceVer);
             }
-            #endregion
+#endif
+            for (int i = 0; i < tempListForChart.Count - 1; i++)
+            {
+                mGhp.DrawLine(mLinePen, startHor + i, endVer - (tempListForChart[i] - min) / margin * spaceVer,
+                    startHor + (i + 1), endVer - (tempListForChart[i + 1] - min) / margin * spaceVer);
+            }
+#endregion
 
-            #region tag time to x axis
+#region tag time to x axis
             List<int[]> timeTags = CalcTimeTags();
             // Draw all time tags
             for (int i = 0; i < timeTags.Count; i++)
@@ -248,7 +268,7 @@ namespace TemperatureControl2
                 mGhp.DrawString(String.Format("{0:D2}:{1:D2}", timeTags[i][0], timeTags[i][1]),
                     mFont, mBrush, startHor + i * timeColInt * colInterval - 15, endVer + 10);
             }
-            #endregion
+#endregion
 
             return mBmp;
         }
@@ -269,6 +289,6 @@ namespace TemperatureControl2
             if (mGhp != null)
                 mGhp.Dispose();
         }
-        #endregion
+#endregion
     }
 }
