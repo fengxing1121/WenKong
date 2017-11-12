@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
@@ -162,6 +161,35 @@ namespace Utils
                 catch (System.Exception ex)
                 {
                     Debug.WriteLine("写入日志文件 " + _fileSys + " 失败！");
+                    _writer.Close();
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        public static bool Data(string data)
+        {
+            lock (_Locker)
+            {
+                try
+                {
+                    if (!File.Exists(_fileData))
+                    {
+                        File.Create(_fileData).Close();
+                        Debug.WriteLine("日志文件 " + _fileData + " 不存在，新建该文件！");
+                    }
+
+                    _writer = new StreamWriter(_fileData, true, Encoding.UTF8);
+                    _writer.WriteLine(DateTime.Now.ToString() + "    " + data);
+                    _writer.Flush();
+                    _writer.Close();
+                    Debug.WriteLine(DateTime.Now.ToString() + "    " + data);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.WriteLine("写入日志文件 " + _fileData + " 失败！");
                     _writer.Close();
                     return false;
                 }

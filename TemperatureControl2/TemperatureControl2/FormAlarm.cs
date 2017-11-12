@@ -80,14 +80,14 @@ namespace TemperatureControl2
                             errMsg += "\r\n传感器设备读取数值失败!   " + item.Value.ToString() + " 次";
                         break;
 
-                    case Device.Devices.FaultCode.TempContinueDown:
+                    case Device.Devices.FaultCode.TempNotDown:
                         if (item.Value != 0)
-                            errMsg += "\r\n温度持续下降警报!   " + item.Value.ToString() + " 次";
+                            errMsg += "\r\n温度不下降警报!   " + item.Value.ToString() + " 次";
                         break;
 
-                    case Device.Devices.FaultCode.TempContinueUp:
+                    case Device.Devices.FaultCode.TempNotUp:
                         if (item.Value != 0)
-                            errMsg += "\r\n温度持续上升警报!   " + item.Value.ToString() + " 次";
+                            errMsg += "\r\n温度不上升警报!   " + item.Value.ToString() + " 次";
                         break;
 
                     case Device.Devices.FaultCode.TempFlucLarge:
@@ -95,9 +95,9 @@ namespace TemperatureControl2
                             errMsg += "\r\n温度波动过大警报!   " + item.Value.ToString() + " 次";
                         break;
 
-                    case Device.Devices.FaultCode.TempNotDown:
+                    case Device.Devices.FaultCode.TempBasis:
                         if (item.Value != 0)
-                            errMsg += "\r\n温度不下降警报!   " + item.Value.ToString() + " 次";
+                            errMsg += "\r\n温度偏离设定点过大警报!   " + item.Value.ToString() + " 次";
                         break;
 
                     case Device.Devices.FaultCode.CodeError:

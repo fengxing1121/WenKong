@@ -13,9 +13,10 @@ namespace TemperatureControl2
     {
         Timer timer1 = new Timer();
         int timeCount = 600;
-        public FormFinish()
+        public FormFinish(int timeSecond = 600)
         {
             InitializeComponent();
+            timeCount = timeSecond;
         }
 
         private void FormFinish_Load(object sender, EventArgs e)

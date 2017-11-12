@@ -31,6 +31,7 @@ namespace TemperatureControl2
                     this.checkBox_ryDevices[i].Checked = this.deviceAll.ryDevice.ryStatus[i];
                 }
 #endif
+                // 从下位机更新继电器状态
                 foreach(Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
                 {
                     this.checkBox_ryDevice[cmd].Checked = this.deviceAll.ryDevice.ryStatus[(int)cmd];

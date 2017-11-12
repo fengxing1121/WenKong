@@ -89,6 +89,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormFinish";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormFinish";
             this.Load += new System.EventHandler(this.FormFinish_Load);
             this.ResumeLayout(false);

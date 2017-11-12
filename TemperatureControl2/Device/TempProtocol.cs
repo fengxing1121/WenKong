@@ -19,9 +19,9 @@ namespace Device
         private const Parity parity = Parity.None;
         private const int readBufferSize = 64;
         private const int writeBufferSize = 64;
-        private const int readTimeout = 200;
+        private const int readTimeout = 500;
         /// <summary>串口</summary>
-        internal SerialPort sPort = new SerialPort()
+        private SerialPort sPort = new SerialPort()
         {
             // Init all parameters except portname, as other parameter should not be easily changed.
             BaudRate = baudrate,
@@ -32,7 +32,7 @@ namespace Device
             WriteBufferSize = writeBufferSize,
             ReadTimeout = readTimeout
         };
-        
+
         /// <summary>串口读-写时间间隔</summary>
         private const int intervalOfWR = 20;
         #endregion
@@ -97,8 +97,7 @@ namespace Device
         //private readonly string[] cmdFormats = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0" };
         private readonly string[] cmdFormats = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.0000", "0" };
         private const string cmdFinish = ":";
-        //private const string cmdEnd = "\r"; // Todo: The endflag may be \r\n, check it.
-        private const string cmdEnd = "\r\n"; // Todo: The endflag may be \r\n, check it.
+        private const string cmdEnd = "\r"; // Todo: The endflag may be \r\n, check it.
         private readonly string[] cmdRW = { "w", "w", "w", "w", "w", "w", "w", "r", "r" };
         #endregion
 
@@ -142,7 +141,7 @@ namespace Device
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("继电器设备新建串口时发生异常：" + ex.Message);
+                Debug.WriteLine("温控设备新建串口时发生异常：" + ex.Message);
                 return false;
             }
         }
@@ -174,12 +173,11 @@ namespace Device
             // 从串口发送指令
             try
             {
-                if(!sPort.IsOpen)
+                if (!sPort.IsOpen)
                     this.sPort.Open();
 
                 // 写入数据
-                this.sPort.Write(command);
-                //this.sPort.Write(command + "\r\n");
+                this.sPort.Write(command + "\r\n");
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
                 data = this.sPort.ReadTo(cmdFinish);
@@ -187,7 +185,7 @@ namespace Device
                 sPort.DiscardInBuffer();
                 sPort.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // 串口发生错误！
                 Debug.WriteLine("温控设备写入参数 " + cmd.ToString() + " 异常: " + ex.Message);
@@ -217,12 +215,11 @@ namespace Device
 
             try
             {
-                if(!sPort.IsOpen)
+                if (!sPort.IsOpen)
                     this.sPort.Open();
 
                 // 写入数据
-                this.sPort.Write(command);
-                //this.sPort.Write(command + "\r\n");
+                this.sPort.Write(command + "\r\n");
                 // 读取返回数据
                 Thread.Sleep(intervalOfWR);
                 data = this.sPort.ReadTo(cmdFinish);
@@ -230,7 +227,7 @@ namespace Device
                 sPort.DiscardInBuffer();
                 sPort.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 val = 0.0f;
                 Debug.WriteLine("温控设备读取参数 " + cmd.ToString() + " 异常: " + ex.Message);

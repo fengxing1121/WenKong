@@ -34,7 +34,7 @@ namespace TemperatureControl2
                 FormSetting fm = new FormSetting(deviceAll.tpDeviceM);
                 fm.Name = "FormSettingM";
                 fm.Text = "主槽控温参数设置";
-                fm.Location = new System.Drawing.Point(600,300);
+                //fm.Location = new System.Drawing.Point(600,300);
                 fm.Show();
             }
 
@@ -64,7 +64,7 @@ namespace TemperatureControl2
                 FormSetting fm = new FormSetting(deviceAll.tpDeviceS);
                 fm.Name = "FormSettingS";
                 fm.Text = "辅槽控温参数设置";
-                fm.Location = new System.Drawing.Point(600, 500);
+                //fm.Location = new System.Drawing.Point(600, 500);
                 fm.Show();
             }
 
@@ -92,7 +92,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll,deviceAll.tpDeviceM);
-                fm.Location = new System.Drawing.Point(50, 250);
+                //fm.Location = new System.Drawing.Point(50, 250);
                 fm.Name = "FormChartM";
                 fm.Text = "主槽温度曲线";
                 fm.Show();
@@ -122,7 +122,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll, deviceAll.tpDeviceS);
-                fm.Location = new System.Drawing.Point(50, 300);
+                //fm.Location = new System.Drawing.Point(50, 300);
                 fm.Name = "FormChartS";
                 fm.Text = "辅槽温度曲线";
                 fm.Show();
@@ -135,6 +135,7 @@ namespace TemperatureControl2
 
         /// <summary>
         /// 控温设备更新温度值 - 事件处理函数 - 将温度值从 TempDevice 更新到界面
+        /// 不对错误进行处理
         /// </summary>
         /// <param name="err"></param>
         private void tpDevice_TpTemperatureUpdateTimerEvent()
@@ -190,6 +191,7 @@ namespace TemperatureControl2
             // 如果温度设定值写入 / 读取正确，而后面的其他参数发生了错误，同样会返回错误标志位
             this.BeginInvoke(new EventHandler(delegate
             {
+                // 更新主界面的温度设定值
                 this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
                 this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
             }));

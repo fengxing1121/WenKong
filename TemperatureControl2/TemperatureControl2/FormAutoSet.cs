@@ -59,7 +59,7 @@ namespace TemperatureControl2
             }
 
             // 排序
-            BList.Sort(null, ListSortDirection.Descending);
+            BList.Sort(null, ListSortDirection.Ascending);
 
             devicesAll.tpDeviceM.tpParam.CopyTo(paramCache, 0);
 
@@ -161,7 +161,7 @@ namespace TemperatureControl2
             pArray.CopyTo(ts.paramS, 0);
             // 向 BList 中添加新数据
             BList.Add(ts);
-            BList.Sort(null, ListSortDirection.Descending);
+            BList.Sort(null, ListSortDirection.Ascending);
             // 计算编号
             for (int i = 0; i < BList.Count; i++)
             {

@@ -22,7 +22,7 @@ namespace Device
         private const int writeBufferSize = 64;
         private const int readTimeout = 200;
         /// <summary>串口</summary>
-        internal SerialPort sPort = new SerialPort()
+        private SerialPort sPort = new SerialPort()
         {
             // Init all parameters except portname, as other parameter should not be easily changed.
             BaudRate = baudrate,

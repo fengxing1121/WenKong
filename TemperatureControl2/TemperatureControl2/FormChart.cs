@@ -35,15 +35,13 @@ namespace TemperatureControl2
             this.BeginInvoke(new EventHandler(delegate
             {
                 TempPic.Image = mDrawChart.Draw();
-                if (deviceAll.currentState.flowState == Device.Devices.State.TempControl || deviceAll.currentState.flowState == Device.Devices.State.TempStable)
-                {
-                    int timeSec = deviceAll.currentState.stateTime * deviceAll.tpDeviceM.readTempInterval / 1000;
-                    this.label1.Text = "控温时间： " + (timeSec/60).ToString("0") + " 分" + (timeSec%60).ToString("0") + "秒";
-                }
-                else
-                {
-                    this.label1.Text = "控温时间： null";
-                }
+
+                UInt64 total = deviceAll.timeStart*(UInt64)(deviceAll.tpDeviceM.readTempInterval / 1000);
+                UInt64 timeHour = total / 360;
+                UInt64 timeMin = (total - timeHour * 360) / 60;
+                UInt64 timeSec = total % 60;
+                this.label1.Text = "控温时间： " + (timeHour).ToString("0") + " 小时" + (timeMin).ToString("0") + " 分" + (timeSec).ToString("0") + "秒";
+
                 float val = 0.0f;
                 if(deviceAll.tpDeviceM.GetFluc((5*60*1000/deviceAll.tpDeviceM.readTempInterval),out val))
                 {

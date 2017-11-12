@@ -552,7 +552,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormAutoSet";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormAutoSet";
             this.Load += new System.EventHandler(this.FormAutoSet_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

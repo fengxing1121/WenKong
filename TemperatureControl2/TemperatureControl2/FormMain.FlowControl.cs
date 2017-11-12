@@ -22,7 +22,7 @@ namespace TemperatureControl2
             if(this.checkBox_auto.Checked == true)
             {
                 Form fm = new FormAutoSet(deviceAll);
-                fm.Location = new System.Drawing.Point(400,500);
+                //fm.Location = new System.Drawing.Point(400,500);
 
                 Utils.Logger.Op("点击自动控温按键，开始设置自动控温流程...");
                 Utils.Logger.Sys("点击自动控温按键，开始设置自动控温流程...");
@@ -39,7 +39,7 @@ namespace TemperatureControl2
                         lock(this.deviceAll.stepLocker)
                         {
                             // 设置初始运行状态
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Start, stateChanged = true, stateTime = 0, stateTemp = deviceAll.temperaturePointList.First() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Start, stateChanged = true, stateTime = 0, tempPoint = deviceAll.temperaturePointList.First() };
                             // 开始运行自动测温
                             deviceAll.autoStart = true;
                         }
@@ -57,7 +57,7 @@ namespace TemperatureControl2
                             // 停止系统运行
                             deviceAll.autoStart = false;
                             // 设置运行状态为空闲
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                         }
                         MessageBox.Show("实验流程格式不正确，请重新设置!");
                     }
@@ -71,7 +71,7 @@ namespace TemperatureControl2
                         // 停止运行自动测温
                         deviceAll.autoStart = false;
                         // 设置运行状态为空闲
-                        this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
+                        this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                     }
 
                     Utils.Logger.Op("取消了自动控温流程设置...");
@@ -96,7 +96,7 @@ namespace TemperatureControl2
                             // 停止运行自动测温
                             this.deviceAll.autoStart = false;
                             // 设置运行状态为空闲
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, stateTemp = new Device.Devices.TemperaturePoint() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                         }
                     }
 
@@ -172,16 +172,11 @@ namespace TemperatureControl2
                 // wghou
                 // 问题来了，要是在这个时候，通信出现了问题，怎么办？？
                 // 先关闭除总电源以外的所有继电器电源
+                Utils.Logger.Sys("测量完成，关闭除总电源外所有继电器！");
                 foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
                     deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
                 deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = true;
                 deviceAll.ryDevice.UpdateStatusToDevice();
-
-                // 关闭所有继电器电源
-                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
-                    deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
-                deviceAll.ryDevice.UpdateStatusToDevice();
-
 
                 // 所有温度点全部测量完成
                 // 是否关闭计算机
@@ -191,9 +186,19 @@ namespace TemperatureControl2
                     DialogResult rtl = fm.ShowDialog();
                     if(rtl == DialogResult.OK)
                     {
+                        Utils.Logger.Sys("十分钟用户未操作 / 选择关机，关闭总电源并关闭计算机！");
+                        // 关闭所有继电器电源
+                        foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                            deviceAll.ryDevice.ryStatusToSet[(int)cmd] = false;
+                        deviceAll.ryDevice.UpdateStatusToDevice();
                         // 60秒后关闭计算机
                         System.Diagnostics.Process.Start("shutdown.exe", "-s -t 60");
                         this.Close();
+                    }
+                    else
+                    {
+                        // 用户选择取消关机
+                        Utils.Logger.Sys("用户取消了关机操作，软件继续运行。");
                     }
                 }));
             }
@@ -226,14 +231,17 @@ namespace TemperatureControl2
             if(fCode == Device.Devices.FaultCode.CodeError)
             {
                 // 程序错误，应立即退出整个程序
+                //Utils.Logger.Sys("程序代码出现了错误，应立即退出程序!");
             }
             else if(fCode == Device.Devices.FaultCode.SensorError)
             {
                 // 读取电桥温度错误
+                //Utils.Logger.Sys("电桥温度读取出现错误！");
             }
             else
             {
                 // 设备故障报警
+                //Utils.Logger.Sys("设备故障报警！");
             }
 
             // 警告信息及处理时间
@@ -255,7 +263,7 @@ namespace TemperatureControl2
                 {
                     fmA = new FormAlarm(errTm);
                     fmA.Name = "FormAlarm";
-                    fmA.Location = new System.Drawing.Point(600, 300);
+                    //fmA.Location = new System.Drawing.Point(600, 300);
                     fmA.shutdownSystem += FmA_shutdownSystem;
                 }
 
@@ -268,6 +276,7 @@ namespace TemperatureControl2
                 }
                 else
                 {
+                    Utils.Logger.Sys("自动控温流程出现故障，故障代码： " + fCode.ToString());
                     fmA.errCount[fCode] = 1;
                 }
 

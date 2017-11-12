@@ -493,7 +493,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormSetting";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "参数设置";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSetting_FormClosed);
             this.Load += new System.EventHandler(this.FormSetting_Load);
