@@ -31,7 +31,7 @@ namespace TemperatureControl2
 
             if(!formExist)
             {
-                FormSetting fm = new FormSetting(deviceAll.tpDeviceM);
+                FormSetting fm = new FormSetting(deviceAll.tpDeviceM, deviceAll);
                 fm.Name = "FormSettingM";
                 fm.Text = "主槽控温参数设置";
                 //fm.Location = new System.Drawing.Point(600,300);
@@ -61,7 +61,7 @@ namespace TemperatureControl2
 
             if (!formExist)
             {
-                FormSetting fm = new FormSetting(deviceAll.tpDeviceS);
+                FormSetting fm = new FormSetting(deviceAll.tpDeviceS,deviceAll);
                 fm.Name = "FormSettingS";
                 fm.Text = "辅槽控温参数设置";
                 //fm.Location = new System.Drawing.Point(600, 500);
@@ -84,6 +84,7 @@ namespace TemperatureControl2
                 {
                     // Avoid form being minimized
                     fm.WindowState = FormWindowState.Normal;
+                    fm.Location = new System.Drawing.Point(10, 72);
                     fm.BringToFront();
                     formExist = true;
                 }
@@ -92,7 +93,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll,deviceAll.tpDeviceM);
-                //fm.Location = new System.Drawing.Point(50, 250);
+                fm.Location = new System.Drawing.Point(10, 72);
                 fm.Name = "FormChartM";
                 fm.Text = "主槽温度曲线";
                 fm.Show();
@@ -113,7 +114,7 @@ namespace TemperatureControl2
                 {
                     // Avoid form being minimized
                     fm.WindowState = FormWindowState.Normal;
-
+                    fm.Location = new System.Drawing.Point(10, 522);
                     fm.BringToFront();
                     formExist = true;
                 }
@@ -122,7 +123,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll, deviceAll.tpDeviceS);
-                //fm.Location = new System.Drawing.Point(50, 300);
+                fm.Location = new System.Drawing.Point(10, 522);
                 fm.Name = "FormChartS";
                 fm.Text = "辅槽温度曲线";
                 fm.Show();
@@ -146,7 +147,11 @@ namespace TemperatureControl2
             {
                 // 更新主槽控温表温度 / 功率值
                 if (this.deviceAll.tpDeviceM.temperatures.Count > 0)
-                    this.label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
+                {
+                    string tpM = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000");
+                    this.label_tempM.Text = tpM + "℃";
+                    //Utils.Logger.Sys("主槽温度： " + tpM);
+                } 
                 else
                 {
                     Debug.WriteLine("未读到温度数据");
@@ -169,10 +174,10 @@ namespace TemperatureControl2
                 // 当前状态提示
                 // wghou
                 float fluc = 0.0f;
-                if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTime * 1000 / deviceAll.tpDeviceM.readTempInterval, out fluc))
-                    this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃";
+                if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc))
+                    this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃ / " + (deviceAll.steadyTimeSec / 60).ToString("0") + " 分钟";
                 else
-                    this.label_fluc.Text = "主控温槽波动度：****"; 
+                    this.label_fluc.Text = "主控温槽波动度：** / " + (deviceAll.steadyTimeSec/60).ToString("0") + " 分钟"; 
 
             }));
 

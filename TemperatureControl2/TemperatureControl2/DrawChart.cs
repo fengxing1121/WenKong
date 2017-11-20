@@ -155,12 +155,12 @@ namespace TemperatureControl2
         {
             List<int[]> timeTags = new List<int[]>();
 
-            int minuteInterval = timeColInt * tpDevice.readTempInterval / 1000;
+            int minuteInterval = timeColInt * tpDevice.readTempIntervalSec;
 
             DateTime dt = DateTime.Now;
             int hour = dt.Hour;
             int minute = (int)Math.Round(dt.Minute + (float)dt.Second / 60.0     // 60.0 means 1min = 60s
-                - (tempListForChart.Count * tpDevice.readTempInterval / 1000 / 60.0) - minuteInterval);
+                - (tempListForChart.Count * tpDevice.readTempIntervalSec / 60.0) - minuteInterval);
 
             // Avoid a minus minute
             if (minute < 0)

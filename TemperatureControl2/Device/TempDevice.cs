@@ -16,16 +16,16 @@ namespace Device
         public string tpDevicePortName = string.Empty;
         private TempProtocol tpDevice = new TempProtocol();
         /// <summary>
-        /// 设备参数值 - 9个
+        /// 设备参数值 - 7个
         /// </summary>
-        public float[] tpParam = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
+        public float[] tpParam = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
         /// <summary>
-        /// 设备参数设定值 - 9个
+        /// 设备参数设定值 - 7个
         /// </summary>
-        public float[] tpParamToSet = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.1f };
-        public readonly string[] tpParamFormat = { "0.000", "0.000", "0.000", "0", "0", "0", "0", "0.000", "0.000" };
+        public float[] tpParamToSet = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+        public readonly string[] tpParamFormat = { "0.000", "0.000", "0.000", "0", "0", "0", "0" };
         public readonly string[] tpParamNames =
-            { "设定值    ", "调整值    ", "超前调整值", "模糊系数  ", "比例系数  ", "积分系数  ", "功率系数  ", "波动度阈值", "温度阈值  " };
+            { "设定值    ", "调整值    ", "超前调整值", "模糊系数  ", "比例系数  ", "积分系数  ", "功率系数  " };
 
         /// <summary>
         /// 暂时未使用
@@ -33,7 +33,7 @@ namespace Device
         public float tpPowerShow = 0.0f;
         public List<float> temperatures = new List<float>();
         private int tempMaxLen = 1000;
-        public int readTempInterval = 1000;
+        public int readTempIntervalSec = 1000;
 
         /// <summary>
         /// 温控设备设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）
@@ -130,10 +130,6 @@ namespace Device
         {
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
 
-            // 更新 xx 阈值
-            tpParam[7] = tpParamToSet[7];
-            tpParam[8] = tpParamToSet[8];
-
             // 更新硬件设备参数
             lock(tpLocker)
             {
@@ -176,10 +172,6 @@ namespace Device
         internal TempProtocol.Err_t UpdateParamToDeviceReturnErr()
         {
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
-
-            // 更新 xx 阈值
-            tpParam[7] = tpParamToSet[7];
-            tpParam[8] = tpParamToSet[8];
 
             // 更新硬件设备参数
             lock (tpLocker)
@@ -353,10 +345,10 @@ namespace Device
         /// <param name="secends">时间长度 / 秒</param>
         /// <param name="crt">波动度阈值</param>
         /// <returns></returns>
-        public bool chekFluc(int secends,float crt)
+        public bool checkFlucSeconds(int secends,float crt)
         {
             float fluc = 0.0f;
-            if (!GetFluc(secends * 1000 / readTempInterval, out fluc))
+            if (!GetFluc(secends / readTempIntervalSec, out fluc))
                 return false;
             else
                 return fluc < crt;

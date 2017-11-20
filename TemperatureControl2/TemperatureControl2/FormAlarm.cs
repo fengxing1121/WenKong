@@ -105,6 +105,11 @@ namespace TemperatureControl2
                             errMsg += "\r\n代码错误!   " + item.Value.ToString() + " 次";
                         break;
 
+                    case Device.Devices.FaultCode.TempOutRange:
+                        if (item.Value != 0)
+                            errMsg += "\r\n代码错误!   " + item.Value.ToString() + " 次";
+                        break;
+
                     default:
                         break;
                 }
@@ -128,6 +133,7 @@ namespace TemperatureControl2
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            Utils.Logger.Sys("用户点击关闭了报警窗口");
             this.Close();
         }
     }

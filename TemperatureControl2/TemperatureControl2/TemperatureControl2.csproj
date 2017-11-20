@@ -69,6 +69,12 @@
     <Compile Include="DrawChart.cs">
       <DependentUpon>FormChart.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormDebug.Designer.cs">
+      <DependentUpon>FormDebug.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormFinish.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,6 +120,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormChart.resx">
       <DependentUpon>FormChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormDebug.resx">
+      <DependentUpon>FormDebug.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormFinish.resx">
       <DependentUpon>FormFinish.cs</DependentUpon>

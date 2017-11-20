@@ -36,17 +36,6 @@ namespace TemperatureControl2
             checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCoolF, checkBox_subCoolF);
             checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterIn, checkBox_waterIn);
             checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterOut, checkBox_waterOut);
-#if false
-            checkBox_ryDevices[0] = checkBox_elect;
-            checkBox_ryDevices[1] = checkBox_mainHeat;
-            checkBox_ryDevices[2] = checkBox_subHeat;
-            checkBox_ryDevices[3] = checkBox_subCool;
-            checkBox_ryDevices[4] = checkBox_subCircle;
-            checkBox_ryDevices[5] = checkBox_mainCoolF;
-            checkBox_ryDevices[6] = checkBox_subCoolF;
-            checkBox_ryDevices[7] = checkBox_waterIn;
-            checkBox_ryDevices[8] = checkBox_waterOut;
-#endif
 
         }
 
@@ -72,16 +61,12 @@ namespace TemperatureControl2
                 this.Close();
                 return;
             }
-
             Utils.Logger.Sys("设备端口配置成功!");
 
-#if false
-            this.label_fault.Text = "主槽故障报警: " + Device.Devices.FaultCode.TempContinueDown.ToString();
-#endif
             // 设备开始自检
             Utils.Logger.Sys("设备开始自检...");
             Debug.WriteLine("开始设备自检...");
-            if(!deviceAll.DeviceSelfCheck())
+            if (!deviceAll.DeviceSelfCheck())
             {
                 Utils.Logger.Sys("设备自检错误，请检查硬件连接，系统退出!");
                 MessageBox.Show("设备自检错误，请检查硬件连接，并重新运行程序！");
@@ -91,6 +76,7 @@ namespace TemperatureControl2
 
             Utils.Logger.Sys("设备自检成功，系统开始运行...");
             Utils.Logger.Op("设备自检成功，系统开始运行...");
+            Utils.Logger.TempData("系统开始运行...");
 
 
             // 初始化主界面中的显示相
@@ -109,6 +95,8 @@ namespace TemperatureControl2
             timPic.Start();
         }
 
+
+        // 指示灯闪烁
         private void TimPic_Tick(object sender, EventArgs e)
         {
             Graphics mGhp = Graphics.FromImage(mBmp);

@@ -59,6 +59,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.button_debug = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -257,6 +258,8 @@
             this.checkBox_logM.Text = "操作日志";
             this.checkBox_logM.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_logM.UseVisualStyleBackColor = true;
+            this.checkBox_logM.CheckedChanged += new System.EventHandler(this.checkBox_logM_CheckedChanged);
+            this.checkBox_logM.Click += new System.EventHandler(this.checkBox_logM_Click);
             // 
             // checkBox_curveS
             // 
@@ -295,6 +298,8 @@
             this.checkBox_logS.Text = "操作日志";
             this.checkBox_logS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_logS.UseVisualStyleBackColor = true;
+            this.checkBox_logS.CheckedChanged += new System.EventHandler(this.checkBox_logS_CheckedChanged);
+            this.checkBox_logS.Click += new System.EventHandler(this.checkBox_logS_Click);
             // 
             // label_tempM
             // 
@@ -322,7 +327,7 @@
             // 
             this.label_powerM.BackColor = System.Drawing.SystemColors.Control;
             this.label_powerM.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_powerM.Location = new System.Drawing.Point(367, 183);
+            this.label_powerM.Location = new System.Drawing.Point(366, 183);
             this.label_powerM.Name = "label_powerM";
             this.label_powerM.Size = new System.Drawing.Size(40, 28);
             this.label_powerM.TabIndex = 47;
@@ -332,7 +337,7 @@
             // label_powerS
             // 
             this.label_powerS.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_powerS.Location = new System.Drawing.Point(368, 522);
+            this.label_powerS.Location = new System.Drawing.Point(367, 522);
             this.label_powerS.Name = "label_powerS";
             this.label_powerS.Size = new System.Drawing.Size(40, 28);
             this.label_powerS.TabIndex = 48;
@@ -427,12 +432,23 @@
             this.pictureBox2.TabIndex = 59;
             this.pictureBox2.TabStop = false;
             // 
+            // button_debug
+            // 
+            this.button_debug.Location = new System.Drawing.Point(12, 12);
+            this.button_debug.Name = "button_debug";
+            this.button_debug.Size = new System.Drawing.Size(75, 23);
+            this.button_debug.TabIndex = 60;
+            this.button_debug.Text = "调试";
+            this.button_debug.UseVisualStyleBackColor = true;
+            this.button_debug.Click += new System.EventHandler(this.button_debug_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(973, 727);
+            this.Controls.Add(this.button_debug);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label_fluc);
@@ -508,6 +524,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button button_debug;
     }
 }
 

@@ -15,6 +15,7 @@ namespace Utils
         private static string _pathSys;
         private static string _fileOp;
         private static string _fileData;
+        private static string _fileTempData;
         private static string _fileSys;
         private static readonly object _Locker = new object();
         private static StreamWriter _writer;
@@ -42,10 +43,11 @@ namespace Utils
 
 
             // 新建操作日志文件
-            string tim = DateTime.Now.ToString("yyyy-MM-dd-HH");
-            _fileOp = _pathOp + "/" + "操作日志" + tim + ".txt";
-            _fileData = _pathData + "/" + "数据" + tim + ".txt";
-            _fileSys = _pathSys + "/" + "系统日志" + tim + ".txt";
+            string tim = DateTime.Now.ToString("yyyy年M月dd日HH时");
+            _fileOp = _pathOp + "/" + "操作日志 " + tim + ".txt";
+            _fileData = _pathData + "/" + "数据 " + tim + ".txt";
+            _fileSys = _pathSys + "/" + "系统日志 " + tim + ".txt";
+            _fileTempData = _pathData + "/" + "实时温度数据 " + tim + ".txt";
 
             if (!File.Exists(_fileOp))
             {
@@ -67,12 +69,28 @@ namespace Utils
             if (!File.Exists(_fileData))
             {
                 File.Create(_fileData).Close();
-                Debug.WriteLine("日志文件 " + _fileData + " 不存在，新建该文件！");
+                Debug.WriteLine("数据文件 " + _fileData + " 不存在，新建该文件！");
             }
 
             _writer = new StreamWriter(_fileData, true, Encoding.UTF8);
             _writer.WriteLine("/*****************************/");
             _writer.WriteLine("/********  数据文件  *********/");
+            _writer.WriteLine("/******** " + tim + " *********/");
+            _writer.WriteLine("/*****************************/");
+            _writer.Flush();
+            _writer.Close();
+            Debug.WriteLine(tim + "  开始写入数据文件");
+
+            // 新建温度数据文件
+            if (!File.Exists(_fileTempData))
+            {
+                File.Create(_fileTempData).Close();
+                Debug.WriteLine("温度数据 " + _fileTempData + " 不存在，新建该文件！");
+            }
+
+            _writer = new StreamWriter(_fileTempData, true, Encoding.UTF8);
+            _writer.WriteLine("/*****************************/");
+            _writer.WriteLine("/********  温度数据文件  *********/");
             _writer.WriteLine("/******** " + tim + " *********/");
             _writer.WriteLine("/*****************************/");
             _writer.Flush();
@@ -117,10 +135,10 @@ namespace Utils
                     }
 
                     _writer = new StreamWriter(_fileOp, true, Encoding.UTF8);
-                    _writer.WriteLine(DateTime.Now.ToString() + "    " + msg);
+                    _writer.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + msg);
                     _writer.Flush();
                     _writer.Close();
-                    Debug.WriteLine(DateTime.Now.ToString() + "    " + msg);
+                    Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + msg);
                 }
                 catch (System.Exception ex)
                 {
@@ -153,10 +171,10 @@ namespace Utils
                     }
 
                     _writer = new StreamWriter(_fileSys, true, Encoding.UTF8);
-                    _writer.WriteLine(DateTime.Now.ToString() + "    " + msg);
+                    _writer.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + msg);
                     _writer.Flush();
                     _writer.Close();
-                    Debug.WriteLine(DateTime.Now.ToString() + "    " + msg);
+                    Debug.WriteLine(DateTime.Now.ToString("HHh:mm:ss") + "    " + msg);
                 }
                 catch (System.Exception ex)
                 {
@@ -182,14 +200,43 @@ namespace Utils
                     }
 
                     _writer = new StreamWriter(_fileData, true, Encoding.UTF8);
-                    _writer.WriteLine(DateTime.Now.ToString() + "    " + data);
+                    _writer.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + data);
                     _writer.Flush();
                     _writer.Close();
-                    Debug.WriteLine(DateTime.Now.ToString() + "    " + data);
+                    Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + data);
                 }
                 catch (System.Exception ex)
                 {
                     Debug.WriteLine("写入日志文件 " + _fileData + " 失败！");
+                    _writer.Close();
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        public static bool TempData(string data)
+        {
+            lock (_Locker)
+            {
+                try
+                {
+                    if (!File.Exists(_fileTempData))
+                    {
+                        File.Create(_fileTempData).Close();
+                        Debug.WriteLine("日志文件 " + _fileTempData + " 不存在，新建该文件！");
+                    }
+
+                    _writer = new StreamWriter(_fileTempData, true, Encoding.UTF8);
+                    _writer.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + data);
+                    _writer.Flush();
+                    _writer.Close();
+                    Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "    " + data);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.WriteLine("写入日志文件 " + _fileTempData + " 失败！");
                     _writer.Close();
                     return false;
                 }

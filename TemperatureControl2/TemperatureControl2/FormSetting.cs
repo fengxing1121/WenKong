@@ -16,21 +16,23 @@ namespace TemperatureControl2
         /// 用于存放所有对象
         /// </summary>
         private Device.TempDevice tpDev;
+        private Device.Devices devicesAll;
 
         /// <summary>
         /// 存放参数控件数组
         /// </summary>
-        private TextBox[] tpParam = new TextBox[9];
+        private TextBox[] tpParam = new TextBox[7];
 
         private TextBox tx = null;
 
         // 窗体构造函数
-        public FormSetting(Device.TempDevice dev)
+        public FormSetting(Device.TempDevice dev, Device.Devices devAll)
         {
             InitializeComponent();
 
             // 温控设备对象
             tpDev = dev;
+            devicesAll = devAll;
 
             // 温控设备参数控件
             tpParam[0] = TxtTempSet;
@@ -40,9 +42,6 @@ namespace TemperatureControl2
             tpParam[4] = TxtRatio;
             tpParam[5] = TxtIntegral;
             tpParam[6] = TxtPower;
-            tpParam[7] = TxtFlucThr;
-            tpParam[8] = TxtTempThr;
-
         }
 
 
@@ -95,21 +94,32 @@ namespace TemperatureControl2
         // 参数设置按键
         private void BntUpdate_Click(object sender, EventArgs e)
         {
+            float[] paramCache = new float[7];
             // 设置温控设备参数
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 7; i++)
             {
                 float newVal = 0.0f;
 
                 if (float.TryParse(this.tpParam[i].Text, out newVal) != true)
                 {
                     // 参数数据格式错误哦
-                    MessageBox.Show("参数 " + tpDev.tpParamNames[i] + " 格式错误！");
+                    MessageBox.Show("参数 " + tpDev.tpParamNames[i] + " 格式错误!");
                     return;
                 }
 
                 // 将参数写入参数设置缓存
-                tpDev.tpParamToSet[i] = newVal;
+                paramCache[i] = newVal;
             }
+
+            // 限制温度点的设置范围
+            if(paramCache[0] > devicesAll.tempMaxValue || paramCache[0] < devicesAll.tempMinValue)
+            {
+                MessageBox.Show("温度点超出界限 ( " + devicesAll.tempMinValue.ToString("0.0000") + " - " + devicesAll.tempMaxValue.ToString("0.0000") + " )，请检查!");
+                return;
+            }
+
+            // 将参数写入温控设备缓存
+            paramCache.CopyTo(tpDev.tpParamToSet, 0);
 
             // 向硬件设备更新参数
             TempGetSetParamHandler setTempParam = new TempGetSetParamHandler(this.tpDev.UpdateParamToDevice);
@@ -149,7 +159,7 @@ namespace TemperatureControl2
                     MessageBox.Show("从温控设备读取参数失败! \r错误状态：" + err.ToString());
                 }));
 
-                Utils.Logger.Sys("从 " + tpDev.tpDeviceName + " 中读取温控设备的参数失败  ErrorCode: !" + err.ToString());
+                Utils.Logger.Sys("从 " + tpDev.tpDeviceName + " 中读取温控设备的参数失败  ErrorCode: " + err.ToString());
             }
         }
 
@@ -176,9 +186,8 @@ namespace TemperatureControl2
                 {
                     MessageBox.Show("向温控设备更新参数失败! \r错误状态：" + err.ToString());
                 }));
+                Utils.Logger.Sys("向 " + tpDev.tpDeviceName + " 中写入温控设备的参数失败  ErrorCode: " + err.ToString());
             }
-
-            Utils.Logger.Sys("向 " + tpDev.tpDeviceName + " 中写入温控设备的参数失败  ErrorCode: !" + err.ToString());
         }
 
         private void button10_Click(object sender, EventArgs e)
@@ -266,27 +275,6 @@ namespace TemperatureControl2
             tx.BackColor = System.Drawing.SystemColors.Window;
         }
 
-        private void TxtFlucThr_Enter(object sender, EventArgs e)
-        {
-            if (tx != null)
-            {
-                tx.BackColor = System.Drawing.SystemColors.Control;
-            }
-
-            tx = this.TxtFlucThr;
-            tx.BackColor = System.Drawing.SystemColors.Window;
-        }
-
-        private void TxtTempThr_Enter(object sender, EventArgs e)
-        {
-            if (tx != null)
-            {
-                tx.BackColor = System.Drawing.SystemColors.Control;
-            }
-
-            tx = this.TxtTempThr;
-            tx.BackColor = System.Drawing.SystemColors.Window;
-        }
         #endregion
 
 

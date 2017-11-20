@@ -37,12 +37,14 @@ namespace TemperatureControl2
             }
         }
 
+        // 关机
         private void button_shutdown_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
+        // 取消
         private void button_cancel_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;

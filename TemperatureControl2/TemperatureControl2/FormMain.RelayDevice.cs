@@ -43,7 +43,7 @@ namespace TemperatureControl2
             {
                 Debug.WriteLine("继电器状态写入成功！");
 
-                Utils.Logger.Sys("成功向下位机写入了继电器状态!");
+                //Utils.Logger.Sys("成功向下位机写入了继电器状态!");
             }
             // 继电器状态设置失败
             else

@@ -44,7 +44,7 @@
             this.TempPic.Dock = System.Windows.Forms.DockStyle.Top;
             this.TempPic.Location = new System.Drawing.Point(0, 0);
             this.TempPic.Name = "TempPic";
-            this.TempPic.Size = new System.Drawing.Size(800, 530);
+            this.TempPic.Size = new System.Drawing.Size(634, 330);
             this.TempPic.TabIndex = 0;
             this.TempPic.TabStop = false;
             // 
@@ -53,7 +53,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(25, 556);
+            this.label1.Location = new System.Drawing.Point(17, 355);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 20);
             this.label1.TabIndex = 2;
@@ -74,7 +74,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label2.Location = new System.Drawing.Point(294, 556);
+            this.label2.Location = new System.Drawing.Point(268, 355);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 20);
             this.label2.TabIndex = 2;
@@ -93,7 +93,7 @@
             // BtnClear
             // 
             this.BtnClear.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.BtnClear.Location = new System.Drawing.Point(666, 547);
+            this.BtnClear.Location = new System.Drawing.Point(522, 349);
             this.BtnClear.Name = "BtnClear";
             this.BtnClear.Size = new System.Drawing.Size(100, 35);
             this.BtnClear.TabIndex = 3;
@@ -110,7 +110,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(800, 594);
+            this.ClientSize = new System.Drawing.Size(634, 392);
             this.Controls.Add(this.BtnClear);
             this.Controls.Add(this.LblCtrlTimeShow);
             this.Controls.Add(this.LblFlucShow);
@@ -121,7 +121,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormChart";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "温度曲线图";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TemperatureChart_FormClosing);
             this.Load += new System.EventHandler(this.TemperatureChart_Load);

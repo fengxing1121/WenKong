@@ -114,37 +114,8 @@ namespace Device
             Thread.Sleep(1000);
 
             /////////////////////////////////////////////////////////////////////////
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.Elect, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭主槽控温开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.MainHeat, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭辅槽控温开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubHeat, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭辅槽制冷源开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCool, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭辅槽循环开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCircle, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭主槽快冷开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.MainCoolF, false);
-            if (err != RelayProtocol.Err_r.NoError)
-                return err;
-            Thread.Sleep(1000);
-            // 关闭辅槽快冷开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCoolF, false);
+            // 关闭海水出开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.WaterOut, false);
             if (err != RelayProtocol.Err_r.NoError)
                 return err;
             Thread.Sleep(1000);
@@ -153,8 +124,38 @@ namespace Device
             if (err != RelayProtocol.Err_r.NoError)
                 return err;
             Thread.Sleep(1000);
-            // 关闭海水出开关
-            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.WaterOut, false);
+            // 关闭辅槽快冷开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCoolF, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭主槽快冷开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.MainCoolF, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭辅槽循环开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCircle, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭辅槽制冷源开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCool, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭辅槽控温开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubHeat, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭主槽控温开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.MainHeat, false);
+            if (err != RelayProtocol.Err_r.NoError)
+                return err;
+            Thread.Sleep(1000);
+            // 关闭总电源开关
+            err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.Elect, false);
             if (err != RelayProtocol.Err_r.NoError)
                 return err;
             Thread.Sleep(1000);

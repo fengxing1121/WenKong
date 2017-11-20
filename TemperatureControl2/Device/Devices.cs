@@ -22,11 +22,11 @@ namespace Device
         /// <summary>
         /// 主槽温控设备
         /// </summary>
-        public TempDevice tpDeviceM = new TempDevice();
+        public TempDevice tpDeviceM = new TempDevice() { tpDeviceName = "主槽控温设备"};
         /// <summary>
         /// 辅槽控温设备
         /// </summary>
-        public TempDevice tpDeviceS = new TempDevice();
+        public TempDevice tpDeviceS = new TempDevice() { tpDeviceName = "辅槽控温设备" };
         /// <summary>
         /// 传感器设备
         /// </summary>
@@ -57,92 +57,98 @@ namespace Device
             // 配置成功标志位
             bool confOK = true;
 
-            // 如果配置文件不存在，则新建
-            if(!File.Exists(configFilePath))
+            try
             {
+                // 如果配置文件不存在，则新建
+                if (!File.Exists(configFilePath))
+                {
+                    // 设备端口号
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "PortName", "tempMain", "COM1");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "PortName", "tempSub", "COM2");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "PortName", "relay", "COM3");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "PortName", "sensor", "COM4");
+
+                    // 相关参数
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "ReadIntervalSec", "2");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "SteadyTimeSec", "300");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "bridgeSteadyTimeSec", "120");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "FlucValue", "0.0001");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "controlTempThr", "0.4");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempNotUpOrDownFaultTimeSec", "600");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempNotUpOrDwonFaultThr", "0.4");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "flucFaultTimeSec", "120");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "flucFaultThr", "0.4");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempBiasFaultThr", "2");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMaxValue", "40");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMinValue", "-2");
+
+                    // 一些其他的调试参数
+                    // 升序还是降序
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Ohters", "sort", "descend");
+                }
+
+                //////////////////////////////////////////
+                // 配置参数
                 // 主槽控温设备
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceM", "COM", "COM1");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceM", "FlucThr", "0.01");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceM", "TempThr", "0.01");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceM", "ReadIntervalMillisecond", "2000");
+                confOK &= tpDeviceM.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "PortName", "tempMain", "COM1"));
+                // 温度读取时间间隔
+                tpDeviceM.readTempIntervalSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "ReadIntervalSec", "2"));
+                Debug.WriteLineIf(!confOK, "配置主槽控温设备失败! 端口号: " + tpDeviceM.tpDevicePortName);
+                Debug.WriteLineIf(confOK, "配置主槽控温设备成功! 端口号: " + tpDeviceM.tpDevicePortName);
+                if (!confOK)
+                    Utils.Logger.Sys("配置主槽控温设备失败! 端口号: " + tpDeviceM.tpDevicePortName);
+
 
                 // 辅槽控温设备
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceS", "COM", "COM2");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceS", "FlucThr", "0.01");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceS", "TempThr", "0.01");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "tempDeviceS", "ReadIntervalMillsecond", "2000");
+                confOK &= tpDeviceS.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "PortName", "tempSub", "COM2"));
+                // 温度读取时间间隔
+                tpDeviceS.readTempIntervalSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "ReadIntervalSec", "2"));
+                Debug.WriteLineIf(!confOK, "配置辅槽控温设备失败! 端口号: " + tpDeviceS.tpDevicePortName);
+                Debug.WriteLineIf(confOK, "配置辅槽控温设备成功! 端口号: " + tpDeviceS.tpDevicePortName);
+                if (!confOK)
+                    Utils.Logger.Sys("配置辅槽控温设备失败! 端口号: " + tpDeviceS.tpDevicePortName);
+
 
                 // 继电器设备
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "relayDevice", "COM", "COM3");
+                confOK &= ryDevice.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "PortName", "relay", "COM3"));
+                Debug.WriteLineIf(!confOK, "配置继电器设备失败! 端口号: " + ryDevice.ryDevicePortName);
+                Debug.WriteLineIf(confOK, "配置继电器设备成功! 端口号: " + ryDevice.ryDevicePortName);
+                if (!confOK)
+                    Utils.Logger.Sys("配置继电器设备失败! 端口号: " + ryDevice.ryDevicePortName);
 
                 // 传感器设备
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "sensorDevice", "COM", "COM4");
+                confOK &= srDevice.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "PortName", "sensor", "COM4"));
+                Debug.WriteLineIf(!confOK, "配置传感器设备失败! 端口号: " + srDevice.srDevicePortName);
+                Debug.WriteLineIf(confOK, "配置传感器设备成功! 端口号: " + srDevice.srDevicePortName);
+                if (!confOK)
+                    Utils.Logger.Sys("配置传感器设备失败! 端口号: " + srDevice.srDevicePortName);
 
-                // 系统参数
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "system", "SteadyTimeSecond", "300");
-                Utils.IniReadWrite.INIWriteValue(configFilePath, "system", "FlucValue", "0.0001");
+
+                ////////////////////////////////////////
+                // 参数设置
+                // 设置定时器更新时间
+                tpTemperatureUpdateTimer.Interval = tpDeviceM.readTempIntervalSec *1000;
+                // 从配置文件读取 稳定时间 / 波动度需满足的条件
+                steadyTimeSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "SteadyTimeSecond", "300"));
+                bridgeSteadyTimeSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "bridgeSteadyTimeSec", "120"));
+                flucValue = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "FlucValue", "0.0001"));
+                controlTempThr = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "controlTempThr", "0.4"));
+                tempNotUpOrDownFaultTimeSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempNotUpOrDownFaultTimeSec", "600"));
+                tempNotUpOrDwonFaultThr = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempNotUpOrDwonFaultThr", "0.4"));
+                flucFaultTimeSec = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "flucFaultTimeSec", "120"));
+                flucFaultThr = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "flucFaultThr", "0.4"));
+                tempBiasFaultThr = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempBiasFaultThr", "2"));
+                tempMaxValue = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempMaxValue", "40"));
+                tempMinValue = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempMinValue", "-2"));
+                // 默认降序
+                sort = Utils.IniReadWrite.INIGetStringValue(configFilePath, "Others", "sort", "descend");
             }
-
-
-            // 配置参数
-            // 主槽控温设备
-            confOK &= tpDeviceM.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceM", "COM", "COM1"));
-            // 这里做的不好，没有把命令统一一下
-            // 有待改进吧
-            // 设置波动度阈值
-            tpDeviceM.tpParam[7] = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceM", "FlucThr", "0.01"));
-            // 设置温度阈值
-            tpDeviceM.tpParam[8] = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceM", "TempThr", "0.01"));
-            // 温度读取时间间隔
-            tpDeviceM.readTempInterval = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceM", "ReadIntervalMillsecond", "2000"));
-            Debug.WriteLineIf(!confOK, "配置主槽控温设备失败! 端口号: " + tpDeviceM.tpDevicePortName);
-            Debug.WriteLineIf(confOK, "配置主槽控温设备成功! 端口号: " + tpDeviceM.tpDevicePortName);
-            if (!confOK)
-                Utils.Logger.Sys("配置主槽控温设备失败! 端口号: " + tpDeviceM.tpDevicePortName);
-
-
-            // 辅槽控温设备
-            confOK &= tpDeviceS.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceS", "COM", "COM2"));
-            // 这里做的不好，没有把命令统一一下
-            // 有待改进吧
-            // 设置波动度阈值
-            tpDeviceS.tpParam[7] = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceS", "FlucThr", "0.01"));
-            // 设置温度阈值
-            tpDeviceS.tpParam[8] = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceS", "TempThr", "0.01"));
-            // 温度读取时间间隔
-            tpDeviceS.readTempInterval = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "tempDeviceS", "ReadIntervalMillsecond", "2000"));
-            Debug.WriteLineIf(!confOK, "配置辅槽控温设备失败! 端口号: " + tpDeviceS.tpDevicePortName);
-            Debug.WriteLineIf(confOK, "配置辅槽控温设备成功! 端口号: " + tpDeviceS.tpDevicePortName);
-            if (!confOK)
-                Utils.Logger.Sys("配置辅槽控温设备失败! 端口号: " + tpDeviceS.tpDevicePortName);
-
-
-            // 继电器设备
-            confOK &= ryDevice.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "relayDevice", "COM", "COM3"));
-            Debug.WriteLineIf(!confOK, "配置继电器设备失败! 端口号: " + ryDevice.ryDevicePortName);
-            Debug.WriteLineIf(confOK, "配置继电器设备成功! 端口号: " + ryDevice.ryDevicePortName);
-            if (!confOK)
-                Utils.Logger.Sys("配置继电器设备失败! 端口号: " + ryDevice.ryDevicePortName);
-
-            // 传感器设备
-            confOK &= srDevice.SetDevicePortName(Utils.IniReadWrite.INIGetStringValue(configFilePath, "sensorDevice", "COM", "COM4"));
-            Debug.WriteLineIf(!confOK, "配置传感器设备失败! 端口号: " + srDevice.srDevicePortName);
-            Debug.WriteLineIf(confOK, "配置传感器设备成功! 端口号: " + srDevice.srDevicePortName);
-            if (!confOK)
-                Utils.Logger.Sys("配置传感器设备失败! 端口号: " + srDevice.srDevicePortName);
-
-
-            // 设置定时器更新时间
-            tpTemperatureUpdateTimer.Interval = tpDeviceM.readTempInterval;
-            // 从配置文件读取 稳定时间 / 波动度需满足的条件
-            steadyTime = int.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "system", "SteadyTimeSecond", "300"));
-            flucValue = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "system", "FlucValue", "0.0001"));
-
-
-            // wghou
-            // code
-
-
+            catch(Exception ex)
+            {
+                Utils.Logger.Sys("从配置文件读取参数过程中发生异常：" + ex.Message.ToString());
+                confOK = false;
+            }
+            
             Debug.WriteLineIf(confOK, "设备串口配置成功!");
             // 返回初始化状态
             return confOK;
@@ -208,8 +214,6 @@ namespace Device
                 Debug.WriteLine("传感器设备自检成功!");
             }
 
-            // wghou
-            // code
 
             Debug.WriteLineIf(checkOK, "设备自检完成!");
             // 返回自检状态
@@ -235,8 +239,10 @@ namespace Device
             tpTemperatureUpdateTimer.Stop();
 #endif
             // 程序运行总时间计数
-            timeStart++;
-
+            timeStart += (UInt64)tpDeviceM.readTempIntervalSec;
+            // 确保不越界
+            if (timeStart > (UInt64.MaxValue - 5 * (UInt64)tpDeviceM.readTempIntervalSec))
+                timeStart = (UInt64.MaxValue - 5 * (UInt64)tpDeviceM.readTempIntervalSec);
 
             // 读取主槽控温表温度值 / 功率系数
             TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
@@ -253,6 +259,8 @@ namespace Device
                 //TpTemperatureUpdateTimerEvent(err);
                 //return;
             }
+            // 记录主槽温度
+            Utils.Logger.TempData("主槽温度: " + tpDeviceM.temperatures.Last().ToString("0.0000"));
 
             // 读取主槽功率系数
             err = tpDeviceM.GetPowerShow(out val);
@@ -296,13 +304,12 @@ namespace Device
             Debug.WriteLineIf(err == TempProtocol.Err_t.NoError, "从主 / 辅槽温控设备读取温度显示值 / 功率系数完成!");
             TpTemperatureUpdateTimerEvent();
 
-            // wghou
-            // 要不要停止，有待商榷
-            // 如果温度读取发生了错误，则停止执行自动控温流程
+
+            // 如果温度读取发生了错误
             if (err != TempProtocol.Err_t.NoError)
             {
                 // 如果读取参数发生了错误，则触发 FlowControlFaultOccurEvent 事件
-                FlowControlFaultOccurEvent(FaultCode.TempParamSetError);
+                FlowControlFaultOccurEvent(FaultCode.TempError);
                 return;
             }
 
@@ -335,16 +342,20 @@ namespace Device
             /// </summary>
             public float stateTemp { get { return paramM[0]; } }
             /// <summary>
-            /// 主槽控温表参数 - 9个
+            /// 主槽控温表参数 - 7个
             /// </summary>
-            public float[] paramM = new float[9];
+            public float[] paramM = new float[7];
             /// <summary>
-            /// 辅槽控温表参数 - 9个
+            /// 辅槽控温表参数 - 7个
             /// </summary>
-            public float[] paramS = new float[9];
+            public float[] paramS = new float[7];
         }
 
 
+        /// <summary>
+        /// 自动控制各流程的名称
+        /// </summary>
+        public string[] StateName = { "升温", "降温", "控温", "稳定", "测量", "完成", "空闲", "开始", "未定义" };
         /// <summary>
         /// 系统工作状态，对应不同的继电器通断组合
         /// </summary>
@@ -389,11 +400,6 @@ namespace Device
         }
 #endregion
 
-#region Public Members
-        /// <summary>
-        /// 自动控制各流程的名称
-        /// </summary>
-        public string[] StateName = { "升温", "降温", "控温", "稳定","测量", "完成", "空闲", "开始", "未定义" };
         /// <summary>
         /// 系统自动状态下，完成整个实验所需的温度点序列 - 当温度点完成测量时，才将该温度点从列表中删除
         /// </summary>
@@ -405,41 +411,85 @@ namespace Device
         {
             public State flowState;
             public bool stateChanged;
-            public int stateTime;
+            public Int32 stateCounts;
             public TemperaturePoint tempPoint;
         }
         /// <summary>
         /// 当前工作状态 - 实例
         /// </summary>
-        public StateStruct currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateTime = 0, tempPoint = new TemperaturePoint() };
+        public StateStruct currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new TemperaturePoint() };
         /// <summary>
         /// 是否开始自动运行
         /// </summary>
         public bool autoStart = false;
         /// <summary>
-        /// 稳定时间 second
-        /// </summary>
-        public int steadyTime;
-        /// <summary>
-        /// 波动度判断
-        /// </summary>
-        private float flucValue = 0.001f;
-        /// <summary>
         /// 锁 - 保证自动控制流程步骤执行的时候，相应资源（例如 currentState autoStart controlFlowList etc. ）不会被访问
         /// </summary>
         public Object stepLocker = new Object();
-        
-        // 
+        /// <summary>
+        /// 自动流程中，进入某一状态时触发的事件
+        /// </summary>
+        /// <param name="st"></param>
         public delegate void FlowControlStateChangedEventHandler(State st);
         /// <summary>
         /// 自动操作流程中，进入某一状态时触发的事件
         /// </summary>
         public event FlowControlStateChangedEventHandler FlowControlStateChangedEvent;
-#endregion
+
+
+        #region 阈值参数
+        /// <summary>
+        /// 稳定时间 second
+        /// </summary>
+        public int steadyTimeSec = 300;
+        /// <summary>
+        /// 电桥温度稳定时间
+        /// </summary>
+        public int bridgeSteadyTimeSec = 120;
+        /// <summary>
+        /// 波动度判断
+        /// </summary>
+        public float flucValue = 0.001f;
+        /// <summary>
+        /// 进入控温状态时的温度阈值
+        /// </summary>
+        public float controlTempThr = 0.4f;
+        /// <summary>
+        /// 温度不升 / 不降故障判断时间
+        /// </summary>
+        public int tempNotUpOrDownFaultTimeSec = 600;
+        /// <summary>
+        /// 温度不升 / 不降故障温度阈值
+        /// </summary>
+        public float tempNotUpOrDwonFaultThr = 0.4f;
+        /// <summary>
+        /// 波动度过大故障判断时间
+        /// </summary>
+        public int flucFaultTimeSec = 120;
+        /// <summary>
+        /// 波动度过大故障阈值
+        /// </summary>
+        public float flucFaultThr = 0.4f;
+        /// <summary>
+        /// 温度偏离设定点故障阈值
+        /// </summary>
+        public float tempBiasFaultThr = 2.0f;
+        /// <summary>
+        /// 控温槽温度上限
+        /// </summary>
+        public float tempMaxValue = 40.0f;
+        /// <summary>
+        /// 控温槽温度下限
+        /// </summary>
+        public float tempMinValue = -2.0f;
+
+        public string sort = "descend";
+        #endregion 阈值参数
 
 
 
-#region 故障判断部分
+
+        #region 故障判断部分
         public enum FaultCode : int
         {
             /// <summary>
@@ -458,6 +508,10 @@ namespace Device
             /// 温度持续上升
             /// </summary>
             TempBasis,
+            /// <summary>
+            /// 控温槽中的温度超出界限
+            /// </summary>
+            TempOutRange,
             /// <summary>
             /// 读电桥温度错误
             /// </summary>
@@ -496,6 +550,21 @@ namespace Device
         /// <param name="auto">是否进行自动流程控制</param>
         private void controlFlowSchedule( bool auto)
         {
+            // 执行控制流程，当前温度列表绝对不能为空！
+            // 如果为空，说明出现了严重的程序 Bug
+            if (tpDeviceM.temperatures.Count == 0)
+            {
+                // 如果出现这个错误，是否要考虑结束整个程序
+                FlowControlFaultOccurEvent(FaultCode.CodeError);
+                return;
+            }
+
+            if(tpDeviceM.temperatures.Last() > tempMaxValue || tpDeviceM.temperatures.Last() < tempMinValue)
+            {
+                // 控温槽温度越过了界限
+                FlowControlFaultOccurEvent(FaultCode.TempOutRange);
+            }
+
             // 如果没有开启自动状态，则不执行状态调度
             if (!auto)
                 return;
@@ -504,17 +573,9 @@ namespace Device
             // 正常状况下，该计数器应该是不会溢出的
             // wghou
             // 考虑溢出状况
-            currentState.stateTime++;
-
-            // 执行控制流程，当前温度列表绝对不能为空！
-            // 如果为空，说明出现了严重的程序 Bug
-            if(tpDeviceM.temperatures.Count == 0)
-            {
-                // wghou
-                // 如果出现这个错误，是否要考虑结束整个程序
-                FlowControlFaultOccurEvent(FaultCode.CodeError);
-                return;
-            }
+            currentState.stateCounts++;
+            if (currentState.stateCounts == Int32.MaxValue)
+                currentState.stateCounts = Int32.MaxValue;
 
             // 判断当前工作状态，执行不同的操作流程
             switch (currentState.flowState)
@@ -582,63 +643,45 @@ namespace Device
         /// </summary>
         private void faultCheckSubStep()
         {
-            // 在多长的时间段内检测故障
-            // 还是担心的那些事情，如果刚刚进入某个状态，特别容易报错
-            int count10 = 10 * 60 * 1000 / tpDeviceM.readTempInterval;
-            int count2 = count10 / 5;
             // 主槽报警及故障判断
             switch (currentState.flowState)
             {
                 case State.TempUp:
                     {
-                        // 故障判断 - 温度不升高 / 温度持续下降
-                        // wghou
-                        // 在升温过程中，需要判断该故障吗？
-                        // 有点担心，当首次进入该状态时，特别容易检测到故障
-                        if (currentState.stateTime < count10)
-                            break;
-                        if (faultCheckTempNotUp(count10))
-                            FlowControlFaultOccurEvent(FaultCode.TempNotUp);
+                        // 故障判断 - 温度不升高
+                        faultCheckTempNotUp();
                         break;
                     }
                 case State.TempDown:
                     {
-                        // 故障判断 - 温度不下降 / 温度持续上升
-                        // wghou
-                        // 有点担心，当首次进入该状态时，特别容易检测到故障
-                        if (currentState.stateTime < count10)
-                            break;
-                        if (faultCheckTempNotDown(count10))
-                            FlowControlFaultOccurEvent(FaultCode.TempNotDown);
+                        // 故障判断 - 温度不下降
+                        faultCheckTempNotDown();
                         break;
                     }
                 case State.TempControl:
                     {
                         // 当前温度与设定温度偏差过大
-                        if (faultCheckBasis())
-                            FlowControlFaultOccurEvent(FaultCode.TempBasis);
-                        // 等待两分钟，再判断波动度是否过大
-                        if (currentState.stateTime < count2)
-                            break;
-                        // 两分钟波动度大于 0.0f
-                        if (faultCheckTempFlucLarge(count2))
-                            FlowControlFaultOccurEvent(FaultCode.TempFlucLarge);
+                        faultCheckBasis();
+
+                        // 进入某一状态后，等待 flucFaultTimeSec 再判断波动度 flucFaultThr
+                        faultCheckTempFlucLarge();
                         break;
 
                     }
                 case State.TempStable:
                     {
-                        if (faultCheckBasis())
-                            FlowControlFaultOccurEvent(FaultCode.TempBasis);
-                        if (currentState.stateTime < count2)
-                            break;
-                        if (faultCheckTempFlucLarge(count2))
-                            FlowControlFaultOccurEvent(FaultCode.TempFlucLarge);
+                        // 当前温度与设定温度偏差过大
+                        faultCheckBasis();
+
+                        // 进入某一状态后，等待 flucFaultTimeSec 再判断波动度 flucFaultThr
+                        faultCheckTempFlucLarge();
                         break;
                     }
                 default:
                     break;
             }
+
+            return;
         }
 
 
@@ -646,22 +689,18 @@ namespace Device
         /// 故障判断 - 温度偏离 - 检测到故障则返回 true
         /// </summary>
         /// <returns></returns>
-        private bool faultCheckBasis()
+        private void faultCheckBasis()
         {
-            bool fault = false;
-            // 判断温度不下降
-            // 如果 tpDeviceM.temperatures 中存储的温度值过少，即系统运行时间太短，则不检测 
-            //int count = 1 * 60 * 1000 / tpDeviceM.readTempInterval;
+            // 判断温度偏离设定点
             if(tpDeviceM.temperatures.Count !=0)
             {
-                if (Math.Abs(tpDeviceM.temperatures.Last() - currentState.tempPoint.stateTemp) > 2.0f)
+                if (Math.Abs(tpDeviceM.temperatures.Last() - currentState.tempPoint.stateTemp) > tempBiasFaultThr)
                 {
-                    fault = true;
-                    return fault;
+                    FlowControlFaultOccurEvent(FaultCode.TempBasis);
                 }
             }
 
-            return false;
+            return;
         }
 
 
@@ -670,25 +709,25 @@ namespace Device
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        private bool faultCheckTempNotDown(int count)
+        private void faultCheckTempNotDown()
         {
-            bool fault = false;
+            // 故障判断 - 温度不下降 / 温度持续上升
+            // 进入某一状态后，等待 tempNotUpOrDownFaultTimeSec 再判断温度是否上升 tempNotUpOrDwonFaultThr
+            int count = tempNotUpOrDownFaultTimeSec / tpDeviceM.readTempIntervalSec;
+            if (currentState.stateCounts < count)
+                return;
+
             // 判断温度不下降
             // 如果 tpDeviceM.temperatures 中存储的温度值过少，即系统运行时间太短，则不检测 
             //int count = 1 * 10 * 1000 / tpDeviceM.readTempInterval;
             if (tpDeviceM.temperatures.Count > count)
             {
                 // 如果count 个之前的温度值减去当前温度 小于 0.4 ，说明温度没有下降
-                if (tpDeviceM.temperatures[tpDeviceM.temperatures.Count - count] - tpDeviceM.temperatures.Last() < 0.4f)
-                    fault = true;
-                else
-                    fault = false;
+                if (tpDeviceM.temperatures[tpDeviceM.temperatures.Count - count] - tpDeviceM.temperatures.Last() < tempNotUpOrDwonFaultThr)
+                    FlowControlFaultOccurEvent(FaultCode.TempNotDown);
             }
-            else
-            {
-                fault = false;
-            }
-            return fault;
+
+            return;
         }
 
 
@@ -697,23 +736,24 @@ namespace Device
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        private bool faultCheckTempFlucLarge(int count)
+        private void faultCheckTempFlucLarge()
         {
-            bool fault = false;
+            // 进入某一状态后，等待 flucFaultTimeSec 再判断波动度 flucFaultThr
+            int count = flucFaultTimeSec / tpDeviceM.readTempIntervalSec;
+            if (currentState.stateCounts < count)
+                return;
+
             // 判断温度波动大
             // 如果 tpDeviceM.temperatures 中存储的温度值过少，即系统运行时间太短，则不检测 
             //int count = 1 * 10 * 1000 / tpDeviceM.readTempInterval;
             float fluc = 0.0f;
             // 如果获取波动度大于 0.4，说明波动度过大
-            if (tpDeviceM.GetFluc(count, out fluc) && fluc > 0.4f)
+            if (tpDeviceM.GetFluc(count, out fluc) && fluc > flucFaultThr)
             {
-                fault = true;
+                FlowControlFaultOccurEvent(FaultCode.TempFlucLarge);
             }
-            else
-            {
-                fault = false;
-            }
-            return fault;
+
+            return;
         }
 
 
@@ -722,30 +762,29 @@ namespace Device
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        private bool faultCheckTempNotUp(int count)
+        private void faultCheckTempNotUp()
         {
-            bool fault = false;
+            // 故障判断 - 温度不升高 / 温度持续下降
+            // 进入某一状态后，等待 tempNotUpOrDownFaultTimeSec 再判断温度是否上升 tempNotUpOrDwonFaultThr
+            int count = tempNotUpOrDownFaultTimeSec / tpDeviceM.readTempIntervalSec;
+            if (currentState.stateCounts < count)
+                return;
+
             // 温度没有上升
             // 如果 tpDeviceM.temperatures 中存储的温度值过少，即系统运行时间太短，则不检测 
             //int count = 1 * 10 * 1000 / tpDeviceM.readTempInterval;
             if (tpDeviceM.temperatures.Count > count)
             {
                 // 如果count 个之前的温度值 减去 当前温度，小于 0.4 ，说明温度没有上升
-                if (tpDeviceM.temperatures.Last() - tpDeviceM.temperatures[tpDeviceM.temperatures.Count - count] < 0.4f)
-                    fault = true;
-                else
-                    fault = false;
+                if (tpDeviceM.temperatures.Last() - tpDeviceM.temperatures[tpDeviceM.temperatures.Count - count] < tempNotUpOrDwonFaultThr)
+                    FlowControlFaultOccurEvent(FaultCode.TempNotUp);
             }
-            else
-            {
-                fault = false;
-            }
-            return fault;
+
+            return;
         }
 #endregion Fault Check Methods
 
         
-
 
 #region Step Methods
         /// <summary>
@@ -761,12 +800,12 @@ namespace Device
             }
 
             // 定义当前状态
-            currentState = new StateStruct() { flowState = State.Undefine, stateChanged = true, stateTime = 0, tempPoint = temperaturePointList.First() };
+            currentState = new StateStruct() { flowState = State.Undefine, stateChanged = true, stateCounts = 0, tempPoint = temperaturePointList.First() };
 
             // 如果当前温度点刚好处于温度点附近，则直接进入控温状态
             // wghou
             // 这里应该设置一个多大的阈值？？？
-            if (Math.Abs(tpDeviceM.temperatures.Last() - currentState.tempPoint.stateTemp) < 0.4)
+            if (Math.Abs(tpDeviceM.temperatures.Last() - currentState.tempPoint.stateTemp) < controlTempThr)
             {
                 // 状态 - 控温
                 currentState.flowState = State.TempControl;
@@ -849,7 +888,8 @@ namespace Device
                 FlowControlStateChangedEvent(currentState.flowState);
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
-                Utils.Logger.Sys("自动控温流程，进入 " + currentState.flowState.ToString() + " 状态...");
+                Utils.Logger.Sys("自动控温流程，进入 升温 状态...");
+                Utils.Logger.TempData("进入升温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
 
                 // 首次进入该状态，不进行其他判断（判断是否满足一定条件，需要转换状态），直接返回
                 return;
@@ -862,7 +902,7 @@ namespace Device
             {
                 // 如果主槽中温度高于设定值，则进入下一个状态 - 控温
                 // 状态 - 控温 / 首次进入 - true / 状态时间 - 0 / 状态温度点 - currentState.stateTemp
-                currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
+                currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateCounts = 0, tempPoint = currentState.tempPoint };
                 return;
             }
 
@@ -938,7 +978,8 @@ namespace Device
                 FlowControlStateChangedEvent(currentState.flowState);
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
-                Utils.Logger.Sys("自动控温流程，进入 " + currentState.flowState.ToString() + " 状态...");
+                Utils.Logger.Sys("自动控温流程，进入 降温 状态...");
+                Utils.Logger.TempData("进入降温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
 
                 // 首次进入该状态，不进行其他判断（判断是否满足一定条件，需要转换状态），直接返回
                 return;
@@ -951,7 +992,7 @@ namespace Device
             {
                 // 进入下一个状态，下一个状态应该是 控温
                 // 状态 - 控温 / 首次进入 - true / 状态时间 - 0 / 状态温度点 - currentState.stateTemp
-                currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
+                currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateCounts = 0, tempPoint = currentState.tempPoint };
                 return;
             }
 
@@ -1011,7 +1052,8 @@ namespace Device
                 FlowControlStateChangedEvent(currentState.flowState);
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
-                Utils.Logger.Sys("自动控温流程，进入 " + currentState.flowState.ToString() + " 状态...");
+                Utils.Logger.Sys("自动控温流程，进入 控温 状态...");
+                Utils.Logger.TempData("进入控温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
 
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
@@ -1025,17 +1067,13 @@ namespace Device
             // 控温状态下，温度波动度满足判断条件，则立即进入下一状态 - 3 分钟波动度小于 0.0005
 
             // 5 分钟 0.001
-            bool steady = tpDeviceM.chekFluc(steadyTime, 0.01f);
+            bool steady = tpDeviceM.checkFlucSeconds(steadyTimeSec, flucValue);
             if (steady)
             {
-                // 除了稳定外，当前温度还应该
-                if(Math.Abs(tpDeviceM.temperatures.Last() - currentState.tempPoint.stateTemp) < 0.005)
-                {
-                    // 进入下一个状态，下一个状态应该是 稳定
-                    // 状态 - 稳定 / 首次进入 - true / 状态时间 - 0 / 状态温度点 - currentState.stateTemp
-                    currentState = new StateStruct() { flowState = State.TempStable, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
-                    Utils.Logger.Sys("温度波动度满足波动度小于 " + flucValue.ToString("0.0000") + " ，继续等待 2 分钟...");
-                }
+                // 进入下一个状态，下一个状态应该是 稳定
+                // 状态 - 稳定 / 首次进入 - true / 状态时间 - 0 / 状态温度点 - currentState.stateTemp
+                currentState = new StateStruct() { flowState = State.TempStable, stateChanged = true, stateCounts = 0, tempPoint = currentState.tempPoint };
+                Utils.Logger.Sys((steadyTimeSec/60).ToString("0") + " 分钟温度波动度满足波动度小于 " + flucValue.ToString("0.0000") + "℃");
             }
 
 
@@ -1091,7 +1129,8 @@ namespace Device
                 FlowControlStateChangedEvent(currentState.flowState);
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
-                Utils.Logger.Sys("自动控温流程，进入 " + currentState.flowState.ToString() + " 状态...");
+                Utils.Logger.Sys("自动控温流程，进入 稳定 状态...");
+                Utils.Logger.TempData("进入稳定状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
 
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
@@ -1145,26 +1184,26 @@ namespace Device
 #else
 
             // 2 分钟 0.001
-            if (currentState.stateTime > 2 * 60 * 1000 / tpDeviceM.readTempInterval)
+            if (currentState.stateCounts > bridgeSteadyTimeSec / tpDeviceM.readTempIntervalSec)
             {
-                bool steady = tpDeviceS.chekFluc(currentState.stateTime, 0.01f);
+                bool steady = tpDeviceS.checkFlucSeconds(currentState.stateCounts, flucValue);
                 if (steady)
                 {
                     // 满足波动度判断条件
 
                     // 温度稳定度达到了要求，进入下一个状态 - 测量
                     // 状态 - 测量 / 首次进入 - true / 状态时间 - 0 / 状态温度点 - currentState.stateTemp
-                    currentState = new StateStruct() { flowState = State.Measure, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
+                    currentState = new StateStruct() { flowState = State.Measure, stateChanged = true, stateCounts = 0, tempPoint = currentState.tempPoint };
 
-                    Utils.Logger.Sys("2 分钟后，温度波动度满足 xxx 条件，可以测量电导率等数据...");
+                    Utils.Logger.Sys((bridgeSteadyTimeSec/60).ToString("0") + " 分钟电桥温度波动度小于 " + flucValue.ToString("0.0000") + "℃，可以测量电导率等数据");
                 }
-                else
-                {
-                    // 不满足波动度条件，则重新返回控温流程
-                    currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
-                    Utils.Logger.Sys("2 分钟后，测温电桥波动度不满足 xxx 条件，重新返回控温状态...");
-                    return;
-                }
+                //else
+                //{
+                //    // 不满足波动度条件，则重新返回控温流程
+                //    currentState = new StateStruct() { flowState = State.TempControl, stateChanged = true, stateTime = 0, tempPoint = currentState.tempPoint };
+                //    Utils.Logger.Sys("2 分钟后，测温电桥波动度不满足 xxx 条件，重新返回控温状态...");
+                //    return;
+                //}
             }
             
 #endif
@@ -1196,6 +1235,7 @@ namespace Device
                 // 记录电桥温度
                 Utils.Logger.Sys("电桥温度： " + tpDeviceS.temperatures.Last().ToString("0.0000"));
                 Utils.Logger.Data("电桥温度： " + tpDeviceS.temperatures.Last().ToString("0.0000"));
+                Utils.Logger.TempData("进入测量状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
             }
 
 
@@ -1214,7 +1254,7 @@ namespace Device
                 // 控制状态序列不为空，说明实验还没有结束
 
                 // 读取列表中的第一个温度点
-                currentState = new StateStruct() { flowState = State.TempDown, stateChanged = true, stateTime = 0, tempPoint = temperaturePointList.First() };
+                currentState = new StateStruct() { flowState = State.TempDown, stateChanged = true, stateCounts = 0, tempPoint = temperaturePointList.First() };
                 if(tpDeviceM.temperatures.Count !=0)
                 {
                     // 默认是降温的过程
@@ -1236,6 +1276,7 @@ namespace Device
                 // 控制状态序列为空，说明实验已经结束了
                 currentState = new StateStruct() { flowState = State.Finish };
                 Utils.Logger.Sys("所有温度点均已测量完成...");
+                Utils.Logger.TempData("所有温度点均已测量完成...");
             }
 
 
@@ -1248,7 +1289,7 @@ namespace Device
         {
             // 触发温度点测量完成事件
             FlowControlStateChangedEvent(State.Finish);
-            currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateTime = 0, tempPoint = new TemperaturePoint() };
+            currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new TemperaturePoint() };
         }
 
         /// <summary>

@@ -26,6 +26,7 @@ namespace TemperatureControl2
 
                 Utils.Logger.Op("点击自动控温按键，开始设置自动控温流程...");
                 Utils.Logger.Sys("点击自动控温按键，开始设置自动控温流程...");
+                Utils.Logger.TempData("开始自动控温流程");
 
                 DialogResult dr = fm.ShowDialog();
                 if(dr == DialogResult.OK)
@@ -39,7 +40,7 @@ namespace TemperatureControl2
                         lock(this.deviceAll.stepLocker)
                         {
                             // 设置初始运行状态
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Start, stateChanged = true, stateTime = 0, tempPoint = deviceAll.temperaturePointList.First() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Start, stateChanged = true, stateCounts = 0, tempPoint = deviceAll.temperaturePointList.First() };
                             // 开始运行自动测温
                             deviceAll.autoStart = true;
                         }
@@ -57,7 +58,7 @@ namespace TemperatureControl2
                             // 停止系统运行
                             deviceAll.autoStart = false;
                             // 设置运行状态为空闲
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                         }
                         MessageBox.Show("实验流程格式不正确，请重新设置!");
                     }
@@ -71,7 +72,7 @@ namespace TemperatureControl2
                         // 停止运行自动测温
                         deviceAll.autoStart = false;
                         // 设置运行状态为空闲
-                        this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
+                        this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                     }
 
                     Utils.Logger.Op("取消了自动控温流程设置...");
@@ -96,13 +97,14 @@ namespace TemperatureControl2
                             // 停止运行自动测温
                             this.deviceAll.autoStart = false;
                             // 设置运行状态为空闲
-                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateTime = 0, tempPoint = new Device.Devices.TemperaturePoint() };
+                            this.deviceAll.currentState = new Device.Devices.StateStruct() { flowState = Device.Devices.State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new Device.Devices.TemperaturePoint() };
                         }
                     }
 
                     this.label_controlState.Text = "自动控温流程停止";
                     Utils.Logger.Op("已暂停了当前的自动控温流程.");
                     Utils.Logger.Sys("已暂停了当前的自动控温流程.");
+                    Utils.Logger.TempData("已暂停了当前的自动控温流程");
 
                 }
                 else
@@ -167,7 +169,7 @@ namespace TemperatureControl2
                 // 所有温度点均已经测量完成
 
 
-                Utils.Logger.Sys("自动控温流程运行结束，测量数据已保存到相应文件中!");
+                //Utils.Logger.Sys("自动控温流程运行结束，测量数据已保存到相应文件中!");
 
                 // wghou
                 // 问题来了，要是在这个时候，通信出现了问题，怎么办？？
@@ -215,7 +217,7 @@ namespace TemperatureControl2
                     this.label_controlState.Text = "自动控温流程： " + deviceAll.StateName[(int)deviceAll.currentState.flowState];
                 }));
 
-                Utils.Logger.Sys("自动控温流程进入 " + deviceAll.StateName[(int)deviceAll.currentState.flowState] + " 状态.");
+                //Utils.Logger.Sys("自动控温流程进入 " + deviceAll.StateName[(int)deviceAll.currentState.flowState] + " 状态.");
             }
             
         }
