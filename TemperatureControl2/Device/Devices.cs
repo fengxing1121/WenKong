@@ -35,6 +35,11 @@ namespace Device
         /// 定时器，用于每隔一段时间从设备读取温度显示值，并在主界面中更新
         /// </summary>
         public Timer tpTemperatureUpdateTimer = new Timer();
+
+        /// <summary>
+        /// 系统开始运行的时间
+        /// </summary>
+        public System.DateTime startTime = new DateTime(); 
         public UInt64 timeStart = 0;
         // 自定义定时器事件，当执行完定时器触发函数后，触发该事件
         public delegate void TpTemperatureUpdateTimerEventHandler();
@@ -84,7 +89,7 @@ namespace Device
 
                     // 一些其他的调试参数
                     // 升序还是降序
-                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Ohters", "sort", "descend");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "sort", "descend");
                 }
 
                 //////////////////////////////////////////
@@ -150,6 +155,87 @@ namespace Device
             }
             
             Debug.WriteLineIf(confOK, "设备串口配置成功!");
+
+
+            // 读取预留的温度点及参数列表
+            try
+            {
+                FileStream fm = File.Open(@"./params.cache", FileMode.Open, FileAccess.Read);
+
+                if (fm != null)
+                {
+                    fm.Close();
+                    string[] lines = File.ReadAllLines(@"./params.cache", Encoding.UTF8);
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        // 主槽参数
+                        string line1 = lines[i];
+                        TemperaturePoint ts = new TemperaturePoint();
+                        i++;
+                        string[] parmM = line1.Split(' ');
+                        if (parmM.Length == 7)
+                        {
+                            float vl;
+                            if (float.TryParse(parmM[0], out vl)) ts.paramM[0] = vl;
+                            else break;
+                            if (float.TryParse(parmM[1], out vl)) ts.paramM[1] = vl;
+                            else break;
+                            if (float.TryParse(parmM[2], out vl)) ts.paramM[2] = vl;
+                            else break;
+                            if (float.TryParse(parmM[3], out vl)) ts.paramM[3] = vl;
+                            else break;
+                            if (float.TryParse(parmM[4], out vl)) ts.paramM[4] = vl;
+                            else break;
+                            if (float.TryParse(parmM[5], out vl)) ts.paramM[5] = vl;
+                            else break;
+                            if (float.TryParse(parmM[6], out vl)) ts.paramM[6] = vl;
+                            else break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                        // 辅槽参数
+                        if (i >= lines.Length) { break; }
+                        string line2 = lines[i];
+                        string[] parmS = line2.Split(' ');
+                        if (parmS.Length == 7)
+                        {
+                            float vl;
+                            if (float.TryParse(parmS[0], out vl)) ts.paramS[0] = vl;
+                            else break;
+                            if (float.TryParse(parmS[1], out vl)) ts.paramS[1] = vl;
+                            else break;
+                            if (float.TryParse(parmS[2], out vl)) ts.paramS[2] = vl;
+                            else break;
+                            if (float.TryParse(parmS[3], out vl)) ts.paramS[3] = vl;
+                            else break;
+                            if (float.TryParse(parmS[4], out vl)) ts.paramS[4] = vl;
+                            else break;
+                            if (float.TryParse(parmS[5], out vl)) ts.paramS[5] = vl;
+                            else break;
+                            if (float.TryParse(parmS[6], out vl)) ts.paramS[6] = vl;
+                            else break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                        // 装入列表中
+                        ts.finished = false;
+                        temperaturePointList.Add(ts);
+                    }
+
+                }
+            }
+            catch(Exception ex)
+            {
+                Utils.Logger.Sys("读取预留的温度点及参数列表时发生异常：" + ex.Message.ToString());
+                confOK = false;
+            }
+
             // 返回初始化状态
             return confOK;
         }
@@ -226,6 +312,7 @@ namespace Device
         {
             tpTemperatureUpdateTimer.Elapsed += TpTemperatureUpdateTimer_Elapsed;
             tpTemperatureUpdateTimer.AutoReset = true;
+            startTime = System.DateTime.Now;
         }
 #endregion Init Methods
 
@@ -260,7 +347,7 @@ namespace Device
                 //return;
             }
             // 记录主槽温度
-            Utils.Logger.TempData("主槽温度: " + tpDeviceM.temperatures.Last().ToString("0.0000"));
+            Utils.Logger.TempData(tpDeviceM.temperatures.Last());
 
             // 读取主槽功率系数
             err = tpDeviceM.GetPowerShow(out val);
@@ -337,6 +424,7 @@ namespace Device
         /// </summary>
         public class TemperaturePoint
         {
+            public bool finished = false;
             /// <summary>
             /// 当前工作状态下的应达到的温度值
             /// </summary>
@@ -355,7 +443,7 @@ namespace Device
         /// <summary>
         /// 自动控制各流程的名称
         /// </summary>
-        public string[] StateName = { "升温", "降温", "控温", "稳定", "测量", "完成", "空闲", "开始", "未定义" };
+        public string[] StateName = { "升温", "降温", "控温", "稳定", "测量", "完成", "空闲", "开始", "停止", "未定义" };
         /// <summary>
         /// 系统工作状态，对应不同的继电器通断组合
         /// </summary>
@@ -394,6 +482,10 @@ namespace Device
             /// </summary>
             Start,
             /// <summary>
+            /// 停止自动控温
+            /// </summary>
+            Stop,
+            /// <summary>
             /// 未定义状态
             /// </summary>
             Undefine
@@ -409,15 +501,31 @@ namespace Device
         /// </summary>
         public struct StateStruct
         {
+            /// <summary>
+            /// 当前温度点在 temperaturePointList 的位置
+            /// </summary>
+            public int tempPointIndex;
+            /// <summary>
+            /// 当前所处的工作状态
+            /// </summary>
             public State flowState;
+            /// <summary>
+            /// 是否为首次进入该状态，此时应设置继电器
+            /// </summary>
             public bool stateChanged;
+            /// <summary>
+            /// 进入该状态计时
+            /// </summary>
             public Int32 stateCounts;
+            /// <summary>
+            /// 该状态温度点信息，包括温度值、控温参数等
+            /// </summary>
             public TemperaturePoint tempPoint;
         }
         /// <summary>
         /// 当前工作状态 - 实例
         /// </summary>
-        public StateStruct currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new TemperaturePoint() };
+        public StateStruct currentState = new StateStruct() { tempPointIndex = 0, flowState = State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new TemperaturePoint() };
         /// <summary>
         /// 是否开始自动运行
         /// </summary>
@@ -484,6 +592,11 @@ namespace Device
         public float tempMinValue = -2.0f;
 
         public string sort = "descend";
+
+        /// <summary>
+        /// 实验完成后是否关闭计算机
+        /// </summary>
+        public bool shutDownComputer = false;
         #endregion 阈值参数
 
 
@@ -575,7 +688,7 @@ namespace Device
             // 考虑溢出状况
             currentState.stateCounts++;
             if (currentState.stateCounts == Int32.MaxValue)
-                currentState.stateCounts = Int32.MaxValue;
+                currentState.stateCounts = Int32.MaxValue - 1;
 
             // 判断当前工作状态，执行不同的操作流程
             switch (currentState.flowState)
@@ -617,6 +730,10 @@ namespace Device
 
                 case State.Start:
                     StartStep();
+                    break;
+
+                case State.Stop:
+                    StopStep();
                     break;
 
                 default:
@@ -795,12 +912,30 @@ namespace Device
             // 确保 temperaturePointList 不为空
             if(temperaturePointList.Count == 0)
             {
-                currentState = new StateStruct() { flowState = State.Idle };
+                currentState.flowState = State.Idle;
                 return;
             }
 
             // 定义当前状态
-            currentState = new StateStruct() { flowState = State.Undefine, stateChanged = true, stateCounts = 0, tempPoint = temperaturePointList.First() };
+            currentState.flowState = State.Undefine;
+            currentState.stateChanged = true;
+            currentState.stateCounts = 0;
+            int i = 0;
+            for(;i<temperaturePointList.Count;i++)
+            {
+                if(temperaturePointList[i].finished == false)
+                {
+                    currentState.tempPointIndex = i;
+                    currentState.tempPoint = temperaturePointList[i];
+                    break;
+                }
+            }
+
+            if(i == temperaturePointList.Count)
+            {
+                currentState.flowState = State.Idle;
+                return;
+            }
 
             // 如果当前温度点刚好处于温度点附近，则直接进入控温状态
             // wghou
@@ -889,13 +1024,35 @@ namespace Device
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
                 Utils.Logger.Sys("自动控温流程，进入 升温 状态...");
-                Utils.Logger.TempData("进入升温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
+                Utils.Logger.TempData(currentState.tempPoint.stateTemp);
 
                 // 首次进入该状态，不进行其他判断（判断是否满足一定条件，需要转换状态），直接返回
                 return;
             }
 
             // 继续执行相应的操作
+
+            // wghou 20180108
+            // 增加 - 升温过程中，辅槽温度达到设定温度点 0.6 C 时，开启辅槽制冷 4 和辅槽循环 5
+            if(tpDeviceS.temperatures.Last() > (currentState.tempPoint.paramS[0] - 0.6))
+            {
+                if(ryDevice.ryStatus[(int)RelayProtocol.Cmd_r.SubCool] == true && ryDevice.ryStatus[(int)RelayProtocol.Cmd_r.SubCircle] == true)
+                {
+
+                }
+                else
+                {
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCircle] = true;
+
+                    // 将继电器状态写入下位机
+                    // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                    RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                    if (ryErr != RelayProtocol.Err_r.NoError)
+                        FlowControlFaultOccurEvent(FaultCode.RelayError);
+                }
+                
+            } 
 
             // 温度达到设定值，即停止升温，进入控温状态
             if(tpDeviceM.temperatures.Last() > currentState.tempPoint.stateTemp)
@@ -979,7 +1136,7 @@ namespace Device
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
                 Utils.Logger.Sys("自动控温流程，进入 降温 状态...");
-                Utils.Logger.TempData("进入降温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
+                Utils.Logger.TempData(currentState.tempPoint.stateTemp);
 
                 // 首次进入该状态，不进行其他判断（判断是否满足一定条件，需要转换状态），直接返回
                 return;
@@ -1053,7 +1210,7 @@ namespace Device
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
                 Utils.Logger.Sys("自动控温流程，进入 控温 状态...");
-                Utils.Logger.TempData("进入控温状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
+                Utils.Logger.TempData(currentState.tempPoint.stateTemp);
 
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
@@ -1130,7 +1287,7 @@ namespace Device
 
                 Debug.WriteLine("当前进入工作状态： " + currentState.flowState.ToString());
                 Utils.Logger.Sys("自动控温流程，进入 稳定 状态...");
-                Utils.Logger.TempData("进入稳定状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
+                Utils.Logger.TempData(currentState.tempPoint.stateTemp);
 
                 // 将首次进入该状态标志位置为 false
                 currentState.stateChanged = false;
@@ -1234,8 +1391,8 @@ namespace Device
             {
                 // 记录电桥温度
                 Utils.Logger.Sys("电桥温度： " + tpDeviceS.temperatures.Last().ToString("0.0000"));
-                Utils.Logger.Data("电桥温度： " + tpDeviceS.temperatures.Last().ToString("0.0000"));
-                Utils.Logger.TempData("进入测量状态，温度设定点： " + currentState.tempPoint.stateTemp.ToString("0.0000"));
+                Utils.Logger.ConductivityData(tpDeviceS.temperatures.Last(), 0.0f);
+                Utils.Logger.TempData(currentState.tempPoint.stateTemp);
             }
 
 
@@ -1243,6 +1400,50 @@ namespace Device
             FlowControlStateChangedEvent(State.Measure);
             Utils.Logger.Sys("测量电导率等数据...");
 
+
+
+            // 测量完成，标记
+            temperaturePointList[currentState.tempPointIndex].finished = true;
+
+            // 查找下一个未测量的温度点
+            int i = currentState.tempPointIndex + 1;
+            for(;i<temperaturePointList.Count;i++)
+            {
+                if(temperaturePointList[i].finished == false)
+                {
+                    currentState.tempPointIndex = i;
+                    currentState.flowState = State.TempDown;
+                    currentState.stateChanged = true;
+                    currentState.stateCounts = 0;
+                    currentState.tempPoint = temperaturePointList[i];
+                    if (tpDeviceM.temperatures.Count != 0)
+                    {
+                        // 默认是降温的过程
+                        // 但是，如果设定温度点高于当前温度，还是应该修改为升温
+                        if (tpDeviceM.temperatures.Last() < currentState.tempPoint.stateTemp)
+                        {
+                            currentState.flowState = State.TempUp;
+                        }
+                    }
+                    else
+                    {
+                        FlowControlFaultOccurEvent(FaultCode.CodeError);
+                    }
+
+                    Utils.Logger.Sys("开始下一个温度点的控温 - 稳定 - 测量流程...");
+                }
+            }
+
+            // 未查找到，则表示已经测量完成了
+            if(i == temperaturePointList.Count)
+            {
+                // 控制状态序列为空，说明实验已经结束了
+                currentState.flowState = State.Finish;
+                currentState.stateChanged = true;
+                Utils.Logger.Sys("所有温度点均已测量完成...");
+            }
+
+#if false
             // 进入下一个状态
             // 首先将已经测量完成的温度点删除掉
             try { temperaturePointList.RemoveAt(0); } catch { }
@@ -1276,9 +1477,9 @@ namespace Device
                 // 控制状态序列为空，说明实验已经结束了
                 currentState = new StateStruct() { flowState = State.Finish };
                 Utils.Logger.Sys("所有温度点均已测量完成...");
-                Utils.Logger.TempData("所有温度点均已测量完成...");
+                //Utils.Logger.TempData("所有温度点均已测量完成...");
             }
-
+#endif
 
             // 是否还有其他相关操作
             // wghou
@@ -1287,9 +1488,21 @@ namespace Device
 
         private void FinishStep()
         {
-            // 触发温度点测量完成事件
-            FlowControlStateChangedEvent(State.Finish);
-            currentState = new StateStruct() { flowState = State.Idle, stateChanged = true, stateCounts = 0, tempPoint = new TemperaturePoint() };
+            if(currentState.stateChanged == true)
+            {
+                currentState.stateChanged = false;
+                // 触发温度点测量完成事件
+                FlowControlStateChangedEvent(State.Finish);
+
+                // 状态转入停止状态
+                currentState.flowState = State.Stop;
+                currentState.stateChanged = true;
+                currentState.stateCounts = 0;
+                return;
+            }
+
+            // 不计时
+            currentState.stateCounts = 0;
         }
 
         /// <summary>
@@ -1297,12 +1510,54 @@ namespace Device
         /// </summary>
         private void IdleStep()
         {
-            // 完成测量
+            // 空闲状态
+            if (currentState.stateChanged == true)
+            {
+                currentState.stateChanged = false;
+                // 触发温度点测量完成事件
+                FlowControlStateChangedEvent(State.Idle);
+                return;
+            }
 
-            // 执行相应的操作
-            // wghou
-            // code
+            // 不计时
+            currentState.stateCounts = 0;
 
+        }
+
+
+        /// <summary>
+        /// 自动 - 停止自动控温
+        /// </summary>
+        private void StopStep()
+        {
+            // 关闭除总电源外的所有继电器
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.Elect] = true;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.MainHeat] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubHeat] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCircle] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.MainCoolF] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCoolF] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterIn] = false;
+            ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterOut] = false;
+
+            // 将继电器状态写入下位机
+            // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+            RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+            if (ryErr != RelayProtocol.Err_r.NoError)
+                FlowControlFaultOccurEvent(FaultCode.RelayError);
+
+
+            // 触发温度点测量完成事件
+            FlowControlStateChangedEvent(State.Stop);
+
+            // 关闭自动控温流程运行标志位
+            autoStart = false;
+
+            // 附加 - 置为空闲状态
+            currentState.flowState = State.Idle;
+            currentState.stateChanged = true;
+            currentState.stateCounts = 0;
         }
 #endregion Step Methods
 

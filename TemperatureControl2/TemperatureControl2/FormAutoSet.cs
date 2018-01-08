@@ -23,6 +23,11 @@ namespace TemperatureControl2
         /// </summary>
         List<TempParam> paramList = new List<TempParam>();
 
+        /// <summary>
+        /// 是否已开始自动控温流程
+        /// </summary>
+        bool flowStart = false;
+
 
         private TextBox tx = null;
         private TextBox[] paramMTextBox = new TextBox[7];
@@ -63,6 +68,7 @@ namespace TemperatureControl2
             else
             {
                 // 降序
+                paramList.Sort();
                 paramList.Reverse();
             }
 
@@ -73,13 +79,16 @@ namespace TemperatureControl2
                 ParamShow ps1 = new ParamShow();
                 ps1._index = i + 1;
                 ps1.tpName = "主槽";
-                ps1.editSave = "";
+                if(paramList[i].finished == true)
+                    ps1.editSave = "已测量";
+                else
+                    ps1.editSave = "未测量";
                 paramList[i].paramM.CopyTo(ps1.param, 0);
                 BList.Add(ps1);
                 ParamShow ps2 = new ParamShow();
                 ps2._index = i + 1;
                 ps2.tpName = "辅槽";
-                ps2.editSave = "移除/重新编辑";
+                ps2.editSave = "参数设置";
                 paramList[i].paramS.CopyTo(ps2.param, 0);
                 BList.Add(ps2);
             }
@@ -104,19 +113,51 @@ namespace TemperatureControl2
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = BList;
 
-#if false
-            if(devicesAll.temperaturePointList.Count != 0)
+#if true
+            lock(this.devicesAll.stepLocker)
             {
-                // 将 devicesAll.temperaturePointList 中未测量完成的温度点
-                foreach (var st in devicesAll.temperaturePointList)
+                // 判断温控列表中是否有温度点
+                if (devicesAll.temperaturePointList.Count != 0)
                 {
-                    TempParam ts = new TempParam();
-                    st.paramM.CopyTo(ts.paramM, 0);
-                    st.paramS.CopyTo(ts.paramS, 0);
-                    paramList.Add(ts);
+                    // 将 devicesAll.temperaturePointList 中未测量完成的温度点
+                    foreach (var st in devicesAll.temperaturePointList)
+                    {
+                        TempParam ts = new TempParam();
+                        st.paramM.CopyTo(ts.paramM, 0);
+                        st.paramS.CopyTo(ts.paramS, 0);
+                        ts.finished = st.finished;
+                        paramList.Add(ts);
+                    }
+                }
+
+                // 判断是否已开始自动控温流程
+                if (this.devicesAll.autoStart == true)
+                {
+                    // 正在自动控温
+                    this.checkBox_start.Checked = true;
+                    this.checkBox_start.Text = "停止";
+                    flowStart = true;
+
+                    // 判断是否已设定完成实验测量后关机
+                    this.checkBox_shutDown.Checked = devicesAll.shutDownComputer;
+                    this.checkBox_shutDown.Enabled = false;
+                }
+                else
+                {
+                    // 未开始自动控温
+                    this.checkBox_start.Checked = false;
+                    this.checkBox_start.Text = "开始";
+                    flowStart = false;
+
+                    // 判断是否已设定完成实验测量后关机
+                    this.checkBox_shutDown.Checked = true;
+                    this.checkBox_shutDown.Enabled = true;
                 }
             }
+            
 #endif
+
+#if false
             FileStream fm = File.Open(@"./params.cache", FileMode.Open, FileAccess.Read);
             
             if(fm != null)
@@ -185,6 +226,7 @@ namespace TemperatureControl2
                 }
                 
             }
+#endif
 
             // 更新表格显示
             updateDataGridView();
@@ -205,10 +247,153 @@ namespace TemperatureControl2
                     paramSTextBox[i].Text = paramSCache[i].ToString("0");
                 }
             }
+
         }
 
 
+        /// <summary>
+        /// 开始 / 暂停自动控温流程
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBox_start_Click(object sender, EventArgs e)
+        {
+            if(this.checkBox_start.Checked == true)
+            {
+                // 如果列表中没有温度点，则不开始控温流程
+                if (paramList.Count == 0)
+                {
+                    flowStart = false;
+                    this.checkBox_start.Checked = false;
+                    this.checkBox_start.Text = "开始";
+                    return;
+                }
+
+
+                // 将温度点数据保存到缓存中
+                try
+                {
+                    // 清空原有文件
+                    FileStream fs = File.Open(@"./params.cache", FileMode.Truncate, FileAccess.ReadWrite);
+                    if(fs!=null) fs.Close();
+
+                    StreamWriter sw = new StreamWriter(@"./params.cache", true, Encoding.UTF8);
+                    for (int i = 0; i < paramList.Count; i++)
+                    {
+                        for (int j = 0; j < paramList[i].paramM.Length - 1; j++)
+                        {
+                            sw.Write(paramList[i].paramM[j].ToString() + " ");
+                        }
+                        sw.Write(paramList[i].paramM[paramList[i].paramM.Length - 1].ToString());
+                        sw.WriteLine();
+                        for (int j = 0; j < paramList[i].paramM.Length - 1; j++)
+                        {
+                            sw.Write(paramList[i].paramS[j].ToString() + " ");
+                        }
+                        sw.Write(paramList[i].paramS[paramList[i].paramM.Length - 1].ToString());
+                        sw.WriteLine();
+                    }
+                    sw.Flush();
+                    fs.Close();
+                }
+                catch(Exception ex)
+                {
+                    Utils.Logger.Sys("存储温度点缓存时，发生异常！");
+                    MessageBox.Show("存储温度点缓存时，发生异常！");
+                    return;
+                }
+
+                // 开始自动控温流程
+                lock (devicesAll.stepLocker)
+                {
+                    // 清空原有的温度点数据
+                    devicesAll.temperaturePointList.Clear();
+                    // 将实验流程数据写入 Devices 类中
+                    for (int i = 0; i < paramList.Count; i++)
+                    {
+                        // deviceAll.controlFlowList 中的 StateFlow.flowState 必须设置为 Undefine
+                        // 只保存温度点，不再保存
+                        Device.Devices.TemperaturePoint tp = new Device.Devices.TemperaturePoint();
+                        paramList[i].paramM.CopyTo(tp.paramM, 0);
+                        paramList[i].paramS.CopyTo(tp.paramS, 0);
+                        tp.finished = paramList[i].finished;
+                        devicesAll.temperaturePointList.Add(tp);
+                    }
+
+                    // 设置当前控温流程状态 - 开始
+                    this.devicesAll.currentState.flowState = Device.Devices.State.Start;
+                    this.devicesAll.currentState.stateChanged = true;
+
+                    // 自动控温流程标志位置位
+                    this.devicesAll.autoStart = true;
+
+                    // 实验完成后是否关闭计算机
+                    devicesAll.shutDownComputer = this.checkBox_shutDown.Checked;
+                    this.checkBox_shutDown.Enabled = false;
+                }
+
+                Utils.Logger.Op("点击自动控温设置界面 开始 按键，开始执行自动控温流程...");
+                Utils.Logger.Sys("点击自动控温设置界面 开始 按键，开始执行自动控温流程...");
+
+                Utils.Logger.Op("设定的温度点有：");
+                Utils.Logger.Sys("设定的温度点有：");
+
+                foreach (var st in paramList)
+                {
+                    Utils.Logger.Op(st.paramM[0].ToString("0.0000"));
+                    Utils.Logger.Sys(st.paramM[0].ToString("0.0000"));
+                    Utils.Logger.Op("是否已测量：" + st.finished.ToString());
+                    Utils.Logger.Sys("是否已测量：" + st.finished.ToString());
+                }
+
+                // 自动控温流程已开始
+                flowStart = true;
+                checkBox_start.Text = "停止";
+
+            }
+            else
+            {
+                // 暂停自动控温流程
+                lock(this.devicesAll.stepLocker)
+                {
+                    // 控温流程当前工作状态 - 停止
+                    this.devicesAll.currentState.flowState = Device.Devices.State.Stop;
+                    this.devicesAll.currentState.stateChanged = true;
+
+                    if (devicesAll.temperaturePointList.Count != 0)
+                    {
+                        paramList.Clear();
+                        // 将 devicesAll.temperaturePointList 中未测量完成的温度点
+                        foreach (var st in devicesAll.temperaturePointList)
+                        {
+                            TempParam ts = new TempParam();
+                            st.paramM.CopyTo(ts.paramM, 0);
+                            st.paramS.CopyTo(ts.paramS, 0);
+                            ts.finished = st.finished;
+                            paramList.Add(ts);
+                        }
+                    }
+
+                    // 取消 - 实验完成后不关闭计算机
+                    devicesAll.shutDownComputer = false;
+                    this.checkBox_shutDown.Enabled = true;
+                }
+
+                // 更新表格显示
+                updateDataGridView();
+
+                // 自动控温流程已停止
+                flowStart = false;
+                checkBox_start.Text = "开始";
+            }
+
+            return;
+        }
+
+#if false
         // 开始自动控温流程
+        // wghou
+        // 已经不用的
         private void button_start_Click(object sender, EventArgs e)
         {
             lock(devicesAll.stepLocker)
@@ -264,6 +449,7 @@ namespace TemperatureControl2
             // 开始实验流程
             this.DialogResult = DialogResult.OK;
         }
+#endif
 
 
         // 取消操作，关闭窗口
@@ -273,13 +459,18 @@ namespace TemperatureControl2
             Utils.Logger.Sys("点击自动控温设置界面 取消 按键，取消了自动控温流程设置...");
 
             // 取消操作
-            this.DialogResult = DialogResult.Cancel;
+            this.Dispose();
         }
 
 
         // 添加温度点
         private void button_add_Click(object sender, EventArgs e)
         {
+            // 如果已经开始自动控温流程，则无法编辑
+            if (flowStart)
+                return;
+
+
             float valuef = 0.0f;
             // 主槽参数
             for(int i = 0;i<7;i++)
@@ -354,6 +545,17 @@ namespace TemperatureControl2
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
+            // 删除文本框中的文本
+            if (tx != null)
+            {
+                tx.Text = "";
+            }
+
+
+            // 如果已经开始自动控温流程，则无法编辑
+            if (flowStart)
+                return;
+
             // 删除选中的温度点
             for (int i = BList.Count; i > 0; i--)
             {
@@ -383,11 +585,6 @@ namespace TemperatureControl2
             // 更新表格显示
             updateDataGridView();
 
-            // 删除文本框中的文本
-            if (tx != null)
-            {
-                tx.Text = "";
-            }
         }
 
 
@@ -404,37 +601,46 @@ namespace TemperatureControl2
         // 重新编辑按键
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            // 如果已经开始自动控温流程，则无法编辑
+            if (flowStart)
+                return;
+
+
             if (dataGridView1.Columns[e.ColumnIndex].Name == "edit")
             {
-                // 获取该行的参数
-                paramList[e.RowIndex / 2].paramM.CopyTo(paramMCache, 0);
-                paramList[e.RowIndex / 2].paramS.CopyTo(paramSCache, 0);
-                // 将参数写入到文本框中
-                for (int i = 0; i < 7; i++)
+                if(e.RowIndex % 2 == 1)
                 {
-                    if (i < 3)
+                    // 获取该行的参数
+                    paramList[e.RowIndex / 2].paramM.CopyTo(paramMCache, 0);
+                    paramList[e.RowIndex / 2].paramS.CopyTo(paramSCache, 0);
+                    // 将参数写入到文本框中
+                    for (int i = 0; i < 7; i++)
                     {
-                        paramMTextBox[i].Text = paramMCache[i].ToString("0.000");
-                        paramSTextBox[i].Text = paramSCache[i].ToString("0.000");
+                        if (i < 3)
+                        {
+                            paramMTextBox[i].Text = paramMCache[i].ToString("0.000");
+                            paramSTextBox[i].Text = paramSCache[i].ToString("0.000");
+                        }
+                        else
+                        {
+                            paramMTextBox[i].Text = paramMCache[i].ToString("0");
+                            paramSTextBox[i].Text = paramSCache[i].ToString("0");
+                        }
                     }
-                    else
-                    {
-                        paramMTextBox[i].Text = paramMCache[i].ToString("0");
-                        paramSTextBox[i].Text = paramSCache[i].ToString("0");
-                    }
+                    // 从 paramList 中删除该项
+                    paramList.RemoveAt(e.RowIndex / 2);
+                    // 重新显示
+                    updateDataGridView();
                 }
-                // 从 paramList 中删除该项
-                paramList.RemoveAt(e.RowIndex / 2);
-                // 重新显示
-                updateDataGridView();
+                else
+                {
+                    paramList[e.RowIndex / 2].finished = !paramList[e.RowIndex / 2].finished;
+                    updateDataGridView();
+                }
+                
             }
         }
 
-        // 选中行改变事件
-        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
-        {
-            
-        }
 
         ////////////////////////////////////////////////////////////
         //// 表格单元合并 / 重新绘制
@@ -507,6 +713,8 @@ namespace TemperatureControl2
                 //设置处理事件完成（关键点），只有设置为ture,才能显示出想要的结果。
                 e.Handled = true;
             }
+
+#if false
             // 合并编辑列
             else if(dataGridView1.Columns[e.ColumnIndex].Name == "edit" && e.RowIndex >= 0)
             {
@@ -573,6 +781,16 @@ namespace TemperatureControl2
                 //设置处理事件完成（关键点），只有设置为ture,才能显示出想要的结果。
                 e.Handled = true;
             }
+#endif
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            float val = 0.0f;
+            if (!float.TryParse(textBox_tpSetM.Text, out val))
+                return;
+
+            
         }
 
 
@@ -1036,7 +1254,6 @@ namespace TemperatureControl2
             tx.BackColor = System.Drawing.SystemColors.Window;
             dataGridView1.ClearSelection();
         }
-
     }
 
     internal class ParamShow
@@ -1103,6 +1320,7 @@ namespace TemperatureControl2
     /// </summary>
     internal class TempParam : IComparable
     {
+        public bool finished = false;
         /// <summary>
         /// 主槽温控设备的参数值
         /// </summary>

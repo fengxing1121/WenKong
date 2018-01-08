@@ -33,7 +33,11 @@ namespace Device
         public float tpPowerShow = 0.0f;
         public List<float> temperatures = new List<float>();
         private int tempMaxLen = 1000;
-        public int readTempIntervalSec = 1000;
+        public int readTempIntervalSec = 2000;
+
+        // 用于显示温度曲线的，只保存最新的数据，可以被清空
+        public object tpShowLocker = new object();
+        public List<float> temperaturesShow = new List<float>();
 
         /// <summary>
         /// 温控设备设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）
@@ -338,6 +342,38 @@ namespace Device
             }
         }
 
+        /// <summary>
+        /// 计算并获取温度波动度，如果当前存储的温度值个数不足 count 个，则返回当前的波动度
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="fluctuation"></param>
+        /// <returns></returns>
+        public bool GetFlucDurCountOrLess(int count, out float fluctuation)
+        {
+            lock (tpLocker)
+            {
+                if (temperatures.Count < 2)
+                {
+                    // If there is not temperature data in list, output extreme fluctuation
+                    fluctuation = -1;
+                    return false;
+                }
+                else if(temperatures.Count < count)
+                {
+                    // If there doesnot contain enough temperature data, output current fluctuation
+                    fluctuation = temperatures.GetRange(0, temperatures.Count).Max() - 
+                        temperatures.GetRange(0, temperatures.Count).Min();
+                    return false;
+                }
+                else
+                {
+                    fluctuation = temperatures.GetRange(temperatures.Count - count, count).Max() -
+                        temperatures.GetRange(temperatures.Count - count, count).Min();
+                    return true;
+                }
+            }
+        }
+
 
         /// <summary>
         /// 判断主槽控温设备的温度波动度是否满足条件
@@ -395,6 +431,16 @@ namespace Device
                 temperatures.RemoveAt(0);
             }
             temperatures.Add(val);
+
+            // 添加温度值，用于温度曲线显示
+            lock(tpShowLocker)
+            {
+                if (temperaturesShow.Count == tempMaxLen)
+                {
+                    temperaturesShow.RemoveAt(0);
+                }
+                temperaturesShow.Add(val);
+            }
         }
         #endregion
     }

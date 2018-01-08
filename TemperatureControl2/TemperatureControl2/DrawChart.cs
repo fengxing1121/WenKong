@@ -29,7 +29,8 @@ namespace TemperatureControl2
         private float endVer;
         private float startHor;
         private float endHor;
-        private const float spaceLeft = 105;
+        //private const float spaceLeft = 105;
+        private const float spaceLeft = 99;
         private const float spaceRight = 35;
         private const float spaceTop = 25;
         private const float spaceBottom = 25;
@@ -49,8 +50,8 @@ namespace TemperatureControl2
         private Graphics mGhp;
 
         // Time line
-        private const int timeColInt = 3;           // Time interval to tag time on x-Axis
-        private const int tempChartFixLen = 661;    // Count of point used in chart, 
+        private const int timeColInt = 2;           // Time interval to tag time on x-Axis
+        private const int tempChartFixLen = 501;    // Count of point used in chart, 
                                                     // 661 is suitable for 800*? chart
                                                     // Use for saving temperature data only for chart drawing
         private List<float> tempListForChart;// 所有要绘制的温度数据
@@ -117,15 +118,18 @@ namespace TemperatureControl2
         /// </summary>
         private void MoveTempLocal()
         {
-            // 将温度数据从 Device.TempDevice.temperatures 中读取到 tempListForChart 中
-            if (tpDevice.temperatures.Count < tempChartFixLen)
+            lock(tpDevice.tpShowLocker)
             {
-                tempListForChart = tpDevice.temperatures.GetRange(0, tpDevice.temperatures.Count);
-            }
-            else
-            {
-                tempListForChart = tpDevice.temperatures.GetRange
-                    (tpDevice.temperatures.Count - tempChartFixLen, tempChartFixLen);
+                // 将温度数据从 Device.TempDevice.temperatures 中读取到 tempListForChart 中
+                if (tpDevice.temperaturesShow.Count < tempChartFixLen)
+                {
+                    tempListForChart = tpDevice.temperaturesShow.GetRange(0, tpDevice.temperaturesShow.Count);
+                }
+                else
+                {
+                    tempListForChart = tpDevice.temperaturesShow.GetRange
+                        (tpDevice.temperaturesShow.Count - tempChartFixLen, tempChartFixLen);
+                }
             }
 
             // 计算温度值大小的范围
@@ -136,13 +140,14 @@ namespace TemperatureControl2
                 min = tempListForChart.Min();
 
                 // 为了保证每格的最小分辨率为0.001,要处理一下
-                max = (float)Math.Round(max, 3);
-                min = (float)Math.Round(min, 3);
-                if (max - min <= 0.001 * rowNum)
+                // wghou -> 分辨率改为 0.0001
+                max = (float)Math.Round(max, 4);
+                min = (float)Math.Round(min, 4);
+                if (max - min <= 0.0001f * rowNum)
                 {
                     float margin = max - min;
-                    max = (float)Math.Round(max + (0.001 * rowNum - margin) / 2, rowNum / 2);
-                    min = max - 0.001f * rowNum;
+                    max = (float)Math.Round(max + (0.0001f * rowNum - margin) / 2, rowNum / 2);
+                    min = max - 0.0001f * rowNum;
                 }
             }
         }
@@ -172,7 +177,8 @@ namespace TemperatureControl2
             }
 
             // Calculate all time tags
-            for (int i = 0; i < (colNum + 1) / timeColInt; i++)
+            //for (int i = 0; i < (colNum + 1) / timeColInt; i++)
+            for (int i = 0; i < colNum / timeColInt + 1; i++)
             {
                 minute = minute + minuteInterval;
                 if (minute >= 60)
@@ -206,6 +212,7 @@ namespace TemperatureControl2
             float margin = max - min;
             float midVer = (startVer + endVer) / 2;
             float spaceVer = height - spaceTop - spaceBottom;
+            float spaceHor = width - spaceLeft - spaceRight;
             Font mFont = new Font("微软雅黑", 10, FontStyle.Regular);
 
             mGhp.Clear(backColor);
@@ -234,12 +241,13 @@ namespace TemperatureControl2
                     mFont, mBrush, startText, startVer + rowInterval * i - 8);
             }
 #endif
-            float max3f = (float)Math.Round(max, 3);
-            float step3f = (float)Math.Round(margin / rowNum,3);
+            // wghou -> 分辨率改为 0.0001
+            float max3f = (float)Math.Round(max, 4);
+            float step3f = (float)Math.Round(margin / rowNum,4);
             for (int i = 0; i < rowNum + 1; i++)
             {
-                
-                mGhp.DrawString((max3f - i * step3f).ToString("0.000"),
+                // wghou -> 分辨率改为 0.0001
+                mGhp.DrawString((max3f - i * step3f).ToString("0.0000"),
                     mFont, mBrush, startText, startVer + rowInterval * i - 8);
             }
             #endregion
@@ -253,10 +261,11 @@ namespace TemperatureControl2
                     startHor + (i + 1), startVer + (tempListForChart[i + 1] - min) / margin * spaceVer);
             }
 #endif
+            float interval = spaceHor / (tempChartFixLen -1 );
             for (int i = 0; i < tempListForChart.Count - 1; i++)
             {
-                mGhp.DrawLine(mLinePen, startHor + i, endVer - (tempListForChart[i] - min) / margin * spaceVer,
-                    startHor + (i + 1), endVer - (tempListForChart[i + 1] - min) / margin * spaceVer);
+                mGhp.DrawLine(mLinePen, startHor + i * interval, endVer - (tempListForChart[i] - min) / margin * spaceVer,
+                    startHor + (i + 1) * interval, endVer - (tempListForChart[i + 1] - min) / margin * spaceVer);
             }
 #endregion
 

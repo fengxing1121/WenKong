@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.button_start = new System.Windows.Forms.Button();
             this.button_cancel = new System.Windows.Forms.Button();
             this.textBox_tpSetM = new System.Windows.Forms.TextBox();
             this.button_add = new System.Windows.Forms.Button();
@@ -81,22 +80,15 @@
             this.textBox_tpSetS = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.button_chkParam = new System.Windows.Forms.Button();
+            this.checkBox_start = new System.Windows.Forms.CheckBox();
+            this.checkBox_shutDown = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
-            // button_start
-            // 
-            this.button_start.Location = new System.Drawing.Point(761, 435);
-            this.button_start.Name = "button_start";
-            this.button_start.Size = new System.Drawing.Size(128, 60);
-            this.button_start.TabIndex = 3;
-            this.button_start.Text = "开始";
-            this.button_start.UseVisualStyleBackColor = true;
-            this.button_start.Click += new System.EventHandler(this.button_start_Click);
-            // 
             // button_cancel
             // 
-            this.button_cancel.Location = new System.Drawing.Point(897, 435);
+            this.button_cancel.Location = new System.Drawing.Point(859, 345);
             this.button_cancel.Name = "button_cancel";
             this.button_cancel.Size = new System.Drawing.Size(128, 60);
             this.button_cancel.TabIndex = 4;
@@ -116,7 +108,7 @@
             // 
             // button_add
             // 
-            this.button_add.Location = new System.Drawing.Point(897, 367);
+            this.button_add.Location = new System.Drawing.Point(859, 277);
             this.button_add.Name = "button_add";
             this.button_add.Size = new System.Drawing.Size(128, 60);
             this.button_add.TabIndex = 7;
@@ -136,7 +128,7 @@
             // buttonNegtive
             // 
             this.buttonNegtive.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonNegtive.Location = new System.Drawing.Point(829, 367);
+            this.buttonNegtive.Location = new System.Drawing.Point(791, 277);
             this.buttonNegtive.Name = "buttonNegtive";
             this.buttonNegtive.Size = new System.Drawing.Size(60, 60);
             this.buttonNegtive.TabIndex = 51;
@@ -148,7 +140,7 @@
             // buttonClear
             // 
             this.buttonClear.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonClear.Location = new System.Drawing.Point(965, 231);
+            this.buttonClear.Location = new System.Drawing.Point(927, 141);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(60, 60);
             this.buttonClear.TabIndex = 50;
@@ -160,7 +152,7 @@
             // buttonBack
             // 
             this.buttonBack.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonBack.Location = new System.Drawing.Point(965, 163);
+            this.buttonBack.Location = new System.Drawing.Point(927, 73);
             this.buttonBack.Name = "buttonBack";
             this.buttonBack.Size = new System.Drawing.Size(60, 60);
             this.buttonBack.TabIndex = 49;
@@ -172,7 +164,7 @@
             // buttonPoint
             // 
             this.buttonPoint.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonPoint.Location = new System.Drawing.Point(965, 299);
+            this.buttonPoint.Location = new System.Drawing.Point(927, 209);
             this.buttonPoint.Name = "buttonPoint";
             this.buttonPoint.Size = new System.Drawing.Size(60, 60);
             this.buttonPoint.TabIndex = 48;
@@ -184,7 +176,7 @@
             // button0
             // 
             this.button0.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button0.Location = new System.Drawing.Point(761, 367);
+            this.button0.Location = new System.Drawing.Point(723, 277);
             this.button0.Name = "button0";
             this.button0.Size = new System.Drawing.Size(60, 60);
             this.button0.TabIndex = 47;
@@ -196,7 +188,7 @@
             // button8
             // 
             this.button8.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button8.Location = new System.Drawing.Point(829, 163);
+            this.button8.Location = new System.Drawing.Point(791, 73);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(60, 60);
             this.button8.TabIndex = 46;
@@ -208,7 +200,7 @@
             // button9
             // 
             this.button9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button9.Location = new System.Drawing.Point(897, 163);
+            this.button9.Location = new System.Drawing.Point(859, 73);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(60, 60);
             this.button9.TabIndex = 45;
@@ -220,7 +212,7 @@
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(761, 231);
+            this.button4.Location = new System.Drawing.Point(723, 141);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(60, 60);
             this.button4.TabIndex = 44;
@@ -232,7 +224,7 @@
             // button5
             // 
             this.button5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button5.Location = new System.Drawing.Point(829, 231);
+            this.button5.Location = new System.Drawing.Point(791, 141);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(60, 60);
             this.button5.TabIndex = 43;
@@ -244,7 +236,7 @@
             // button6
             // 
             this.button6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button6.Location = new System.Drawing.Point(897, 231);
+            this.button6.Location = new System.Drawing.Point(859, 141);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(60, 60);
             this.button6.TabIndex = 42;
@@ -256,7 +248,7 @@
             // button7
             // 
             this.button7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button7.Location = new System.Drawing.Point(761, 163);
+            this.button7.Location = new System.Drawing.Point(723, 73);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(60, 60);
             this.button7.TabIndex = 41;
@@ -268,7 +260,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(761, 299);
+            this.button1.Location = new System.Drawing.Point(723, 209);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(60, 60);
             this.button1.TabIndex = 40;
@@ -280,7 +272,7 @@
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(897, 299);
+            this.button3.Location = new System.Drawing.Point(859, 209);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(60, 60);
             this.button3.TabIndex = 39;
@@ -292,7 +284,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(829, 299);
+            this.button2.Location = new System.Drawing.Point(791, 209);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(60, 60);
             this.button2.TabIndex = 38;
@@ -436,19 +428,18 @@
             this.integration,
             this.power,
             this.edit});
-            this.dataGridView1.Location = new System.Drawing.Point(19, 14);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 14);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(719, 391);
+            this.dataGridView1.Size = new System.Drawing.Size(689, 391);
             this.dataGridView1.TabIndex = 9;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
             this.dataGridView1.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dataGridView1_CellPainting);
-            this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             // 
             // index
             // 
@@ -537,6 +528,7 @@
             this.edit.Name = "edit";
             this.edit.ReadOnly = true;
             this.edit.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.edit.Width = 70;
             // 
             // label8
             // 
@@ -629,17 +621,55 @@
             // label10
             // 
             this.label10.Font = new System.Drawing.Font("宋体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label10.Location = new System.Drawing.Point(810, 54);
+            this.label10.Location = new System.Drawing.Point(773, 14);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(165, 61);
+            this.label10.Size = new System.Drawing.Size(165, 39);
             this.label10.TabIndex = 73;
             this.label10.Text = "温度点设定";
+            // 
+            // button_chkParam
+            // 
+            this.button_chkParam.Location = new System.Drawing.Point(723, 420);
+            this.button_chkParam.Name = "button_chkParam";
+            this.button_chkParam.Size = new System.Drawing.Size(128, 60);
+            this.button_chkParam.TabIndex = 74;
+            this.button_chkParam.Text = "查询参数";
+            this.button_chkParam.UseVisualStyleBackColor = true;
+            this.button_chkParam.Click += new System.EventHandler(this.button10_Click);
+            // 
+            // checkBox_start
+            // 
+            this.checkBox_start.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox_start.Location = new System.Drawing.Point(723, 345);
+            this.checkBox_start.Name = "checkBox_start";
+            this.checkBox_start.Size = new System.Drawing.Size(128, 60);
+            this.checkBox_start.TabIndex = 75;
+            this.checkBox_start.Text = "开始";
+            this.checkBox_start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox_start.UseVisualStyleBackColor = true;
+            this.checkBox_start.Click += new System.EventHandler(this.checkBox_start_Click);
+            // 
+            // checkBox_shutDown
+            // 
+            this.checkBox_shutDown.AutoSize = true;
+            this.checkBox_shutDown.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.checkBox_shutDown.ForeColor = System.Drawing.Color.Red;
+            this.checkBox_shutDown.Location = new System.Drawing.Point(875, 431);
+            this.checkBox_shutDown.Name = "checkBox_shutDown";
+            this.checkBox_shutDown.Size = new System.Drawing.Size(112, 36);
+            this.checkBox_shutDown.TabIndex = 76;
+            this.checkBox_shutDown.Text = "实验完成后\r\n关闭计算机";
+            this.checkBox_shutDown.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox_shutDown.UseVisualStyleBackColor = true;
             // 
             // FormAutoSet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1040, 512);
+            this.ClientSize = new System.Drawing.Size(1008, 512);
+            this.Controls.Add(this.checkBox_shutDown);
+            this.Controls.Add(this.checkBox_start);
+            this.Controls.Add(this.button_chkParam);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.textBox_powerS);
@@ -681,7 +711,6 @@
             this.Controls.Add(this.button_add);
             this.Controls.Add(this.textBox_tpSetM);
             this.Controls.Add(this.button_cancel);
-            this.Controls.Add(this.button_start);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -696,7 +725,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button button_start;
         private System.Windows.Forms.Button button_cancel;
         private System.Windows.Forms.TextBox textBox_tpSetM;
         private System.Windows.Forms.Button button_add;
@@ -737,6 +765,7 @@
         private System.Windows.Forms.TextBox textBox_tpAdjustS;
         private System.Windows.Forms.TextBox textBox_tpSetS;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.DataGridViewTextBoxColumn index;
         private System.Windows.Forms.DataGridViewTextBoxColumn tpName;
         private System.Windows.Forms.DataGridViewTextBoxColumn tpSet;
@@ -747,6 +776,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn integration;
         private System.Windows.Forms.DataGridViewTextBoxColumn power;
         private System.Windows.Forms.DataGridViewLinkColumn edit;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button button_chkParam;
+        private System.Windows.Forms.CheckBox checkBox_start;
+        private System.Windows.Forms.CheckBox checkBox_shutDown;
     }
 }

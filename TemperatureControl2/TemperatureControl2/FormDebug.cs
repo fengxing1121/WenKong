@@ -113,7 +113,7 @@ namespace TemperatureControl2
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempBiasFaultThr", devicesAll.tempBiasFaultThr.ToString("0.0000"));
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMaxValue", devicesAll.tempMaxValue.ToString("0.0000"));
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMinValue", devicesAll.tempMinValue.ToString("0.0000"));
-            Utils.IniReadWrite.INIWriteValue(configFilePath, "Ohters", "sort", devicesAll.sort);
+            Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "sort", devicesAll.sort);
         }
 
         private void BntRead_Click(object sender, EventArgs e)

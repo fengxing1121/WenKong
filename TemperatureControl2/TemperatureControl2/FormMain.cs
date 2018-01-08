@@ -27,16 +27,19 @@ namespace TemperatureControl2
             InitializeComponent();
 
             // 继电器设备编号
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.Elect, checkBox_elect);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.MainHeat, checkBox_mainHeat);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubHeat, checkBox_subHeat);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCool, checkBox_subCool);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCircle, checkBox_subCircle);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.MainCoolF, checkBox_mainCoolF);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCoolF, checkBox_subCoolF);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterIn, checkBox_waterIn);
-            checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterOut, checkBox_waterOut);
-
+            try
+            {
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.Elect, checkBox_elect);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.MainHeat, checkBox_mainHeat);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubHeat, checkBox_subHeat);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCool, checkBox_subCool);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCircle, checkBox_subCircle);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.MainCoolF, checkBox_mainCoolF);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.SubCoolF, checkBox_subCoolF);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterIn, checkBox_waterIn);
+                checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterOut, checkBox_waterOut);
+            }
+            catch { }
         }
 
 
@@ -47,6 +50,7 @@ namespace TemperatureControl2
         /// <param name="e"></param>
         private void FormMain_Load(object sender, EventArgs e)
         {
+
             Utils.Logger.Op("系统启动，开始自检...");
             Utils.Logger.Sys("系统启动，开始自检...");
 
@@ -64,19 +68,30 @@ namespace TemperatureControl2
             Utils.Logger.Sys("设备端口配置成功!");
 
             // 设备开始自检
-            Utils.Logger.Sys("设备开始自检...");
-            Debug.WriteLine("开始设备自检...");
-            if (!deviceAll.DeviceSelfCheck())
+            //Utils.Logger.Sys("设备开始自检...");
+            //Debug.WriteLine("开始设备自检...");
+            //if (!deviceAll.DeviceSelfCheck())
+            //{
+            //    Utils.Logger.Sys("设备自检错误，请检查硬件连接，系统退出!");
+            //    MessageBox.Show("设备自检错误，请检查硬件连接，并重新运行程序！");
+            //    this.Close();
+            //    return;
+            //}
+
+            FormSelfCheck fm = new FormSelfCheck(deviceAll);
+            DialogResult rt = fm.ShowDialog();
+            if (rt != DialogResult.OK)
             {
-                Utils.Logger.Sys("设备自检错误，请检查硬件连接，系统退出!");
-                MessageBox.Show("设备自检错误，请检查硬件连接，并重新运行程序！");
+                //MessageBox.Show("设备自检错误！");
+                Debug.WriteLine("自检错误！");
                 this.Close();
                 return;
             }
+                
 
             Utils.Logger.Sys("设备自检成功，系统开始运行...");
             Utils.Logger.Op("设备自检成功，系统开始运行...");
-            Utils.Logger.TempData("系统开始运行...");
+            //Utils.Logger.TempData("系统开始运行...");
 
 
             // 初始化主界面中的显示相
@@ -86,6 +101,8 @@ namespace TemperatureControl2
             RegisterEventHandler();
 
             // 主槽控温表 / 辅槽控温表 开始读取参数
+            // wghou 20180105
+            // 暂时先不开始读取温度，等待自检
             deviceAll.tpTemperatureUpdateTimer.Start();
 
             // 闪烁灯
@@ -93,6 +110,7 @@ namespace TemperatureControl2
             timPic.Interval = 500;
             timPic.Tick += TimPic_Tick;
             timPic.Start();
+
         }
 
 
@@ -145,7 +163,12 @@ namespace TemperatureControl2
                 this.checkBox_ryDevice[cmd].Checked = deviceAll.ryDevice.ryStatus[(int)cmd];
             }
             // 启用总电源开关
-            this.checkBox_ryDevice[Device.RelayProtocol.Cmd_r.Elect].Enabled = true;
+            this.checkBox_elect.Enabled = true;
+            // 打开总电源开关
+            this.checkBox_elect.Checked = true;
+            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
+            RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
+            setRyStatus.BeginInvoke(null, null);
 
         }
 
@@ -159,7 +182,7 @@ namespace TemperatureControl2
             deviceAll.TpTemperatureUpdateTimerEvent += tpDevice_TpTemperatureUpdateTimerEvent;
 
 
-            // 继电器状态设置 - 状态更新事件 - 发生错误则弹出对话框
+            // 继电器状态设置 - 状态更新事件 - 发生错误则弹出提示对话框
             deviceAll.ryDevice.StatusUpdateToDeviceEvent += RyDev_StatusUpdateEvent;
 
 
@@ -175,7 +198,7 @@ namespace TemperatureControl2
             deviceAll.FlowControlStateChangedEvent += DeviceAll_FlowControlStateChangedEvent;
 
 
-            // 主槽报警及故障判断
+            // 主槽报警及故障判断 - 弹出错误提示界面 - 未及时处理则关机
             deviceAll.FlowControlFaultOccurEvent += DeviceAll_FlowControlFaultOccurEvent;
         }
 

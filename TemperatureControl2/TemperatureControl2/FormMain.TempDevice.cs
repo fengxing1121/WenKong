@@ -84,7 +84,7 @@ namespace TemperatureControl2
                 {
                     // Avoid form being minimized
                     fm.WindowState = FormWindowState.Normal;
-                    fm.Location = new System.Drawing.Point(10, 72);
+                    fm.Location = new System.Drawing.Point(10, 12);
                     fm.BringToFront();
                     formExist = true;
                 }
@@ -93,7 +93,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll,deviceAll.tpDeviceM);
-                fm.Location = new System.Drawing.Point(10, 72);
+                fm.Location = new System.Drawing.Point(10, 12);
                 fm.Name = "FormChartM";
                 fm.Text = "主槽温度曲线";
                 fm.Show();
@@ -114,7 +114,7 @@ namespace TemperatureControl2
                 {
                     // Avoid form being minimized
                     fm.WindowState = FormWindowState.Normal;
-                    fm.Location = new System.Drawing.Point(10, 522);
+                    fm.Location = new System.Drawing.Point(10, 380);
                     fm.BringToFront();
                     formExist = true;
                 }
@@ -123,7 +123,7 @@ namespace TemperatureControl2
             if (!formExist)
             {
                 FormChart fm = new FormChart(deviceAll, deviceAll.tpDeviceS);
-                fm.Location = new System.Drawing.Point(10, 522);
+                fm.Location = new System.Drawing.Point(10, 380);
                 fm.Name = "FormChartS";
                 fm.Text = "辅槽温度曲线";
                 fm.Show();
@@ -173,11 +173,17 @@ namespace TemperatureControl2
 
                 // 当前状态提示
                 // wghou
+
                 float fluc = 0.0f;
+                deviceAll.tpDeviceM.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
+                this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃ / " + (deviceAll.steadyTimeSec / 60).ToString("0") + " 分钟";
+
+                /*
                 if (deviceAll.tpDeviceM.GetFluc( deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc))
                     this.label_fluc.Text = "主控温槽波动度：" + fluc.ToString("0.0000") + "℃ / " + (deviceAll.steadyTimeSec / 60).ToString("0") + " 分钟";
                 else
                     this.label_fluc.Text = "主控温槽波动度：** / " + (deviceAll.steadyTimeSec/60).ToString("0") + " 分钟"; 
+                */
 
             }));
 

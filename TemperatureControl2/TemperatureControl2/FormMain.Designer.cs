@@ -68,7 +68,7 @@
             // 
             this.checkBox_elect.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_elect.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_elect.Location = new System.Drawing.Point(527, 249);
+            this.checkBox_elect.Location = new System.Drawing.Point(518, 249);
             this.checkBox_elect.Name = "checkBox_elect";
             this.checkBox_elect.Size = new System.Drawing.Size(140, 45);
             this.checkBox_elect.TabIndex = 20;
@@ -80,8 +80,9 @@
             // checkBox_auto
             // 
             this.checkBox_auto.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox_auto.AutoCheck = false;
             this.checkBox_auto.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_auto.Location = new System.Drawing.Point(723, 249);
+            this.checkBox_auto.Location = new System.Drawing.Point(741, 249);
             this.checkBox_auto.Name = "checkBox_auto";
             this.checkBox_auto.Size = new System.Drawing.Size(140, 45);
             this.checkBox_auto.TabIndex = 21;
@@ -95,7 +96,7 @@
             this.checkBox_dataChk.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_dataChk.AutoCheck = false;
             this.checkBox_dataChk.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_dataChk.Location = new System.Drawing.Point(527, 320);
+            this.checkBox_dataChk.Location = new System.Drawing.Point(518, 320);
             this.checkBox_dataChk.Name = "checkBox_dataChk";
             this.checkBox_dataChk.Size = new System.Drawing.Size(140, 45);
             this.checkBox_dataChk.TabIndex = 22;
@@ -108,7 +109,7 @@
             // 
             this.checkBox_man.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_man.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_man.Location = new System.Drawing.Point(723, 320);
+            this.checkBox_man.Location = new System.Drawing.Point(741, 320);
             this.checkBox_man.Name = "checkBox_man";
             this.checkBox_man.Size = new System.Drawing.Size(140, 45);
             this.checkBox_man.TabIndex = 23;
@@ -121,7 +122,7 @@
             // 
             this.checkBox_mainHeat.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_mainHeat.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_mainHeat.Location = new System.Drawing.Point(527, 391);
+            this.checkBox_mainHeat.Location = new System.Drawing.Point(518, 391);
             this.checkBox_mainHeat.Name = "checkBox_mainHeat";
             this.checkBox_mainHeat.Size = new System.Drawing.Size(140, 45);
             this.checkBox_mainHeat.TabIndex = 24;
@@ -134,7 +135,7 @@
             // 
             this.checkBox_mainCoolF.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_mainCoolF.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_mainCoolF.Location = new System.Drawing.Point(723, 391);
+            this.checkBox_mainCoolF.Location = new System.Drawing.Point(741, 391);
             this.checkBox_mainCoolF.Name = "checkBox_mainCoolF";
             this.checkBox_mainCoolF.Size = new System.Drawing.Size(140, 45);
             this.checkBox_mainCoolF.TabIndex = 25;
@@ -147,7 +148,7 @@
             // 
             this.checkBox_subHeat.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_subHeat.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_subHeat.Location = new System.Drawing.Point(527, 462);
+            this.checkBox_subHeat.Location = new System.Drawing.Point(518, 462);
             this.checkBox_subHeat.Name = "checkBox_subHeat";
             this.checkBox_subHeat.Size = new System.Drawing.Size(140, 45);
             this.checkBox_subHeat.TabIndex = 26;
@@ -160,7 +161,7 @@
             // 
             this.checkBox_subCoolF.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_subCoolF.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_subCoolF.Location = new System.Drawing.Point(723, 462);
+            this.checkBox_subCoolF.Location = new System.Drawing.Point(741, 462);
             this.checkBox_subCoolF.Name = "checkBox_subCoolF";
             this.checkBox_subCoolF.Size = new System.Drawing.Size(140, 45);
             this.checkBox_subCoolF.TabIndex = 27;
@@ -173,7 +174,7 @@
             // 
             this.checkBox_subCool.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_subCool.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_subCool.Location = new System.Drawing.Point(527, 533);
+            this.checkBox_subCool.Location = new System.Drawing.Point(518, 533);
             this.checkBox_subCool.Name = "checkBox_subCool";
             this.checkBox_subCool.Size = new System.Drawing.Size(140, 45);
             this.checkBox_subCool.TabIndex = 28;
@@ -186,7 +187,7 @@
             // 
             this.checkBox_waterIn.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_waterIn.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_waterIn.Location = new System.Drawing.Point(723, 533);
+            this.checkBox_waterIn.Location = new System.Drawing.Point(741, 533);
             this.checkBox_waterIn.Name = "checkBox_waterIn";
             this.checkBox_waterIn.Size = new System.Drawing.Size(140, 45);
             this.checkBox_waterIn.TabIndex = 29;
@@ -199,7 +200,7 @@
             // 
             this.checkBox_subCircle.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_subCircle.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_subCircle.Location = new System.Drawing.Point(527, 604);
+            this.checkBox_subCircle.Location = new System.Drawing.Point(518, 604);
             this.checkBox_subCircle.Name = "checkBox_subCircle";
             this.checkBox_subCircle.Size = new System.Drawing.Size(140, 45);
             this.checkBox_subCircle.TabIndex = 30;
@@ -212,7 +213,7 @@
             // 
             this.checkBox_waterOut.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox_waterOut.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_waterOut.Location = new System.Drawing.Point(723, 604);
+            this.checkBox_waterOut.Location = new System.Drawing.Point(741, 604);
             this.checkBox_waterOut.Name = "checkBox_waterOut";
             this.checkBox_waterOut.Size = new System.Drawing.Size(140, 45);
             this.checkBox_waterOut.TabIndex = 31;
@@ -327,9 +328,9 @@
             // 
             this.label_powerM.BackColor = System.Drawing.SystemColors.Control;
             this.label_powerM.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_powerM.Location = new System.Drawing.Point(366, 183);
+            this.label_powerM.Location = new System.Drawing.Point(351, 183);
             this.label_powerM.Name = "label_powerM";
-            this.label_powerM.Size = new System.Drawing.Size(40, 28);
+            this.label_powerM.Size = new System.Drawing.Size(55, 28);
             this.label_powerM.TabIndex = 47;
             this.label_powerM.Text = "00%";
             this.label_powerM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -337,9 +338,9 @@
             // label_powerS
             // 
             this.label_powerS.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_powerS.Location = new System.Drawing.Point(367, 522);
+            this.label_powerS.Location = new System.Drawing.Point(355, 522);
             this.label_powerS.Name = "label_powerS";
-            this.label_powerS.Size = new System.Drawing.Size(40, 28);
+            this.label_powerS.Size = new System.Drawing.Size(52, 28);
             this.label_powerS.TabIndex = 48;
             this.label_powerS.Text = "00%";
             this.label_powerS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -369,9 +370,9 @@
             // label_controlState
             // 
             this.label_controlState.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_controlState.Location = new System.Drawing.Point(531, 76);
+            this.label_controlState.Location = new System.Drawing.Point(519, 75);
             this.label_controlState.Name = "label_controlState";
-            this.label_controlState.Size = new System.Drawing.Size(322, 31);
+            this.label_controlState.Size = new System.Drawing.Size(358, 31);
             this.label_controlState.TabIndex = 52;
             this.label_controlState.Text = "系统启动";
             // 
@@ -379,9 +380,9 @@
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label1.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(280, 182);
+            this.label1.Location = new System.Drawing.Point(266, 182);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(130, 30);
+            this.label1.Size = new System.Drawing.Size(144, 30);
             this.label1.TabIndex = 53;
             this.label1.Text = "加热功率";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -390,9 +391,9 @@
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label2.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(280, 521);
+            this.label2.Location = new System.Drawing.Point(266, 521);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(130, 30);
+            this.label2.Size = new System.Drawing.Size(144, 30);
             this.label2.TabIndex = 54;
             this.label2.Text = "加热功率";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -400,18 +401,18 @@
             // label_fluc
             // 
             this.label_fluc.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_fluc.Location = new System.Drawing.Point(531, 106);
+            this.label_fluc.Location = new System.Drawing.Point(519, 106);
             this.label_fluc.Name = "label_fluc";
-            this.label_fluc.Size = new System.Drawing.Size(324, 31);
+            this.label_fluc.Size = new System.Drawing.Size(358, 31);
             this.label_fluc.TabIndex = 56;
             this.label_fluc.Text = "主控温槽波动度：****";
             // 
             // label3
             // 
             this.label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label3.Location = new System.Drawing.Point(527, 65);
+            this.label3.Location = new System.Drawing.Point(518, 65);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(336, 146);
+            this.label3.Size = new System.Drawing.Size(363, 146);
             this.label3.TabIndex = 57;
             // 
             // pictureBox1

@@ -18,11 +18,11 @@ namespace Device
         /// <summary>
         /// Relay 设备各继电器状态
         /// </summary>
-        public bool[] ryStatus = { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+        public bool[] ryStatus = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         /// <summary>
         /// Relay 设备各继电器将要设置的状态，调用 SetRelayStatusAll 后将更新继电器状态
         /// </summary>
-        public bool[] ryStatusToSet = { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+        public bool[] ryStatusToSet = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         /// <summary>
         /// 设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）
         /// </summary>
@@ -56,6 +56,20 @@ namespace Device
                 return err;
             }
 
+        }
+
+
+        /// <summary>
+        /// 继电器设备逐个自检
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public RelayProtocol.Err_r SelfCheckOneByOne(RelayProtocol.Cmd_r cmd, bool status)
+        {
+            RelayProtocol.Err_r err = RelayProtocol.Err_r.NoError;
+            err = ryDeviceProtocol.WriteRelayStatus(cmd, status);
+            return err;
         }
 
 

@@ -6,6 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+
 
 namespace TemperatureControl2
 {
@@ -13,7 +16,9 @@ namespace TemperatureControl2
     {
         // 显示时间
         private int errTime = 0;
-        private Timer timer1 = new Timer();
+        // wghou
+        // 直接 new 出来的资源，窗体不会在关闭时释放，而是整个系统在关闭时释放，所以，感觉要慎用!!!
+        //private Timer timer1 = new Timer();
         /// <summary>
         /// 警示信息统计
         /// </summary>
@@ -47,10 +52,14 @@ namespace TemperatureControl2
             timer1.Tick += Timer1_Tick;
             timer1.Interval = 1000;
             timer1.Start();
+
+
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
+            Debug.WriteLine("timer for error message and try to shut down PC.");
+            
             // 时间减一
             errTime--;
 
@@ -129,6 +138,8 @@ namespace TemperatureControl2
                 shutdownSystem(null, null);
                 this.Close();
             }
+
+            Console.WriteLine("formAlarm.timer");
         }
 
         private void button1_Click_1(object sender, EventArgs e)

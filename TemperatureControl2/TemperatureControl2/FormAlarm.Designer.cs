@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.textBox_errMessage = new System.Windows.Forms.TextBox();
             this.label_errTime = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // textBox_errMessage
@@ -87,5 +89,6 @@
         private System.Windows.Forms.TextBox textBox_errMessage;
         private System.Windows.Forms.Label label_errTime;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Timer timer1;
     }
 }

@@ -59,6 +59,8 @@
             this.buttonClear = new System.Windows.Forms.Button();
             this.buttonNegtive = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
+            this.button_checkDataBase = new System.Windows.Forms.Button();
+            this.button_writeDataBase = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -75,7 +77,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(30, 83);
+            this.label2.Location = new System.Drawing.Point(30, 94);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 17);
             this.label2.TabIndex = 1;
@@ -85,7 +87,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(30, 134);
+            this.label3.Location = new System.Drawing.Point(30, 156);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(80, 17);
             this.label3.TabIndex = 1;
@@ -95,7 +97,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(42, 185);
+            this.label4.Location = new System.Drawing.Point(30, 218);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 17);
             this.label4.TabIndex = 1;
@@ -105,7 +107,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(42, 236);
+            this.label5.Location = new System.Drawing.Point(30, 280);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 17);
             this.label5.TabIndex = 1;
@@ -115,7 +117,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(42, 287);
+            this.label6.Location = new System.Drawing.Point(30, 342);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(68, 17);
             this.label6.TabIndex = 1;
@@ -125,7 +127,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label7.Location = new System.Drawing.Point(42, 338);
+            this.label7.Location = new System.Drawing.Point(30, 404);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(68, 17);
             this.label7.TabIndex = 1;
@@ -145,7 +147,7 @@
             // 
             this.TxtTempCorrect.BackColor = System.Drawing.SystemColors.Control;
             this.TxtTempCorrect.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtTempCorrect.Location = new System.Drawing.Point(130, 80);
+            this.TxtTempCorrect.Location = new System.Drawing.Point(130, 91);
             this.TxtTempCorrect.Name = "TxtTempCorrect";
             this.TxtTempCorrect.Size = new System.Drawing.Size(100, 23);
             this.TxtTempCorrect.TabIndex = 2;
@@ -155,7 +157,7 @@
             // 
             this.TxtLeadAdjust.BackColor = System.Drawing.SystemColors.Control;
             this.TxtLeadAdjust.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtLeadAdjust.Location = new System.Drawing.Point(130, 131);
+            this.TxtLeadAdjust.Location = new System.Drawing.Point(130, 153);
             this.TxtLeadAdjust.Name = "TxtLeadAdjust";
             this.TxtLeadAdjust.Size = new System.Drawing.Size(100, 23);
             this.TxtLeadAdjust.TabIndex = 2;
@@ -165,7 +167,7 @@
             // 
             this.TxtFuzzy.BackColor = System.Drawing.SystemColors.Control;
             this.TxtFuzzy.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtFuzzy.Location = new System.Drawing.Point(130, 182);
+            this.TxtFuzzy.Location = new System.Drawing.Point(130, 215);
             this.TxtFuzzy.Name = "TxtFuzzy";
             this.TxtFuzzy.Size = new System.Drawing.Size(100, 23);
             this.TxtFuzzy.TabIndex = 2;
@@ -175,7 +177,7 @@
             // 
             this.TxtRatio.BackColor = System.Drawing.SystemColors.Control;
             this.TxtRatio.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtRatio.Location = new System.Drawing.Point(130, 233);
+            this.TxtRatio.Location = new System.Drawing.Point(130, 277);
             this.TxtRatio.Name = "TxtRatio";
             this.TxtRatio.Size = new System.Drawing.Size(100, 23);
             this.TxtRatio.TabIndex = 2;
@@ -185,7 +187,7 @@
             // 
             this.TxtIntegral.BackColor = System.Drawing.SystemColors.Control;
             this.TxtIntegral.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtIntegral.Location = new System.Drawing.Point(130, 284);
+            this.TxtIntegral.Location = new System.Drawing.Point(130, 339);
             this.TxtIntegral.Name = "TxtIntegral";
             this.TxtIntegral.Size = new System.Drawing.Size(100, 23);
             this.TxtIntegral.TabIndex = 2;
@@ -195,7 +197,7 @@
             // 
             this.TxtPower.BackColor = System.Drawing.SystemColors.Control;
             this.TxtPower.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TxtPower.Location = new System.Drawing.Point(130, 335);
+            this.TxtPower.Location = new System.Drawing.Point(130, 401);
             this.TxtPower.Name = "TxtPower";
             this.TxtPower.Size = new System.Drawing.Size(100, 23);
             this.TxtPower.TabIndex = 2;
@@ -405,11 +407,37 @@
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
+            // button_checkDataBase
+            // 
+            this.button_checkDataBase.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button_checkDataBase.Location = new System.Drawing.Point(265, 369);
+            this.button_checkDataBase.Name = "button_checkDataBase";
+            this.button_checkDataBase.Size = new System.Drawing.Size(128, 60);
+            this.button_checkDataBase.TabIndex = 39;
+            this.button_checkDataBase.TabStop = false;
+            this.button_checkDataBase.Text = "读取预留参数";
+            this.button_checkDataBase.UseVisualStyleBackColor = true;
+            this.button_checkDataBase.Click += new System.EventHandler(this.button_checkDataBase_Click);
+            // 
+            // button_writeDataBase
+            // 
+            this.button_writeDataBase.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button_writeDataBase.Location = new System.Drawing.Point(401, 368);
+            this.button_writeDataBase.Name = "button_writeDataBase";
+            this.button_writeDataBase.Size = new System.Drawing.Size(128, 60);
+            this.button_writeDataBase.TabIndex = 40;
+            this.button_writeDataBase.TabStop = false;
+            this.button_writeDataBase.Text = "保存预留参数";
+            this.button_writeDataBase.UseVisualStyleBackColor = true;
+            this.button_writeDataBase.Click += new System.EventHandler(this.button_writeDataBase_Click);
+            // 
             // FormSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(577, 402);
+            this.ClientSize = new System.Drawing.Size(577, 461);
+            this.Controls.Add(this.button_writeDataBase);
+            this.Controls.Add(this.button_checkDataBase);
             this.Controls.Add(this.button10);
             this.Controls.Add(this.buttonNegtive);
             this.Controls.Add(this.buttonClear);
@@ -487,5 +515,7 @@
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.Button buttonNegtive;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button_checkDataBase;
+        private System.Windows.Forms.Button button_writeDataBase;
     }
 }
