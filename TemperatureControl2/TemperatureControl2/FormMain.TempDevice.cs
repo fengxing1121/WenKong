@@ -155,18 +155,18 @@ namespace TemperatureControl2
                 else
                 {
                     Debug.WriteLine("未读到温度数据");
-                    this.label_tempM.Text = "0.000℃";
+                    this.label_tempM.Text = "0.0000℃";
                 }
                 // 功率系数
                 this.label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
 
                 // 更新辅槽控温温度 / 功率值
                 if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                    this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
+                    this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.00") + "℃";
                 else
                 {
                     Debug.WriteLine("未读到温度数据");
-                    this.label_tempS.Text = "0.000℃";
+                    this.label_tempS.Text = "0.00℃";
                 }
                 // 功率系数
                 this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";

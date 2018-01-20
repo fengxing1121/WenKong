@@ -53,11 +53,15 @@ namespace TemperatureControl2
                 // 波动度显示
                 float fluc = 0.0f;
                 if(this.Name == "FormChartM")
+                {
                     deviceAll.tpDeviceM.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
+                    this.label2.Text = "5分钟波动度： " + fluc.ToString("0.0000") + " ℃";
+                }
                 else
+                {
                     deviceAll.tpDeviceS.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
-
-                this.label2.Text = "5分钟波动度： " + fluc.ToString("0.0000") + " ℃";
+                    this.label2.Text = "5分钟波动度： " + fluc.ToString("0.00") + " ℃";
+                }  
             }));
         }
 

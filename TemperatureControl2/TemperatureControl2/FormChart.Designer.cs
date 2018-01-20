@@ -96,7 +96,7 @@
             // BtnClear
             // 
             this.BtnClear.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.BtnClear.Location = new System.Drawing.Point(522, 288);
+            this.BtnClear.Location = new System.Drawing.Point(578, 288);
             this.BtnClear.Name = "BtnClear";
             this.BtnClear.Size = new System.Drawing.Size(100, 35);
             this.BtnClear.TabIndex = 3;
@@ -111,7 +111,7 @@
             // button_Clear
             // 
             this.button_Clear.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button_Clear.Location = new System.Drawing.Point(401, 288);
+            this.button_Clear.Location = new System.Drawing.Point(433, 288);
             this.button_Clear.Name = "button_Clear";
             this.button_Clear.Size = new System.Drawing.Size(100, 35);
             this.button_Clear.TabIndex = 4;

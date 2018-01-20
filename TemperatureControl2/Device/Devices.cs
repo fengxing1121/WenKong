@@ -332,7 +332,8 @@ namespace Device
 
             // 读取主槽温度
             float val = 0.0f;
-            err = tpDeviceM.GetTemperatureShow( out val);
+            // 主槽温度取小数点后 4 位
+            err = tpDeviceM.GetTemperatureShow( out val,4);
             if(err != TempProtocol.Err_t.NoError)
             {
                 // 如果发生错误，则直接触发事件，向主界面报错，并暂停流程控制
@@ -362,7 +363,8 @@ namespace Device
 
 
             // 读取辅槽控温表温度值 / 功率系数
-            err = tpDeviceS.GetTemperatureShow(out val);
+            // 辅槽温度取取小数点后 2 位
+            err = tpDeviceS.GetTemperatureShow(out val, 2);
             if (err != TempProtocol.Err_t.NoError)
             {
                 // 如果发生错误，则直接触发事件，向主界面报错，并暂停流程控制
@@ -755,6 +757,20 @@ namespace Device
                     break;
             }
 
+            // 辅槽制冷延迟打开功能
+            if(ryDevice.subCoolWaiting == true)
+            {
+                if((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes > 10)
+                {
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
+                    // 将继电器状态写入下位机
+                    // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                    RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                    if (ryErr != RelayProtocol.Err_r.NoError)
+                        FlowControlFaultOccurEvent(FaultCode.RelayError);
+                }
+            }
+
 
             // 故障判断子步骤 - 判断主要故障，如 温度不降 / 温度持续上升 / 温度持续下降 / 温度波动过大 等等
             // 如果发生错误，则触发 FlowControlFaultOccurEvent 事件，通知主界面做相应的处理
@@ -1056,14 +1072,20 @@ namespace Device
                 }
                 else
                 {
-                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
-                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCircle] = true;
+                    // 辅槽制冷关闭后需要等待十分钟才能再次打开
+                    TimeSpan dt = DateTime.Now - ryDevice.subCoolCloseTime;
 
-                    // 将继电器状态写入下位机
-                    // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
-                    RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
-                    if (ryErr != RelayProtocol.Err_r.NoError)
-                        FlowControlFaultOccurEvent(FaultCode.RelayError);
+                    if(dt.TotalMinutes > 10)
+                    {
+                        ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
+                        ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCircle] = true;
+
+                        // 将继电器状态写入下位机
+                        // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
+                        RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
+                        if (ryErr != RelayProtocol.Err_r.NoError)
+                            FlowControlFaultOccurEvent(FaultCode.RelayError);
+                    }
                 }
                 
             } 
@@ -1117,6 +1139,21 @@ namespace Device
                 ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterIn] = false;
                 ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.WaterOut] = false;
 #endif
+
+                // 如果辅槽制冷本身就是打开的，则不操作
+                if (ryDevice.ryStatus[(int)RelayProtocol.Cmd_r.SubCool] == true)
+                {
+
+                }
+                // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes<10)
+                {
+                    // 暂时先保持关闭，等待满 10 分钟后再打开
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
+                    ryDevice.subCoolWaiting = true;
+                }
+
+
                 // 将继电器状态写入下位机
                 // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
                 RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
@@ -1214,6 +1251,21 @@ namespace Device
                 if (currentState.tempPoint.stateTemp < 5.0f)
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCoolF] = true;
 #endif
+
+                // 如果辅槽制冷本身就是打开的，则不操作
+                if (ryDevice.ryStatus[(int)RelayProtocol.Cmd_r.SubCool] == true)
+                {
+
+                }
+                // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < 10)
+                {
+                    // 暂时先保持关闭，等待满 10 分钟后再打开
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
+                    ryDevice.subCoolWaiting = true;
+                }
+
+
                 // 将继电器状态写入下位机
                 // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
                 RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();
@@ -1317,6 +1369,21 @@ namespace Device
                 if (currentState.tempPoint.stateTemp < 5.0f)
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCoolF] = true;
 #endif
+
+                // 如果辅槽制冷本身就是打开的，则不操作
+                if (ryDevice.ryStatus[(int)RelayProtocol.Cmd_r.SubCool] == true)
+                {
+
+                }
+                // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < 10)
+                {
+                    // 暂时先保持关闭，等待满 10 分钟后再打开
+                    ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
+                    ryDevice.subCoolWaiting = true;
+                }
+
+
                 // 将继电器状态写入下位机
                 // 如果出现错误，则通过 FlowControlFaultOccurEvent 事件通知主界面提示错误
                 RelayProtocol.Err_r ryErr = ryDevice.UpdateStatusToDeviceReturnErr();

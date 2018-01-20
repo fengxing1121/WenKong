@@ -24,6 +24,17 @@ namespace Device
         /// </summary>
         public bool[] ryStatusToSet = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         /// <summary>
+        /// 辅槽制冷上一次关闭的时间；
+        /// 辅槽制冷开关在关闭后，必须要等待至少十分钟，才能再次打开；
+        /// 故，在每次关闭时，都记录下关闭时的时间点
+        /// </summary>
+        public DateTime subCoolCloseTime = DateTime.MinValue;
+        /// <summary>
+        /// 辅槽制冷需要延迟打开
+        /// 配合 subCoolCLoseTime 使用
+        /// </summary>
+        public bool subCoolWaiting = false;
+        /// <summary>
         /// 设备线程锁，同一时间只允许单一线程访问设备资源（串口 / 数据）
         /// </summary>
         private object ryLocker = new object();
@@ -157,6 +168,8 @@ namespace Device
             err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubCool, false);
             if (err != RelayProtocol.Err_r.NoError)
                 return err;
+            // 记录辅槽制冷关闭时间
+            subCoolCloseTime = DateTime.Now;
             Thread.Sleep(1000);
             // 关闭辅槽控温开关
             err = ryDeviceProtocol.WriteRelayStatus(RelayProtocol.Cmd_r.SubHeat, false);
@@ -206,6 +219,10 @@ namespace Device
                     // 调试信息
                     Debug.WriteLineIf(err == RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新成功!  " + ryStatusToSet[(int)cmd].ToString());
                     Debug.WriteLineIf(err != RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新失败!  " + err.ToString());
+
+                    // 如果正确关闭了辅槽制冷，则记录其关闭时间
+                    if (cmd == RelayProtocol.Cmd_r.SubCool && ryStatusToSet[(int)cmd] == false && err == RelayProtocol.Err_r.NoError)
+                        subCoolCloseTime = DateTime.Now;
 
                     if (err == RelayProtocol.Err_r.NoError)
                     {
@@ -273,6 +290,10 @@ namespace Device
                     // 调试信息
                     Debug.WriteLineIf(err == RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新成功!  " + ryStatusToSet[(int)cmd].ToString());
                     Debug.WriteLineIf(err != RelayProtocol.Err_r.NoError, "继电器 " + cmd.ToString() + " 状态更新失败!  " + err.ToString());
+
+                    // 如果正确关闭了辅槽制冷，则记录其关闭时间
+                    if (cmd == RelayProtocol.Cmd_r.SubCool && ryStatusToSet[(int)cmd] == false && err == RelayProtocol.Err_r.NoError)
+                        subCoolCloseTime = DateTime.Now;
 
                     if (err == RelayProtocol.Err_r.NoError)
                     {

@@ -285,6 +285,43 @@ namespace Device
             return err;
         }
 
+        /// <summary>
+        /// 从温控设备硬件读取温度显示值，发生错误则返回上一个状态时的温度值；
+        /// 温度值取小数点后 digits 位
+        /// 错误信息处理 - 返回错误标志
+        /// </summary>
+        /// <param name="val">温度显示值</param>
+        /// <param name="digits">取小数点后位数</param>
+        /// <returns>返回错误标志</returns>
+        public TempProtocol.Err_t GetTemperatureShow(out float val, int digits)
+        {
+            TempProtocol.Err_t err = TempProtocol.Err_t.NoError;
+            lock (tpLocker)
+            {
+                // 从下位机读取温度显示值
+                err = tpDevice.ReadData(TempProtocol.Cmd_t.TempShow, out val);
+
+                try { val = (float)Math.Round(val, 2); } catch { }
+
+                if (err == TempProtocol.Err_t.NoError)
+                {
+                    // 未发生错误，则加入到 temperatures 列表中
+                    AddTemperature(val);
+                }
+                else
+                {
+                    // 如发生错误，则不向列表中添加新的数据，返回上一时刻的温度显示
+                    if (temperatures.Count > 0)
+                        val = temperatures.Last();
+                    else
+                        val = 0.0f;
+                }
+            }
+
+            // 返回错误标志
+            return err;
+        }
+
 
         /// <summary>
         /// 从温控设备硬件读取功率显示值，如发生错误，则返回上一状态时的功率值；
