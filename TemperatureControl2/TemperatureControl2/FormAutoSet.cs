@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace TemperatureControl2
 {
@@ -55,6 +56,47 @@ namespace TemperatureControl2
             paramSTextBox[5] = textBox_integS;
             paramSTextBox[6] = textBox_powerS;
 
+            this.timer1.Interval = 10000;
+            this.timer1.Tick += Timer1_Tick;
+            this.backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
+        }
+
+        // 间隔一段时间，查询
+        private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            List<bool> finishedStatus = new List<bool>();
+            lock(devicesAll.stepLocker)
+            {
+                // 获取当前温度点列表中的完成状态
+                for(int i =0;i<devicesAll.temperaturePointList.Count;i++)
+                {
+                    finishedStatus.Add(devicesAll.temperaturePointList[i].finished);
+                }
+            }
+            if (finishedStatus.Count != paramList.Count)
+                return;
+
+            // 将温度点状态更新到显示列表中
+            bool changed = false;
+            for (int i = 0; i < paramList.Count; i++)
+            {
+                if (paramList[i].finished != finishedStatus[i])
+                {
+                    // 更新状态
+                    changed = true;
+                    paramList[i].finished = finishedStatus[i];
+                }
+            }
+            // 如果有改变，则更新显示
+            if(changed) this.BeginInvoke(new EventHandler(delegate { updateDataGridView(); }));
+
+            if (changed) Debug.WriteLine("FormAuto 状态更新定时器，状态已更新.");
+            else Debug.WriteLine("FormAuto 状态更新定时器，状态未更新.");
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            this.backgroundWorker1.RunWorkerAsync();
         }
 
         private void updateDataGridView()
@@ -150,7 +192,7 @@ namespace TemperatureControl2
                     flowStart = false;
 
                     // 判断是否已设定完成实验测量后关机
-                    this.checkBox_shutDown.Checked = true;
+                    this.checkBox_shutDown.Checked = false;
                     this.checkBox_shutDown.Enabled = true;
                 }
             }
@@ -350,9 +392,15 @@ namespace TemperatureControl2
                 flowStart = true;
                 checkBox_start.Text = "停止";
 
+                // 开启定时器 - 状态更新
+                //this.timer1.Start();
             }
             else
             {
+                // 停止定时器 - 状态更新
+                this.timer1.Stop();
+
+
                 // 暂停自动控温流程
                 lock(this.devicesAll.stepLocker)
                 {
@@ -452,11 +500,9 @@ namespace TemperatureControl2
 #endif
 
 
-        // 取消操作，关闭窗口
+        // 返回主界面，关闭窗口
         private void button_cancel_Click(object sender, EventArgs e)
         {
-            Utils.Logger.Op("点击自动控温设置界面 取消 按键，取消了自动控温流程设置...");
-            Utils.Logger.Sys("点击自动控温设置界面 取消 按键，取消了自动控温流程设置...");
 
             // 取消操作
             this.Dispose();
@@ -784,14 +830,69 @@ namespace TemperatureControl2
 #endif
         }
 
-        private void button10_Click(object sender, EventArgs e)
+
+        /// <summary>
+        /// 从数据库中查询参数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_chk_Click(object sender, EventArgs e)
         {
             float val = 0.0f;
-            if (!float.TryParse(textBox_tpSetM.Text, out val))
-                return;
+            // 从数据库中查询主槽温度设定参数
+            if (float.TryParse(textBox_tpSetM.Text, out val))
+            {
+                Utils.CTempSets tpSet = null;
+                tpSet = Utils.DataBase.checkTempSetM(val, 2.0f);
 
-            
+                if(tpSet!=null && tpSet.Count != 0)
+                {
+                    float[] parm = { 0, 0, 0, 0, 0, 0, 0 };
+                    for (int i = 0; i < tpSet.Count; i++)
+                    {
+                        for (int j = 1; j < 7; j++)
+                        {
+                            parm[j] += tpSet[i][j];
+                        }
+                    }
+
+                    // 数据库中温度修正值始终为 0
+                    parm[1] = 0;
+
+                    for (int i = 1; i < 7; i++)
+                    {
+                        paramMTextBox[i].Text = (parm[i] / tpSet.Count).ToString();
+                    }
+                }
+            }
+
+
+            // 从数据库中查询辅槽温度设定参数
+            if (float.TryParse(textBox_tpSetS.Text, out val))
+            {
+                Utils.CTempSets tpSet = null;
+                tpSet = Utils.DataBase.checkTempSetS(val, 2.0f);
+
+                if (tpSet != null && tpSet.Count != 0)
+                {
+                    float[] parm = { 0, 0, 0, 0, 0, 0, 0 };
+                    for (int i = 0; i < tpSet.Count; i++)
+                    {
+                        for (int j = 1; j < 7; j++)
+                        {
+                            parm[j] += tpSet[i][j];
+                        }
+                    }
+
+                    for (int i = 1; i < 7; i++)
+                    {
+                        paramSTextBox[i].Text = (parm[i] / tpSet.Count).ToString();
+                    }
+                }
+            }
+
         }
+
 
 
         ///////////////////////////////////////////////////////////////

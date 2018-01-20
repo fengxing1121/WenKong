@@ -47,7 +47,7 @@
             this.TempPic.Dock = System.Windows.Forms.DockStyle.Top;
             this.TempPic.Location = new System.Drawing.Point(0, 0);
             this.TempPic.Name = "TempPic";
-            this.TempPic.Size = new System.Drawing.Size(634, 280);
+            this.TempPic.Size = new System.Drawing.Size(704, 280);
             this.TempPic.TabIndex = 0;
             this.TempPic.TabStop = false;
             // 
@@ -124,7 +124,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(634, 328);
+            this.ClientSize = new System.Drawing.Size(704, 328);
             this.Controls.Add(this.button_Clear);
             this.Controls.Add(this.BtnClear);
             this.Controls.Add(this.LblCtrlTimeShow);

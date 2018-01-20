@@ -30,8 +30,8 @@ namespace TemperatureControl2
         private float startHor;
         private float endHor;
         //private const float spaceLeft = 105;
-        private const float spaceLeft = 99;
-        private const float spaceRight = 35;
+        private const float spaceLeft = 79;
+        private const float spaceRight = 25;
         private const float spaceTop = 25;
         private const float spaceBottom = 25;
         private const float startText = 30;
@@ -51,7 +51,7 @@ namespace TemperatureControl2
 
         // Time line
         private const int timeColInt = 2;           // Time interval to tag time on x-Axis
-        private const int tempChartFixLen = 501;    // Count of point used in chart, 
+        private const int tempChartFixLen = 601;    // Count of point used in chart, 
                                                     // 661 is suitable for 800*? chart
                                                     // Use for saving temperature data only for chart drawing
         private List<float> tempListForChart;// 所有要绘制的温度数据
@@ -262,14 +262,27 @@ namespace TemperatureControl2
             }
 #endif
             float interval = spaceHor / (tempChartFixLen -1 );
+            // wghou 20180109
+            // 关于温度分辨率的调整
+#if false
             for (int i = 0; i < tempListForChart.Count - 1; i++)
             {
                 mGhp.DrawLine(mLinePen, startHor + i * interval, endVer - (tempListForChart[i] - min) / margin * spaceVer,
                     startHor + (i + 1) * interval, endVer - (tempListForChart[i + 1] - min) / margin * spaceVer);
             }
-#endregion
+#else
+            float temperatureFirst = 0.0f, temperatureNext = 0.0f;
+            for (int i = 0; i < tempListForChart.Count - 1; i++)
+            {
+                temperatureFirst = (float)Math.Round(tempListForChart[i], 4);
+                temperatureNext = (float)Math.Round(tempListForChart[i +1], 4);
+                mGhp.DrawLine(mLinePen, startHor + i * interval, endVer - (temperatureFirst - min) / margin * spaceVer,
+                    startHor + (i + 1) * interval, endVer - (temperatureNext - min) / margin * spaceVer);
+            }
+#endif
+            #endregion
 
-#region tag time to x axis
+            #region tag time to x axis
             List<int[]> timeTags = CalcTimeTags();
             // Draw all time tags
             for (int i = 0; i < timeTags.Count; i++)

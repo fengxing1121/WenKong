@@ -30,7 +30,7 @@ namespace TemperatureControl2
         private void Timer1_Tick(object sender, EventArgs e)
         {
             System.TimeSpan tmSpan = System.DateTime.Now - deviceAll.startTime;
-            this.label1.Text = "控温时间： " + tmSpan.Hours.ToString("00") + " h " + tmSpan.Minutes.ToString("00") + " m " + tmSpan.Seconds.ToString("00") + " s";
+            this.label1.Text = "控温时间： " + tmSpan.Hours.ToString("00") + " : " + tmSpan.Minutes.ToString("00") + " : " + tmSpan.Seconds.ToString("00") + " s";
         }
 
         private void TemperatureChart_Load(object sender, EventArgs e)
@@ -52,7 +52,11 @@ namespace TemperatureControl2
 
                 // 波动度显示
                 float fluc = 0.0f;
-                deviceAll.tpDeviceM.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
+                if(this.Name == "FormChartM")
+                    deviceAll.tpDeviceM.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
+                else
+                    deviceAll.tpDeviceS.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
+
                 this.label2.Text = "5分钟波动度： " + fluc.ToString("0.0000") + " ℃";
             }));
         }

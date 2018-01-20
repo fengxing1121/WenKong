@@ -240,6 +240,9 @@ namespace TemperatureControl2
                     }
                 }
 
+                // 在数据库中，温度修正值始终为 0
+                parm[1] = 0;
+
                 for(int i=1;i<7;i++)
                 {
                     tpParam[i].Text = (parm[i] / tpSet.Count).ToString();
@@ -259,11 +262,14 @@ namespace TemperatureControl2
             {
                 if(!float.TryParse(tpParam[i].Text,out val))
                 {
-
+                    MessageBox.Show("参数设定格式错误!");
                     return;
                 }
                 tpSet[i] = val;
             }
+
+            // 在数据库中，温度修正值始终为 0
+            tpSet[1] = 0;
 
             bool result = true;
             if(this.Name == "FormSettingM")

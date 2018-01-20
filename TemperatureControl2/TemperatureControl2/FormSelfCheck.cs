@@ -64,8 +64,12 @@ namespace TemperatureControl2
                 MessageBox.Show("辅槽控温设备自检失败！");
                 goto ExitErr;
             }
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                label2.Text = "温控设备自检成功！";
+            }));
 
-            goto ExitOK;
+            Thread.Sleep(1000);
 
             this.BeginInvoke(new EventHandler(delegate
             {
@@ -129,7 +133,7 @@ namespace TemperatureControl2
                 goto ExitErr;
             }
 
-            ExitOK:
+
             this.BeginInvoke(new EventHandler(delegate
             {
                 label2.Text = "设备自检成功！";

@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button_cancel = new System.Windows.Forms.Button();
             this.textBox_tpSetM = new System.Windows.Forms.TextBox();
             this.button_add = new System.Windows.Forms.Button();
@@ -83,6 +84,8 @@
             this.button_chkParam = new System.Windows.Forms.Button();
             this.checkBox_start = new System.Windows.Forms.CheckBox();
             this.checkBox_shutDown = new System.Windows.Forms.CheckBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -414,8 +417,8 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AllowUserToResizeColumns = false;
             this.dataGridView1.AllowUserToResizeRows = false;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.index,
@@ -635,7 +638,7 @@
             this.button_chkParam.TabIndex = 74;
             this.button_chkParam.Text = "查询参数";
             this.button_chkParam.UseVisualStyleBackColor = true;
-            this.button_chkParam.Click += new System.EventHandler(this.button10_Click);
+            this.button_chkParam.Click += new System.EventHandler(this.button_chk_Click);
             // 
             // checkBox_start
             // 
@@ -779,5 +782,7 @@
         private System.Windows.Forms.Button button_chkParam;
         private System.Windows.Forms.CheckBox checkBox_start;
         private System.Windows.Forms.CheckBox checkBox_shutDown;
+        private System.Windows.Forms.Timer timer1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
