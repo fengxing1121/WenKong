@@ -918,6 +918,24 @@ namespace TemperatureControl2
 
         ///////////////////////////////////////////////////////////////
         // 键盘操作
+
+        /// <summary>
+        /// 检查是否可以继续向小数点后添加数字 - 
+        /// true 表示可以继续添加，false 表示不可以
+        /// </summary>
+        /// <param name="str">数字字符串</param>
+        /// <param name="digit">小数点后的位数</param>
+        /// <returns></returns>
+        bool checkDotPosition(string str, int digit)
+        {
+            if (!str.Contains('.')) return true;
+
+            if (str.Length - str.IndexOf('.') < 3) return true;
+
+            return false;
+        }
+
+
         private void button9_Click(object sender, EventArgs e)
         {
             if (tx != null)

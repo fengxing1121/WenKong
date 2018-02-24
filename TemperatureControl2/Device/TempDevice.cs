@@ -301,7 +301,7 @@ namespace Device
                 // 从下位机读取温度显示值
                 err = tpDevice.ReadData(TempProtocol.Cmd_t.TempShow, out val);
 
-                try { val = (float)Math.Round(val, 2); } catch { }
+                try { val = (float)Math.Round(val, digits); } catch { }
 
                 if (err == TempProtocol.Err_t.NoError)
                 {

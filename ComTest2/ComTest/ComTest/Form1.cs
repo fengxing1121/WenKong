@@ -40,6 +40,17 @@ namespace ComTest
         public Form1()
         {
             InitializeComponent();
+
+            // 界面显示值
+            this.label_SetTempM.Text = tmParam.SetTemp.ToString("0.0000");
+            this.label_SteadyM.Text = tmParam.Steady.ToString();
+            this.label_ChangeRateM.Text = tmParam.ChangeRate.ToString();
+            this.label_FlucM.Text = tmParam.Fluc.ToString();
+
+            this.label_SetTempS.Text = tsParam.SetTemp.ToString("0.0000");
+            this.label_SteadyS.Text = tsParam.Steady.ToString();
+            this.label_ChangeRateS.Text = tsParam.ChangeRate.ToString();
+            this.label_FlucS.Text = tsParam.Fluc.ToString();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -228,6 +239,88 @@ namespace ComTest
             {
                 ryErrLast = this.checkBox_RyErrLast.Checked;
             }
+        }
+
+
+        /// <summary>
+        /// 主控温槽 - 当前温度附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_CurTempPlusM_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_CurTempPlusM.Text = ((this.hScrollBar_CurTempPlusM.Value - 50) * 0.05).ToString();
+            lock (tmLocker) { tmParam.CurTempPlus = (float)((this.hScrollBar_CurTempPlusM.Value - 50) * 0.05); }
+        }
+
+
+        /// <summary>
+        /// 主控温槽 - 当前温度变化率附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_ChangeRatePlusM_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_ChangeRatePlusM.Text = ((this.hScrollBar_ChangeRatePlusM.Value - 50) * 0.001).ToString();
+            lock (tmLocker) { tmParam.ChangeRatePlus = (float)((this.hScrollBar_ChangeRatePlusM.Value - 50) * 0.001); }
+        }
+
+
+        /// <summary>
+        /// 主控温槽 - 当前波动度附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_FlucPlusM_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_FlucPlusM.Text = ((this.hScrollBar_FlucPlusM.Value - 50) * 0.001).ToString();
+            lock (tmLocker) { tmParam.FlucPlus = (float)((this.hScrollBar_FlucPlusM.Value - 50) * 0.001); }
+        }
+
+
+
+        /// <summary>
+        /// 辅控温槽 - 当前温度附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_CurTempPlusS_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_CurTempPlusS.Text = ((this.hScrollBar_CurTempPlusS.Value - 50) * 0.05).ToString();
+            lock (tsLocker) { tsParam.CurTempPlus = (float)((this.hScrollBar_CurTempPlusS.Value - 50) * 0.05); }
+        }
+
+
+
+        /// <summary>
+        /// 辅控温槽 - 当前温度变化率附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_ChangeRatePlusS_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_ChangeRatePlusS.Text = ((this.hScrollBar_ChangeRatePlusS.Value - 50) * 0.001).ToString();
+            lock (tsLocker) { tsParam.ChangeRatePlus = (float)((this.hScrollBar_ChangeRatePlusS.Value - 50) * 0.001); }
+        }
+
+
+
+        /// <summary>
+        /// 辅控温槽 - 当前波动度附加值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hScrollBar_FlucPlusS_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_FlucPlusS.Text = ((this.hScrollBar_FlucPlusS.Value - 50) * 0.001).ToString();
+            lock (tsLocker) { tsParam.FlucPlus = (float)((this.hScrollBar_FlucPlusS.Value - 50) * 0.001); }
+        }
+
+        private void hScrollBar_Sr_ValueChanged(object sender, EventArgs e)
+        {
+            this.label_Sr.Text = (12.0f + (hScrollBar_Sr.Value - 50) * 0.2f).ToString("0.000");
+
+            lock (srLocker) { this.srValue = 12.0f + (hScrollBar_Sr.Value - 50) * 0.2f; }
         }
     }
 }

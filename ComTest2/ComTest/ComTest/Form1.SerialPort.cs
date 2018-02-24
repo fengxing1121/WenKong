@@ -121,7 +121,7 @@ namespace ComTest
             /// <summary>
             /// 温度变化速率 - 下降
             /// </summary>
-            public float ChangeRate = -0.05f;
+            public float ChangeRate = 0.025f;
             /// <summary>
             /// 按正弦信号 - 0~10
             /// </summary>
@@ -216,6 +216,10 @@ namespace ComTest
             DataErr = 2,
         }
         /// <summary>
+        /// 传感器温度值
+        /// </summary>
+        float srValue = 12.00f;
+        /// <summary>
         /// 锁 - 用于锁定传感器状态参数
         /// </summary>
         object srLocker = new object();
@@ -274,7 +278,7 @@ namespace ComTest
                             if (dataRev.Contains("R"))
                             {
                                 // 上位机读取数据
-                                float temp = 12.0f;
+                                float temp = srValue;
                                 dataRev += temp.ToString("0.000");
                                 dataRev += ":";
                                 sPortSr.WriteLine(dataRev);
@@ -486,6 +490,7 @@ namespace ComTest
                     Debug.WriteLine("辅槽更新了温度设定值：" + val.ToString());
                     // 更新温度设定值
                     tsParam.SetTemp = val;
+                    this.BeginInvoke(new EventHandler(delegate { this.label_SetTempS.Text = val.ToString("0.000"); }));
                 }
 
                 // 向上位机返回正确数据
@@ -501,7 +506,7 @@ namespace ComTest
                     // 计算出当前的温度显示值
 
                     // 如果未稳定，则使温度发生一个变化
-                    if(!tsParam.Steady) tsParam.CurTemp += tsParam.ChangeRate + tsParam.ChangeRatePlus;
+                    if(!tsParam.Steady) tsParam.CurTemp += (tsParam.ChangeRate + tsParam.ChangeRatePlus) * Math.Sign(tsParam.SetTemp - tsParam.CurTemp);
 
                     // 如果改变后的温度值接近温度设定点，则设当前温度点为温度设定值
                     if(Math.Abs(tsParam.CurTemp - tsParam.SetTemp) <= Math.Abs((tsParam.ChangeRate + tsParam.ChangeRatePlus)/2))
@@ -512,15 +517,18 @@ namespace ComTest
 
                     // 计算波动度
                     tsParam.PhaseCount++;
-                    if (tsParam.PhaseCount >= 10) tsParam.PhaseCount = 0;
+                    if (tsParam.PhaseCount >= 20) tsParam.PhaseCount = 0;
 
-                    float fluc = tsParam.Fluc * (float)Math.Sin(3.1415 * tsParam.PhaseCount / 5);
+                    float fluc = tsParam.Fluc * (float)Math.Sin(3.1415 * tsParam.PhaseCount / 10) / 2;
 
                     // 如果稳定，则波动度为零
-                    if (tsParam.Steady) fluc = 0;
+                    //if (tsParam.Steady) fluc = 0;
 
                     // 最终的显示值 = 当前温度值 + 附加温度值 + 计算波动度 + 附加波动度
                     float val = tsParam.CurTemp + tsParam.CurTempPlus + fluc + tsParam.FlucPlus;
+
+                    // 界面显示的当前温度值为 curTemp + 波动度
+                    this.BeginInvoke(new EventHandler(delegate { this.label_CurTempS.Text = val.ToString("0.000"); }));
 
                     dataRev += val.ToString("0.000");
                     dataRev += ":";
@@ -604,7 +612,7 @@ namespace ComTest
         void processDataTm(string dataRev)
         {
             // 先判断温度是否已经稳定
-            if (Math.Abs(tmParam.CurTemp - tmParam.SetTemp) * 2 < Math.Abs(tmParam.ChangeRate + tmParam.ChangeRatePlus)) tmParam.Steady = true;
+            if (Math.Abs(tmParam.CurTemp - tmParam.SetTemp) * 2.0f < Math.Abs(tmParam.ChangeRate + tmParam.ChangeRatePlus)) tmParam.Steady = true;
             else tmParam.Steady = false;
 
             if (dataRev.Contains("W"))
@@ -627,6 +635,9 @@ namespace ComTest
                     Debug.WriteLine("主槽更新了温度设定值：" + val.ToString());
                     // 更新温度设定值
                     tmParam.SetTemp = val;
+
+                    // 更新界面显示值
+                    this.BeginInvoke(new EventHandler(delegate { this.label_SetTempM.Text = val.ToString("0.0000"); }));
                 }
 
                 // 向上位机返回正确数据
@@ -642,10 +653,10 @@ namespace ComTest
                     // 计算出当前的温度显示值
 
                     // 如果未稳定，则使温度发生一个变化
-                    if (!tmParam.Steady) tmParam.CurTemp += tmParam.ChangeRate + tmParam.ChangeRatePlus;
+                    if (!tmParam.Steady) tmParam.CurTemp += (tmParam.ChangeRate + tmParam.ChangeRatePlus) * Math.Sign(tmParam.SetTemp - tmParam.CurTemp);
 
                     // 如果改变后的温度值接近温度设定点，则设当前温度点为温度设定值
-                    if (Math.Abs(tmParam.CurTemp - tmParam.SetTemp) <= Math.Abs((tmParam.ChangeRate + tmParam.ChangeRatePlus) / 2))
+                    if (Math.Abs(tmParam.CurTemp - tmParam.SetTemp) * 2.0f <= Math.Abs(tmParam.ChangeRate + tmParam.ChangeRatePlus))
                     {
                         tmParam.CurTemp = tmParam.SetTemp;
                         tmParam.Steady = true;
@@ -653,23 +664,26 @@ namespace ComTest
 
                     // 计算波动度
                     tmParam.PhaseCount++;
-                    if (tmParam.PhaseCount >= 10) tmParam.PhaseCount = 0;
+                    if (tmParam.PhaseCount >= 30) tmParam.PhaseCount = 0;
 
-                    float fluc = tmParam.Fluc * (float)Math.Sin(3.1415 * tmParam.PhaseCount / 5);
+                    float fluc = tmParam.Fluc * (float)Math.Sin(3.1415 * tmParam.PhaseCount / 15) / 2;
 
                     // 如果稳定，则波动度为零
-                    if (tmParam.Steady) fluc = 0;
+                    //if (tmParam.Steady) fluc = 0;
 
                     // 最终的显示值 = 当前温度值 + 附加温度值 + 计算波动度 + 附加波动度
                     float val = tmParam.CurTemp + tmParam.CurTempPlus + fluc + tmParam.FlucPlus;
 
-                    dataRev += val.ToString("0.000");
+                    // 界面显示值 - 当前温度值 = curTemp + 波动度
+                    this.BeginInvoke(new EventHandler(delegate { this.label_CurTempM.Text = val.ToString("0.0000"); }));
+
+                    dataRev += val.ToString("0.0000");
                     dataRev += ":";
                     sPortTm.WriteLine(dataRev);
                 }
                 else
                 {
-                    dataRev += "12.000";
+                    dataRev += "12.0000";
                     dataRev += ":";
                     sPortTm.WriteLine(dataRev);
                 }

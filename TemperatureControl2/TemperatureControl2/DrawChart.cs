@@ -55,6 +55,8 @@ namespace TemperatureControl2
                                                     // 661 is suitable for 800*? chart
                                                     // Use for saving temperature data only for chart drawing
         private List<float> tempListForChart;// 所有要绘制的温度数据
+
+        private int digits;     // 数据分辨率
         #endregion
 
         #region constructor
@@ -79,6 +81,14 @@ namespace TemperatureControl2
 
             mBmp = new Bitmap(this.width, this.height);
             mGhp = Graphics.FromImage(mBmp);
+
+            if (tpDevice.tpDeviceName == "主槽控温设备")
+                digits = 4;
+            else if (tpDevice.tpDeviceName == "辅槽控温设备")
+                digits = 3;
+            else
+                digits = 4;     // 默认 4 位有效数字
+
         }
         #endregion
 
@@ -141,13 +151,47 @@ namespace TemperatureControl2
 
                 // 为了保证每格的最小分辨率为0.001,要处理一下
                 // wghou -> 分辨率改为 0.0001
-                max = (float)Math.Round(max, 4);
-                min = (float)Math.Round(min, 4);
-                if (max - min <= 0.0001f * rowNum)
+                if(digits == 3)
                 {
-                    float margin = max - min;
-                    max = (float)Math.Round(max + (0.0001f * rowNum - margin) / 2, rowNum / 2);
-                    min = max - 0.0001f * rowNum;
+                    max = (float)Math.Round(max, 3);
+                    min = (float)Math.Round(min, 3);
+
+                    //if (max - min <= 0.001f * rowNum)
+                    //{
+                    //    float margin = max - min;
+                    //    //max = (float)Math.Round(max + (0.001f * rowNum - margin) / 2, rowNum / 2);
+                    //    max = (float)Math.Round(min + (max - min) / 2 + (0.001f * rowNum) / 2, 3);
+                    //    min = max - 0.001f * rowNum;
+                    //}
+
+                    // 总的幅度（范围）是 0.001*rowNum 的整数倍
+                    float marg = max - min;
+                    //int tms = (int)((marg + 0.001f * (rowNum - 1)) / (0.001f * rowNum));
+                    int tms = (int)Math.Ceiling(marg / (0.001f * rowNum));
+                    if (tms == 0) tms = 1;
+                    max = (float)Math.Round(min + marg/2 + tms*0.001f*rowNum/2, 3);
+                    min = (float)(max - tms * 0.001f * rowNum);
+                }
+                else
+                {
+                    max = (float)Math.Round(max, 4);
+                    min = (float)Math.Round(min, 4);
+
+                    //if (max - min <= 0.0001f * rowNum)
+                    //{
+                    //    float margin = max - min;
+                    //    max = (float)Math.Round(max + (0.0001f * rowNum - margin) / 2, rowNum / 2);
+                    //    //max = (float)Math.Round((max - min) / 2 + (0.0001f * rowNum) / 2, 3);
+                    //    min = max - 0.0001f * rowNum;
+                    //}
+
+                    // 总的幅度（范围）是 0.001*rowNum 的整数倍
+                    float marg = max - min;
+                    //int tms = (int)((marg + 0.001f * (rowNum - 1)) / (0.001f * rowNum));
+                    int tms = (int)Math.Ceiling(marg / (0.0001f * rowNum));
+                    if (tms == 0) tms = 1;
+                    max = (float)Math.Round(min + marg / 2 + tms * 0.0001f * rowNum / 2, 4);
+                    min = (float)(max - tms * 0.0001f * rowNum);
                 }
             }
         }
@@ -242,14 +286,33 @@ namespace TemperatureControl2
             }
 #endif
             // wghou -> 分辨率改为 0.0001
-            float max3f = (float)Math.Round(max, 4);
-            float step3f = (float)Math.Round(margin / rowNum,4);
-            for (int i = 0; i < rowNum + 1; i++)
+            if(digits==3)
             {
-                // wghou -> 分辨率改为 0.0001
-                mGhp.DrawString((max3f - i * step3f).ToString("0.0000"),
+                float max3f = (float)Math.Round(max, digits);
+                float step3f = (float)Math.Round(margin / rowNum, digits);
+                for (int i = 0; i < rowNum + 1; i++)
+                {
+                    // wghou -> 分辨率改为 0.0001
+                    // 默认 4 位
+                    mGhp.DrawString((max3f - i * step3f).ToString("0.000"),
                     mFont, mBrush, startText, startVer + rowInterval * i - 8);
+                }
             }
+            else
+            {
+                float max3f = (float)Math.Round(max, digits);
+                float step3f = (float)Math.Round(margin / rowNum, digits);
+                for (int i = 0; i < rowNum + 1; i++)
+                {
+                    // wghou -> 分辨率改为 0.0001
+                    // 默认 4 位
+                    mGhp.DrawString((max3f - i * step3f).ToString("0.0000"),
+                    mFont, mBrush, startText, startVer + rowInterval * i - 8);
+                }
+            }
+
+
+            
             #endregion
 
             // 将温度数据绘制到图表中
@@ -274,8 +337,8 @@ namespace TemperatureControl2
             float temperatureFirst = 0.0f, temperatureNext = 0.0f;
             for (int i = 0; i < tempListForChart.Count - 1; i++)
             {
-                temperatureFirst = (float)Math.Round(tempListForChart[i], 4);
-                temperatureNext = (float)Math.Round(tempListForChart[i +1], 4);
+                temperatureFirst = (float)Math.Round(tempListForChart[i], digits);
+                temperatureNext = (float)Math.Round(tempListForChart[i +1], digits);
                 mGhp.DrawLine(mLinePen, startHor + i * interval, endVer - (temperatureFirst - min) / margin * spaceVer,
                     startHor + (i + 1) * interval, endVer - (temperatureNext - min) / margin * spaceVer);
             }

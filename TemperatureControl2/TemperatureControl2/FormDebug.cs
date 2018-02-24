@@ -56,6 +56,15 @@ namespace TemperatureControl2
             {
                 comboBox1.SelectedIndex = 1;
             }
+
+            if(devicesAll.ryElecEnable == true)
+            {
+                comboBox2.SelectedIndex = 0;
+            }
+            else
+            {
+                comboBox2.SelectedIndex = 1;
+            }
         }
 
 
@@ -99,6 +108,15 @@ namespace TemperatureControl2
                 devicesAll.sort = "descend";
             }
 
+            if(comboBox2.SelectedIndex==0)
+            {
+                devicesAll.ryElecEnable = true;
+            }
+            else
+            {
+                devicesAll.ryElecEnable = false;
+            }
+
             // 写入到文本中
             // 相关参数
             string configFilePath = @"./config.ini";
@@ -114,6 +132,8 @@ namespace TemperatureControl2
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMaxValue", devicesAll.tempMaxValue.ToString("0.0000"));
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Paramters", "tempMinValue", devicesAll.tempMinValue.ToString("0.0000"));
             Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "sort", devicesAll.sort);
+            if(devicesAll.ryElecEnable) Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "ryElecEnable", "Enable");
+            else Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "ryElecEnable", "Disable");
         }
 
         private void BntRead_Click(object sender, EventArgs e)
@@ -129,7 +149,25 @@ namespace TemperatureControl2
             textBox9.Text = devicesAll.tempBiasFaultThr.ToString("0.0000");
             textBox10.Text = devicesAll.tempMaxValue.ToString("0.0000");
             textBox11.Text = devicesAll.tempMinValue.ToString("0.0000");
-            
+
+            if (devicesAll.sort == "ascend")
+            {
+                comboBox1.SelectedIndex = 0;
+            }
+            else
+            {
+                comboBox1.SelectedIndex = 1;
+            }
+
+            if (devicesAll.ryElecEnable == true)
+            {
+                comboBox2.SelectedIndex = 0;
+            }
+            else
+            {
+                comboBox2.SelectedIndex = 1;
+            }
+
         }
 
         private void button10_Click(object sender, EventArgs e)

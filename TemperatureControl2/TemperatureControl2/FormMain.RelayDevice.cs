@@ -131,6 +131,19 @@ namespace TemperatureControl2
         // 4 - 辅槽制冷
         private void checkBox_subCool_Click(object sender, EventArgs e)
         {
+            if(this.checkBox_subCool.Checked==true)
+            {
+                if((DateTime.Now - this.deviceAll.ryDevice.subCoolCloseTime).TotalMinutes < this.deviceAll.ryDevice.waitingTime)
+                {
+                    DialogResult rl = MessageBox.Show("辅槽制冷关闭后未满 " + this.deviceAll.ryDevice.waitingTime.ToString("0") + " 分钟，是否开启辅槽制冷？","打开辅槽制冷",MessageBoxButtons.OKCancel);
+                    if(rl!= DialogResult.OK)
+                    {
+                        this.checkBox_subCool.Checked = false;
+                        return;
+                    }
+                }
+            }
+
             // 异步调用 RelayDevice 函数，设置继电器状态
             // 结果会触发 继电器设置事件 处理函数
             deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.SubCool] = this.checkBox_subCool.Checked;

@@ -162,11 +162,11 @@ namespace TemperatureControl2
 
                 // 更新辅槽控温温度 / 功率值
                 if (this.deviceAll.tpDeviceS.temperatures.Count > 0)
-                    this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.00") + "℃";
+                    this.label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.000") + "℃";
                 else
                 {
                     Debug.WriteLine("未读到温度数据");
-                    this.label_tempS.Text = "0.00℃";
+                    this.label_tempS.Text = "0.000℃";
                 }
                 // 功率系数
                 this.label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
@@ -184,6 +184,9 @@ namespace TemperatureControl2
                 else
                     this.label_fluc.Text = "主控温槽波动度：** / " + (deviceAll.steadyTimeSec/60).ToString("0") + " 分钟"; 
                 */
+
+                // 设置主电源的禁用状态
+                this.checkBox_elect.Enabled = this.deviceAll.ryElecEnable;
 
             }));
 
@@ -204,7 +207,7 @@ namespace TemperatureControl2
             {
                 // 更新主界面的温度设定值
                 this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
-                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.00") + "℃";
+                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.000") + "℃";
             }));
         }
     }

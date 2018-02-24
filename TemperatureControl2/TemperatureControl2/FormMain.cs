@@ -117,10 +117,10 @@ namespace TemperatureControl2
                 if (this.deviceAll.tpDeviceM.temperatures.Count != 0)
                     label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
                 if (this.deviceAll.tpDeviceS.temperatures.Count != 0)
-                    label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
+                    label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.000") + "℃";
                 // 温度设定值
                 label_tempSetM.Text = this.deviceAll.tpDeviceM.tpParam[0].ToString("0.0000") + "℃";
-                label_tempSetS.Text = this.deviceAll.tpDeviceS.tpParam[0].ToString("0.00") + "℃";
+                label_tempSetS.Text = this.deviceAll.tpDeviceS.tpParam[0].ToString("0.000") + "℃";
 
 
                 // 禁用所有继电器按键 
@@ -221,6 +221,26 @@ namespace TemperatureControl2
             // 禁用一些控件
             SelfChkDisableControl(false);
 
+            Device.RelayProtocol.Err_r err1 = deviceAll.ryDevice.SelfCheckOneByOne(Device.RelayProtocol.Cmd_r.Elect, true);
+            if(err1== Device.RelayProtocol.Err_r.NoError)
+            {
+                // 自检成功
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.checkBox_ryDevice[Device.RelayProtocol.Cmd_r.Elect].Checked = true;
+                }));
+            }
+            else
+            {
+                MessageBox.Show("总电源开关打开失败！");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.Close();
+                }));
+                return;
+            }
+
+
 
             this.BeginInvoke(new EventHandler(delegate
             {
@@ -278,7 +298,7 @@ namespace TemperatureControl2
             {
                 this.label_fluc.Text = "继电器设备自检中...";
             }));
-            for (int cmd = 0; cmd < 9; cmd++)
+            for (int cmd = 1; cmd < 9; cmd++)
             {
                 Device.RelayProtocol.Err_r err = deviceAll.ryDevice.SelfCheckOneByOne((Device.RelayProtocol.Cmd_r)cmd, true);
                 if (err == Device.RelayProtocol.Err_r.NoError)
@@ -304,7 +324,7 @@ namespace TemperatureControl2
             Debug.WriteLine("ryDevice.SelfCheckOneByOne true OK");
 
             // 继电器设备自检 - 关闭继电器
-            for (int cmd = 8; cmd >= 0; cmd--)
+            for (int cmd = 8; cmd >= 1; cmd--)
             {
                 Device.RelayProtocol.Err_r err = deviceAll.ryDevice.SelfCheckOneByOne((Device.RelayProtocol.Cmd_r)cmd, false);
                 if (err == Device.RelayProtocol.Err_r.NoError)
@@ -358,11 +378,31 @@ namespace TemperatureControl2
             Debug.WriteLine("srDevice.SelfCheck ok");
             System.Threading.Thread.Sleep(2000);
 
+            err1 = deviceAll.ryDevice.SelfCheckOneByOne(Device.RelayProtocol.Cmd_r.Elect, false);
+            if (err1 == Device.RelayProtocol.Err_r.NoError)
+            {
+                // 自检成功
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.checkBox_ryDevice[Device.RelayProtocol.Cmd_r.Elect].Checked = false;
+                }));
+            }
+            else
+            {
+                MessageBox.Show("总电源开关关闭失败！");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.Close();
+                }));
+                return;
+            }
+
 
             // 自检成功
             Utils.Logger.Sys("设备自检成功，系统开始运行...");
             Utils.Logger.Op("设备自检成功，系统开始运行...");
             //Utils.Logger.TempData("系统开始运行...");
+            System.Threading.Thread.Sleep(2000);
 
 
             // 初始化主界面中的显示相
@@ -381,6 +421,15 @@ namespace TemperatureControl2
 
             // 启用主界面所有按键
             SelfChkDisableControl(true);
+
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                    checkBox_ryDevice[cmd].Enabled = false;
+
+                // 设置主电源的禁用状态
+                this.checkBox_elect.Enabled = this.deviceAll.ryElecEnable;
+            }));
 
             return;
         }
@@ -406,5 +455,6 @@ namespace TemperatureControl2
                 }
             }));
         }
+
     }
 }

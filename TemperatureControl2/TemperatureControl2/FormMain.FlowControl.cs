@@ -145,7 +145,7 @@ namespace TemperatureControl2
             // 开启手动模式
             if (this.checkBox_man.Checked == true)
             {
-                this.checkBox_auto.Enabled = false;
+                //this.checkBox_auto.Enabled = false;
 #if false
                 for (int i = 1; i < this.checkBox_ryDevices.Length; i++)
                     checkBox_ryDevices[i].Enabled = true;
@@ -154,7 +154,7 @@ namespace TemperatureControl2
                 foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
                     checkBox_ryDevice[cmd].Enabled = true;
 
-                this.label_controlState.Text = "手动模式开启";
+                //this.label_controlState.Text = "手动模式开启";
                 Utils.Logger.Op("开启手动模式.");
                 Utils.Logger.Sys("开启手动模式.");
             }
@@ -162,7 +162,7 @@ namespace TemperatureControl2
             // 关闭手动模式
             else
             {
-                this.checkBox_auto.Enabled = true;
+                //this.checkBox_auto.Enabled = true;
 #if false
                 for (int i = 1; i < this.checkBox_ryDevices.Length; i++)
                     checkBox_ryDevices[i].Enabled = false;
@@ -173,10 +173,13 @@ namespace TemperatureControl2
                     checkBox_ryDevice[cmd].Enabled = false;
                 checkBox_ryDevice[Device.RelayProtocol.Cmd_r.Elect].Enabled = true;
 
-                this.label_controlState.Text = "手动模式关闭";
+                //this.label_controlState.Text = "手动模式关闭";
                 Utils.Logger.Op("关闭手动模式.");
                 Utils.Logger.Sys("关闭手动模式.");
             }
+
+            // 设置主电源的禁用状态
+            this.checkBox_elect.Enabled = this.deviceAll.ryElecEnable;
         }
 
 

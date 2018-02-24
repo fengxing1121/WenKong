@@ -324,7 +324,7 @@
             this.label_tempS.Name = "label_tempS";
             this.label_tempS.Size = new System.Drawing.Size(310, 70);
             this.label_tempS.TabIndex = 46;
-            this.label_tempS.Text = "0.0000℃";
+            this.label_tempS.Text = "0.000℃";
             this.label_tempS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label_powerM
@@ -367,7 +367,7 @@
             this.label_tempSetS.Name = "label_tempSetS";
             this.label_tempSetS.Size = new System.Drawing.Size(130, 30);
             this.label_tempSetS.TabIndex = 50;
-            this.label_tempSetS.Text = "0.00℃";
+            this.label_tempSetS.Text = "0.000℃";
             this.label_tempSetS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label_controlState

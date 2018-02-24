@@ -22,7 +22,7 @@ namespace Device
         /// <summary>
         /// 主槽温控设备
         /// </summary>
-        public TempDevice tpDeviceM = new TempDevice() { tpDeviceName = "主槽控温设备"};
+        public TempDevice tpDeviceM = new TempDevice() { tpDeviceName =  "主槽控温设备"};
         /// <summary>
         /// 辅槽控温设备
         /// </summary>
@@ -90,6 +90,7 @@ namespace Device
                     // 一些其他的调试参数
                     // 升序还是降序
                     Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "sort", "descend");
+                    Utils.IniReadWrite.INIWriteValue(configFilePath, "Others", "ryElecEnable", "Disable");
                 }
 
                 //////////////////////////////////////////
@@ -147,6 +148,8 @@ namespace Device
                 tempMinValue = float.Parse(Utils.IniReadWrite.INIGetStringValue(configFilePath, "Paramters", "tempMinValue", "-2"));
                 // 默认降序
                 sort = Utils.IniReadWrite.INIGetStringValue(configFilePath, "Others", "sort", "descend");
+                if (Utils.IniReadWrite.INIGetStringValue(configFilePath, "Others", "ryElecEnable", "Disable") == "Enable") ryElecEnable = true;
+                else ryElecEnable = false;
             }
             catch(Exception ex)
             {
@@ -364,7 +367,7 @@ namespace Device
 
             // 读取辅槽控温表温度值 / 功率系数
             // 辅槽温度取取小数点后 2 位
-            err = tpDeviceS.GetTemperatureShow(out val, 2);
+            err = tpDeviceS.GetTemperatureShow(out val, 3);
             if (err != TempProtocol.Err_t.NoError)
             {
                 // 如果发生错误，则直接触发事件，向主界面报错，并暂停流程控制
@@ -616,6 +619,10 @@ namespace Device
 
         #region 阈值参数
         /// <summary>
+        /// 是否禁用总电源按键
+        /// </summary>
+        public bool ryElecEnable = false;
+        /// <summary>
         /// 稳定时间 second
         /// </summary>
         public int steadyTimeSec = 300;
@@ -757,10 +764,12 @@ namespace Device
                     break;
             }
 
+            //double tt = (DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes;
+
             // 辅槽制冷延迟打开功能
-            if(ryDevice.subCoolWaiting == true)
+            if (ryDevice.subCoolWaiting == true)
             {
-                if((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes > 10)
+                if((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes > ryDevice.waitingTime)
                 {
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
                     // 将继电器状态写入下位机
@@ -1073,9 +1082,7 @@ namespace Device
                 else
                 {
                     // 辅槽制冷关闭后需要等待十分钟才能再次打开
-                    TimeSpan dt = DateTime.Now - ryDevice.subCoolCloseTime;
-
-                    if(dt.TotalMinutes > 10)
+                    if((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes > ryDevice.waitingTime)
                     {
                         ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = true;
                         ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCircle] = true;
@@ -1146,7 +1153,7 @@ namespace Device
 
                 }
                 // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
-                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes<10)
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < ryDevice.waitingTime)
                 {
                     // 暂时先保持关闭，等待满 10 分钟后再打开
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
@@ -1258,7 +1265,7 @@ namespace Device
 
                 }
                 // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
-                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < 10)
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < ryDevice.waitingTime)
                 {
                     // 暂时先保持关闭，等待满 10 分钟后再打开
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;
@@ -1376,7 +1383,7 @@ namespace Device
 
                 }
                 // 如果辅槽制冷是关闭的，且距离辅槽制冷关闭不足十分钟，则等待
-                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < 10)
+                else if ((DateTime.Now - ryDevice.subCoolCloseTime).TotalMinutes < ryDevice.waitingTime)
                 {
                     // 暂时先保持关闭，等待满 10 分钟后再打开
                     ryDevice.ryStatusToSet[(int)RelayProtocol.Cmd_r.SubCool] = false;

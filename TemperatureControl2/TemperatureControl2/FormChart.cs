@@ -60,7 +60,7 @@ namespace TemperatureControl2
                 else
                 {
                     deviceAll.tpDeviceS.GetFlucDurCountOrLess(deviceAll.steadyTimeSec / deviceAll.tpDeviceM.readTempIntervalSec, out fluc);
-                    this.label2.Text = "5分钟波动度： " + fluc.ToString("0.00") + " ℃";
+                    this.label2.Text = "5分钟波动度： " + fluc.ToString("0.000") + " ℃";
                 }  
             }));
         }

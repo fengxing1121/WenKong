@@ -29,6 +29,7 @@ namespace Device
         /// 故，在每次关闭时，都记录下关闭时的时间点
         /// </summary>
         public DateTime subCoolCloseTime = DateTime.MinValue;
+        public double waitingTime = 5;
         /// <summary>
         /// 辅槽制冷需要延迟打开
         /// 配合 subCoolCLoseTime 使用
@@ -80,6 +81,11 @@ namespace Device
         {
             RelayProtocol.Err_r err = RelayProtocol.Err_r.NoError;
             err = ryDeviceProtocol.WriteRelayStatus(cmd, status);
+
+            // 记录辅槽制冷的关闭时间
+            if (cmd == RelayProtocol.Cmd_r.SubCool && status == false)
+                subCoolCloseTime = DateTime.Now;
+
             return err;
         }
 
@@ -222,7 +228,10 @@ namespace Device
 
                     // 如果正确关闭了辅槽制冷，则记录其关闭时间
                     if (cmd == RelayProtocol.Cmd_r.SubCool && ryStatusToSet[(int)cmd] == false && err == RelayProtocol.Err_r.NoError)
+                    {
                         subCoolCloseTime = DateTime.Now;
+                        subCoolWaiting = false;
+                    }
 
                     if (err == RelayProtocol.Err_r.NoError)
                     {
@@ -293,7 +302,11 @@ namespace Device
 
                     // 如果正确关闭了辅槽制冷，则记录其关闭时间
                     if (cmd == RelayProtocol.Cmd_r.SubCool && ryStatusToSet[(int)cmd] == false && err == RelayProtocol.Err_r.NoError)
+                    {
                         subCoolCloseTime = DateTime.Now;
+                        subCoolWaiting = false;
+                    }
+                        
 
                     if (err == RelayProtocol.Err_r.NoError)
                     {
