@@ -48,8 +48,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox_tpAdjustM = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox_advanceM = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -61,23 +59,12 @@
             this.label7 = new System.Windows.Forms.Label();
             this.textBox_powerM = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.index = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tpName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tpSet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tpAdjust = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.advance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.fuzzy = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ratio = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.integration = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.power = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.edit = new System.Windows.Forms.DataGridViewLinkColumn();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox_powerS = new System.Windows.Forms.TextBox();
             this.textBox_integS = new System.Windows.Forms.TextBox();
             this.textBox_ratioS = new System.Windows.Forms.TextBox();
             this.textBox_fuzzyS = new System.Windows.Forms.TextBox();
             this.textBox_advanceS = new System.Windows.Forms.TextBox();
-            this.textBox_tpAdjustS = new System.Windows.Forms.TextBox();
             this.textBox_tpSetS = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -86,12 +73,21 @@
             this.checkBox_shutDown = new System.Windows.Forms.CheckBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tpName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tpSet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.advance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.fuzzy = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ratio = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.integration = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.power = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.edit = new System.Windows.Forms.DataGridViewLinkColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // button_cancel
             // 
-            this.button_cancel.Location = new System.Drawing.Point(859, 345);
+            this.button_cancel.Location = new System.Drawing.Point(791, 345);
             this.button_cancel.Name = "button_cancel";
             this.button_cancel.Size = new System.Drawing.Size(128, 60);
             this.button_cancel.TabIndex = 4;
@@ -111,7 +107,7 @@
             // 
             // button_add
             // 
-            this.button_add.Location = new System.Drawing.Point(859, 277);
+            this.button_add.Location = new System.Drawing.Point(791, 277);
             this.button_add.Name = "button_add";
             this.button_add.Size = new System.Drawing.Size(128, 60);
             this.button_add.TabIndex = 7;
@@ -131,7 +127,7 @@
             // buttonNegtive
             // 
             this.buttonNegtive.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonNegtive.Location = new System.Drawing.Point(791, 277);
+            this.buttonNegtive.Location = new System.Drawing.Point(723, 277);
             this.buttonNegtive.Name = "buttonNegtive";
             this.buttonNegtive.Size = new System.Drawing.Size(60, 60);
             this.buttonNegtive.TabIndex = 51;
@@ -143,7 +139,7 @@
             // buttonClear
             // 
             this.buttonClear.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonClear.Location = new System.Drawing.Point(927, 141);
+            this.buttonClear.Location = new System.Drawing.Point(859, 141);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(60, 60);
             this.buttonClear.TabIndex = 50;
@@ -155,7 +151,7 @@
             // buttonBack
             // 
             this.buttonBack.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonBack.Location = new System.Drawing.Point(927, 73);
+            this.buttonBack.Location = new System.Drawing.Point(859, 73);
             this.buttonBack.Name = "buttonBack";
             this.buttonBack.Size = new System.Drawing.Size(60, 60);
             this.buttonBack.TabIndex = 49;
@@ -167,7 +163,7 @@
             // buttonPoint
             // 
             this.buttonPoint.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonPoint.Location = new System.Drawing.Point(927, 209);
+            this.buttonPoint.Location = new System.Drawing.Point(859, 209);
             this.buttonPoint.Name = "buttonPoint";
             this.buttonPoint.Size = new System.Drawing.Size(60, 60);
             this.buttonPoint.TabIndex = 48;
@@ -179,7 +175,7 @@
             // button0
             // 
             this.button0.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button0.Location = new System.Drawing.Point(723, 277);
+            this.button0.Location = new System.Drawing.Point(655, 277);
             this.button0.Name = "button0";
             this.button0.Size = new System.Drawing.Size(60, 60);
             this.button0.TabIndex = 47;
@@ -191,7 +187,7 @@
             // button8
             // 
             this.button8.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button8.Location = new System.Drawing.Point(791, 73);
+            this.button8.Location = new System.Drawing.Point(723, 73);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(60, 60);
             this.button8.TabIndex = 46;
@@ -203,7 +199,7 @@
             // button9
             // 
             this.button9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button9.Location = new System.Drawing.Point(859, 73);
+            this.button9.Location = new System.Drawing.Point(791, 73);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(60, 60);
             this.button9.TabIndex = 45;
@@ -215,7 +211,7 @@
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(723, 141);
+            this.button4.Location = new System.Drawing.Point(655, 141);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(60, 60);
             this.button4.TabIndex = 44;
@@ -227,7 +223,7 @@
             // button5
             // 
             this.button5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button5.Location = new System.Drawing.Point(791, 141);
+            this.button5.Location = new System.Drawing.Point(723, 141);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(60, 60);
             this.button5.TabIndex = 43;
@@ -239,7 +235,7 @@
             // button6
             // 
             this.button6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button6.Location = new System.Drawing.Point(859, 141);
+            this.button6.Location = new System.Drawing.Point(791, 141);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(60, 60);
             this.button6.TabIndex = 42;
@@ -251,7 +247,7 @@
             // button7
             // 
             this.button7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button7.Location = new System.Drawing.Point(723, 73);
+            this.button7.Location = new System.Drawing.Point(655, 73);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(60, 60);
             this.button7.TabIndex = 41;
@@ -263,7 +259,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(723, 209);
+            this.button1.Location = new System.Drawing.Point(655, 209);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(60, 60);
             this.button1.TabIndex = 40;
@@ -275,7 +271,7 @@
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(859, 209);
+            this.button3.Location = new System.Drawing.Point(791, 209);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(60, 60);
             this.button3.TabIndex = 39;
@@ -287,7 +283,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(791, 209);
+            this.button2.Location = new System.Drawing.Point(723, 209);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(60, 60);
             this.button2.TabIndex = 38;
@@ -296,29 +292,10 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(182, 423);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 12);
-            this.label2.TabIndex = 53;
-            this.label2.Text = "温度修正值";
-            // 
-            // textBox_tpAdjustM
-            // 
-            this.textBox_tpAdjustM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_tpAdjustM.Location = new System.Drawing.Point(175, 444);
-            this.textBox_tpAdjustM.Name = "textBox_tpAdjustM";
-            this.textBox_tpAdjustM.Size = new System.Drawing.Size(72, 21);
-            this.textBox_tpAdjustM.TabIndex = 52;
-            this.textBox_tpAdjustM.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_tpAdjustM.Enter += new System.EventHandler(this.textBox_tpAdjust_Enter);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(260, 423);
+            this.label3.Location = new System.Drawing.Point(182, 423);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 12);
             this.label3.TabIndex = 55;
@@ -327,7 +304,7 @@
             // textBox_advanceM
             // 
             this.textBox_advanceM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_advanceM.Location = new System.Drawing.Point(253, 444);
+            this.textBox_advanceM.Location = new System.Drawing.Point(175, 444);
             this.textBox_advanceM.Name = "textBox_advanceM";
             this.textBox_advanceM.Size = new System.Drawing.Size(72, 21);
             this.textBox_advanceM.TabIndex = 54;
@@ -337,7 +314,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(338, 423);
+            this.label4.Location = new System.Drawing.Point(260, 423);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 12);
             this.label4.TabIndex = 57;
@@ -346,7 +323,7 @@
             // textBox_fuzzyM
             // 
             this.textBox_fuzzyM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_fuzzyM.Location = new System.Drawing.Point(331, 444);
+            this.textBox_fuzzyM.Location = new System.Drawing.Point(253, 444);
             this.textBox_fuzzyM.Name = "textBox_fuzzyM";
             this.textBox_fuzzyM.Size = new System.Drawing.Size(72, 21);
             this.textBox_fuzzyM.TabIndex = 56;
@@ -356,7 +333,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(416, 423);
+            this.label5.Location = new System.Drawing.Point(338, 423);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 59;
@@ -366,7 +343,7 @@
             // textBox_ratioM
             // 
             this.textBox_ratioM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_ratioM.Location = new System.Drawing.Point(409, 444);
+            this.textBox_ratioM.Location = new System.Drawing.Point(331, 444);
             this.textBox_ratioM.Name = "textBox_ratioM";
             this.textBox_ratioM.Size = new System.Drawing.Size(72, 21);
             this.textBox_ratioM.TabIndex = 58;
@@ -376,7 +353,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(494, 423);
+            this.label6.Location = new System.Drawing.Point(416, 423);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(53, 12);
             this.label6.TabIndex = 61;
@@ -385,7 +362,7 @@
             // textBox_integM
             // 
             this.textBox_integM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_integM.Location = new System.Drawing.Point(487, 444);
+            this.textBox_integM.Location = new System.Drawing.Point(409, 444);
             this.textBox_integM.Name = "textBox_integM";
             this.textBox_integM.Size = new System.Drawing.Size(72, 21);
             this.textBox_integM.TabIndex = 60;
@@ -395,7 +372,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(572, 423);
+            this.label7.Location = new System.Drawing.Point(494, 423);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(53, 12);
             this.label7.TabIndex = 63;
@@ -404,7 +381,7 @@
             // textBox_powerM
             // 
             this.textBox_powerM.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_powerM.Location = new System.Drawing.Point(565, 444);
+            this.textBox_powerM.Location = new System.Drawing.Point(487, 444);
             this.textBox_powerM.Name = "textBox_powerM";
             this.textBox_powerM.Size = new System.Drawing.Size(72, 21);
             this.textBox_powerM.TabIndex = 62;
@@ -424,7 +401,6 @@
             this.index,
             this.tpName,
             this.tpSet,
-            this.tpAdjust,
             this.advance,
             this.fuzzy,
             this.ratio,
@@ -438,11 +414,133 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(689, 391);
+            this.dataGridView1.Size = new System.Drawing.Size(619, 391);
             this.dataGridView1.TabIndex = 9;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
             this.dataGridView1.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dataGridView1_CellPainting);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(37, 444);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 12);
+            this.label8.TabIndex = 64;
+            this.label8.Text = "主槽";
+            // 
+            // textBox_powerS
+            // 
+            this.textBox_powerS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_powerS.Location = new System.Drawing.Point(487, 474);
+            this.textBox_powerS.Name = "textBox_powerS";
+            this.textBox_powerS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_powerS.TabIndex = 71;
+            this.textBox_powerS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_powerS.Enter += new System.EventHandler(this.textBox_powerS_Enter);
+            // 
+            // textBox_integS
+            // 
+            this.textBox_integS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_integS.Location = new System.Drawing.Point(409, 474);
+            this.textBox_integS.Name = "textBox_integS";
+            this.textBox_integS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_integS.TabIndex = 70;
+            this.textBox_integS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_integS.Enter += new System.EventHandler(this.textBox_integS_Enter);
+            // 
+            // textBox_ratioS
+            // 
+            this.textBox_ratioS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_ratioS.Location = new System.Drawing.Point(331, 474);
+            this.textBox_ratioS.Name = "textBox_ratioS";
+            this.textBox_ratioS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_ratioS.TabIndex = 69;
+            this.textBox_ratioS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_ratioS.Enter += new System.EventHandler(this.textBox_ratioS_Enter);
+            // 
+            // textBox_fuzzyS
+            // 
+            this.textBox_fuzzyS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_fuzzyS.Location = new System.Drawing.Point(253, 474);
+            this.textBox_fuzzyS.Name = "textBox_fuzzyS";
+            this.textBox_fuzzyS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_fuzzyS.TabIndex = 68;
+            this.textBox_fuzzyS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_fuzzyS.Enter += new System.EventHandler(this.textBox_fuzzyS_Enter);
+            // 
+            // textBox_advanceS
+            // 
+            this.textBox_advanceS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_advanceS.Location = new System.Drawing.Point(175, 474);
+            this.textBox_advanceS.Name = "textBox_advanceS";
+            this.textBox_advanceS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_advanceS.TabIndex = 67;
+            this.textBox_advanceS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_advanceS.Enter += new System.EventHandler(this.textBox_advanceS_Enter);
+            // 
+            // textBox_tpSetS
+            // 
+            this.textBox_tpSetS.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_tpSetS.Location = new System.Drawing.Point(97, 474);
+            this.textBox_tpSetS.Name = "textBox_tpSetS";
+            this.textBox_tpSetS.Size = new System.Drawing.Size(72, 21);
+            this.textBox_tpSetS.TabIndex = 65;
+            this.textBox_tpSetS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_tpSetS.Enter += new System.EventHandler(this.textBox_tpSetS_Enter);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(37, 474);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 12);
+            this.label9.TabIndex = 72;
+            this.label9.Text = "辅槽";
+            // 
+            // label10
+            // 
+            this.label10.Font = new System.Drawing.Font("宋体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label10.Location = new System.Drawing.Point(705, 14);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(165, 39);
+            this.label10.TabIndex = 73;
+            this.label10.Text = "温度点设定";
+            // 
+            // button_chkParam
+            // 
+            this.button_chkParam.Location = new System.Drawing.Point(655, 420);
+            this.button_chkParam.Name = "button_chkParam";
+            this.button_chkParam.Size = new System.Drawing.Size(128, 60);
+            this.button_chkParam.TabIndex = 74;
+            this.button_chkParam.Text = "查询参数";
+            this.button_chkParam.UseVisualStyleBackColor = true;
+            this.button_chkParam.Click += new System.EventHandler(this.button_chk_Click);
+            // 
+            // checkBox_start
+            // 
+            this.checkBox_start.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox_start.Location = new System.Drawing.Point(655, 345);
+            this.checkBox_start.Name = "checkBox_start";
+            this.checkBox_start.Size = new System.Drawing.Size(128, 60);
+            this.checkBox_start.TabIndex = 75;
+            this.checkBox_start.Text = "开始";
+            this.checkBox_start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox_start.UseVisualStyleBackColor = true;
+            this.checkBox_start.Click += new System.EventHandler(this.checkBox_start_Click);
+            // 
+            // checkBox_shutDown
+            // 
+            this.checkBox_shutDown.AutoSize = true;
+            this.checkBox_shutDown.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.checkBox_shutDown.ForeColor = System.Drawing.Color.Red;
+            this.checkBox_shutDown.Location = new System.Drawing.Point(807, 431);
+            this.checkBox_shutDown.Name = "checkBox_shutDown";
+            this.checkBox_shutDown.Size = new System.Drawing.Size(112, 36);
+            this.checkBox_shutDown.TabIndex = 76;
+            this.checkBox_shutDown.Text = "实验完成后\r\n关闭计算机";
+            this.checkBox_shutDown.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox_shutDown.UseVisualStyleBackColor = true;
             // 
             // index
             // 
@@ -470,15 +568,6 @@
             this.tpSet.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.tpSet.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.tpSet.Width = 72;
-            // 
-            // tpAdjust
-            // 
-            this.tpAdjust.HeaderText = "温度修正值";
-            this.tpAdjust.Name = "tpAdjust";
-            this.tpAdjust.ReadOnly = true;
-            this.tpAdjust.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.tpAdjust.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.tpAdjust.Width = 72;
             // 
             // advance
             // 
@@ -533,143 +622,11 @@
             this.edit.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.edit.Width = 70;
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(37, 444);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(29, 12);
-            this.label8.TabIndex = 64;
-            this.label8.Text = "主槽";
-            // 
-            // textBox_powerS
-            // 
-            this.textBox_powerS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_powerS.Location = new System.Drawing.Point(565, 474);
-            this.textBox_powerS.Name = "textBox_powerS";
-            this.textBox_powerS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_powerS.TabIndex = 71;
-            this.textBox_powerS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_powerS.Enter += new System.EventHandler(this.textBox_powerS_Enter);
-            // 
-            // textBox_integS
-            // 
-            this.textBox_integS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_integS.Location = new System.Drawing.Point(487, 474);
-            this.textBox_integS.Name = "textBox_integS";
-            this.textBox_integS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_integS.TabIndex = 70;
-            this.textBox_integS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_integS.Enter += new System.EventHandler(this.textBox_integS_Enter);
-            // 
-            // textBox_ratioS
-            // 
-            this.textBox_ratioS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_ratioS.Location = new System.Drawing.Point(409, 474);
-            this.textBox_ratioS.Name = "textBox_ratioS";
-            this.textBox_ratioS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_ratioS.TabIndex = 69;
-            this.textBox_ratioS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_ratioS.Enter += new System.EventHandler(this.textBox_ratioS_Enter);
-            // 
-            // textBox_fuzzyS
-            // 
-            this.textBox_fuzzyS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_fuzzyS.Location = new System.Drawing.Point(331, 474);
-            this.textBox_fuzzyS.Name = "textBox_fuzzyS";
-            this.textBox_fuzzyS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_fuzzyS.TabIndex = 68;
-            this.textBox_fuzzyS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_fuzzyS.Enter += new System.EventHandler(this.textBox_fuzzyS_Enter);
-            // 
-            // textBox_advanceS
-            // 
-            this.textBox_advanceS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_advanceS.Location = new System.Drawing.Point(253, 474);
-            this.textBox_advanceS.Name = "textBox_advanceS";
-            this.textBox_advanceS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_advanceS.TabIndex = 67;
-            this.textBox_advanceS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_advanceS.Enter += new System.EventHandler(this.textBox_advanceS_Enter);
-            // 
-            // textBox_tpAdjustS
-            // 
-            this.textBox_tpAdjustS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_tpAdjustS.Location = new System.Drawing.Point(175, 474);
-            this.textBox_tpAdjustS.Name = "textBox_tpAdjustS";
-            this.textBox_tpAdjustS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_tpAdjustS.TabIndex = 66;
-            this.textBox_tpAdjustS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_tpAdjustS.Enter += new System.EventHandler(this.textBox_tpAdjustS_Enter);
-            // 
-            // textBox_tpSetS
-            // 
-            this.textBox_tpSetS.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox_tpSetS.Location = new System.Drawing.Point(97, 474);
-            this.textBox_tpSetS.Name = "textBox_tpSetS";
-            this.textBox_tpSetS.Size = new System.Drawing.Size(72, 21);
-            this.textBox_tpSetS.TabIndex = 65;
-            this.textBox_tpSetS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_tpSetS.Enter += new System.EventHandler(this.textBox_tpSetS_Enter);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(37, 474);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(29, 12);
-            this.label9.TabIndex = 72;
-            this.label9.Text = "辅槽";
-            // 
-            // label10
-            // 
-            this.label10.Font = new System.Drawing.Font("宋体", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label10.Location = new System.Drawing.Point(773, 14);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(165, 39);
-            this.label10.TabIndex = 73;
-            this.label10.Text = "温度点设定";
-            // 
-            // button_chkParam
-            // 
-            this.button_chkParam.Location = new System.Drawing.Point(723, 420);
-            this.button_chkParam.Name = "button_chkParam";
-            this.button_chkParam.Size = new System.Drawing.Size(128, 60);
-            this.button_chkParam.TabIndex = 74;
-            this.button_chkParam.Text = "查询参数";
-            this.button_chkParam.UseVisualStyleBackColor = true;
-            this.button_chkParam.Click += new System.EventHandler(this.button_chk_Click);
-            // 
-            // checkBox_start
-            // 
-            this.checkBox_start.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox_start.Location = new System.Drawing.Point(723, 345);
-            this.checkBox_start.Name = "checkBox_start";
-            this.checkBox_start.Size = new System.Drawing.Size(128, 60);
-            this.checkBox_start.TabIndex = 75;
-            this.checkBox_start.Text = "开始";
-            this.checkBox_start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_start.UseVisualStyleBackColor = true;
-            this.checkBox_start.Click += new System.EventHandler(this.checkBox_start_Click);
-            // 
-            // checkBox_shutDown
-            // 
-            this.checkBox_shutDown.AutoSize = true;
-            this.checkBox_shutDown.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.checkBox_shutDown.ForeColor = System.Drawing.Color.Red;
-            this.checkBox_shutDown.Location = new System.Drawing.Point(875, 431);
-            this.checkBox_shutDown.Name = "checkBox_shutDown";
-            this.checkBox_shutDown.Size = new System.Drawing.Size(112, 36);
-            this.checkBox_shutDown.TabIndex = 76;
-            this.checkBox_shutDown.Text = "实验完成后\r\n关闭计算机";
-            this.checkBox_shutDown.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_shutDown.UseVisualStyleBackColor = true;
-            // 
             // FormAutoSet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 512);
+            this.ClientSize = new System.Drawing.Size(941, 512);
             this.Controls.Add(this.checkBox_shutDown);
             this.Controls.Add(this.checkBox_start);
             this.Controls.Add(this.button_chkParam);
@@ -680,7 +637,6 @@
             this.Controls.Add(this.textBox_ratioS);
             this.Controls.Add(this.textBox_fuzzyS);
             this.Controls.Add(this.textBox_advanceS);
-            this.Controls.Add(this.textBox_tpAdjustS);
             this.Controls.Add(this.textBox_tpSetS);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -693,8 +649,6 @@
             this.Controls.Add(this.textBox_fuzzyM);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox_advanceM);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox_tpAdjustM);
             this.Controls.Add(this.buttonNegtive);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.buttonBack);
@@ -746,8 +700,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox_tpAdjustM;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox_advanceM;
         private System.Windows.Forms.Label label4;
@@ -765,24 +717,22 @@
         private System.Windows.Forms.TextBox textBox_ratioS;
         private System.Windows.Forms.TextBox textBox_fuzzyS;
         private System.Windows.Forms.TextBox textBox_advanceS;
-        private System.Windows.Forms.TextBox textBox_tpAdjustS;
         private System.Windows.Forms.TextBox textBox_tpSetS;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button button_chkParam;
+        private System.Windows.Forms.CheckBox checkBox_start;
+        private System.Windows.Forms.CheckBox checkBox_shutDown;
+        private System.Windows.Forms.Timer timer1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridViewTextBoxColumn index;
         private System.Windows.Forms.DataGridViewTextBoxColumn tpName;
         private System.Windows.Forms.DataGridViewTextBoxColumn tpSet;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tpAdjust;
         private System.Windows.Forms.DataGridViewTextBoxColumn advance;
         private System.Windows.Forms.DataGridViewTextBoxColumn fuzzy;
         private System.Windows.Forms.DataGridViewTextBoxColumn ratio;
         private System.Windows.Forms.DataGridViewTextBoxColumn integration;
         private System.Windows.Forms.DataGridViewTextBoxColumn power;
         private System.Windows.Forms.DataGridViewLinkColumn edit;
-        private System.Windows.Forms.Button button_chkParam;
-        private System.Windows.Forms.CheckBox checkBox_start;
-        private System.Windows.Forms.CheckBox checkBox_shutDown;
-        private System.Windows.Forms.Timer timer1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

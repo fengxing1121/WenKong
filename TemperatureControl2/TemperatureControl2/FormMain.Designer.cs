@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.checkBox_elect = new System.Windows.Forms.CheckBox();
             this.checkBox_auto = new System.Windows.Forms.CheckBox();
             this.checkBox_dataChk = new System.Windows.Forms.CheckBox();
@@ -60,6 +61,8 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.button_debug = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -364,7 +367,7 @@
             this.label_tempSetS.Name = "label_tempSetS";
             this.label_tempSetS.Size = new System.Drawing.Size(130, 30);
             this.label_tempSetS.TabIndex = 50;
-            this.label_tempSetS.Text = "0.0000℃";
+            this.label_tempSetS.Text = "0.00℃";
             this.label_tempSetS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label_controlState
@@ -487,6 +490,7 @@
             this.Text = "TemperatureControl";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.Shown += new System.EventHandler(this.FormMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
@@ -526,6 +530,8 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button button_debug;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

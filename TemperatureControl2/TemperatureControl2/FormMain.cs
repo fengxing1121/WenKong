@@ -67,50 +67,12 @@ namespace TemperatureControl2
             }
             Utils.Logger.Sys("设备端口配置成功!");
 
-            // 设备开始自检
-            //Utils.Logger.Sys("设备开始自检...");
-            //Debug.WriteLine("开始设备自检...");
-            //if (!deviceAll.DeviceSelfCheck())
-            //{
-            //    Utils.Logger.Sys("设备自检错误，请检查硬件连接，系统退出!");
-            //    MessageBox.Show("设备自检错误，请检查硬件连接，并重新运行程序！");
-            //    this.Close();
-            //    return;
-            //}
-
-            FormSelfCheck fm = new FormSelfCheck(deviceAll);
-            DialogResult rt = fm.ShowDialog();
-            if (rt != DialogResult.OK)
-            {
-                //MessageBox.Show("设备自检错误！");
-                Debug.WriteLine("自检错误！");
-                this.Close();
-                return;
-            }
-                
-
-            Utils.Logger.Sys("设备自检成功，系统开始运行...");
-            Utils.Logger.Op("设备自检成功，系统开始运行...");
-            //Utils.Logger.TempData("系统开始运行...");
-
-
-            // 初始化主界面中的显示相
-            InitMainFormShow();
-
-            // 注册事件处理函数
-            RegisterEventHandler();
-
-            // 主槽控温表 / 辅槽控温表 开始读取参数
-            // wghou 20180105
-            // 暂时先不开始读取温度，等待自检
-            deviceAll.tpTemperatureUpdateTimer.Start();
 
             // 闪烁灯
             mBmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             timPic.Interval = 500;
             timPic.Tick += TimPic_Tick;
             timPic.Start();
-
         }
 
 
@@ -141,35 +103,41 @@ namespace TemperatureControl2
         /// </summary>
         void InitMainFormShow()
         {
-            // 更新主界面显示数值
-            // 功率系数
-            label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
-            label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
-            // 温度显示值
-            if (this.deviceAll.tpDeviceM.temperatures.Count != 0)
-                label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
-            if (this.deviceAll.tpDeviceS.temperatures.Count != 0)
-                label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
-            // 温度设定值
-            label_tempSetM.Text = this.deviceAll.tpDeviceM.tpParam[0].ToString("0.0000") + "℃";
-            label_tempSetS.Text = this.deviceAll.tpDeviceS.tpParam[0].ToString("0.0000") + "℃";
-
-
-            // 禁用所有继电器按键 
-            // 并更新继电器状态
-            foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+            this.BeginInvoke(new EventHandler(delegate
             {
-                this.checkBox_ryDevice[cmd].Enabled = false;
-                this.checkBox_ryDevice[cmd].Checked = deviceAll.ryDevice.ryStatus[(int)cmd];
-            }
-            // 启用总电源开关
-            this.checkBox_elect.Enabled = true;
-            // 打开总电源开关
-            this.checkBox_elect.Checked = true;
-            deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
-            RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
-            setRyStatus.BeginInvoke(null, null);
+                //
+                this.label_controlState.Text = "系统启动";
+                this.label_fluc.Text = "主控温槽波动度：****";
 
+                // 更新主界面显示数值
+                // 功率系数
+                label_powerM.Text = this.deviceAll.tpDeviceM.tpPowerShow.ToString("0") + "%";
+                label_powerS.Text = this.deviceAll.tpDeviceS.tpPowerShow.ToString("0") + "%";
+                // 温度显示值
+                if (this.deviceAll.tpDeviceM.temperatures.Count != 0)
+                    label_tempM.Text = this.deviceAll.tpDeviceM.temperatures.Last().ToString("0.0000") + "℃";
+                if (this.deviceAll.tpDeviceS.temperatures.Count != 0)
+                    label_tempS.Text = this.deviceAll.tpDeviceS.temperatures.Last().ToString("0.0000") + "℃";
+                // 温度设定值
+                label_tempSetM.Text = this.deviceAll.tpDeviceM.tpParam[0].ToString("0.0000") + "℃";
+                label_tempSetS.Text = this.deviceAll.tpDeviceS.tpParam[0].ToString("0.00") + "℃";
+
+
+                // 禁用所有继电器按键 
+                // 并更新继电器状态
+                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                {
+                    this.checkBox_ryDevice[cmd].Enabled = false;
+                    this.checkBox_ryDevice[cmd].Checked = deviceAll.ryDevice.ryStatus[(int)cmd];
+                }
+                // 启用总电源开关
+                this.checkBox_elect.Enabled = true;
+                // 打开总电源开关
+                this.checkBox_elect.Checked = true;
+                deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
+                RySetHandler setRyStatus = new RySetHandler(this.deviceAll.ryDevice.UpdateStatusToDevice);
+                setRyStatus.BeginInvoke(null, null);
+            }));
         }
 
 
@@ -221,6 +189,222 @@ namespace TemperatureControl2
             }
             // 关闭系统
             Utils.Logger.Sys("关闭系统软件！");
+        }
+
+        
+
+        ////////////////////////////////////////////
+        // 用于自检的代码段
+        ////////////////////////////////////////////
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FormMain_Shown(object sender, EventArgs e)
+        {
+            backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
+            timer1.Interval = 200;
+            timer1.Tick += Timer1_Tick;
+            timer1.Start();
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+            this.backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Debug.WriteLine("BackgroundWorker1_DoWork is running...");
+            // 禁用一些控件
+            SelfChkDisableControl(false);
+
+
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_controlState.Text = "设备自检中...";
+                this.label_fluc.Text = "主槽温控设备自检中...";
+            }));
+
+
+            // 开始自检
+            Debug.WriteLine("Start self check.");
+
+
+            // 主槽控温设备自检
+            if(this.deviceAll.tpDeviceM.SelfCheck() != Device.TempProtocol.Err_t.NoError)
+            {
+                MessageBox.Show("主槽温控设备自检失败！");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.Close();
+                }));
+                return;
+            }
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "主槽温控设备自检成功!";
+            }));
+            Debug.WriteLine("tpDeviceM.SelfCheck OK");
+            System.Threading.Thread.Sleep(2000);
+
+
+            // 辅槽控温设备自检
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "辅槽温控设备自检中...";
+            }));
+            if (this.deviceAll.tpDeviceS.SelfCheck() != Device.TempProtocol.Err_t.NoError)
+            {
+                MessageBox.Show("辅槽温控设备自检失败！");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.Close();
+                }));
+                return;
+            }
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "辅槽温控设备自检成功!";
+            }));
+            Debug.WriteLine("tpDeviceS.SelfCheck OK");
+            System.Threading.Thread.Sleep(2000);
+
+
+            // 继电器设备自检 - 打开继电器
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "继电器设备自检中...";
+            }));
+            for (int cmd = 0; cmd < 9; cmd++)
+            {
+                Device.RelayProtocol.Err_r err = deviceAll.ryDevice.SelfCheckOneByOne((Device.RelayProtocol.Cmd_r)cmd, true);
+                if (err == Device.RelayProtocol.Err_r.NoError)
+                {
+                    // 自检成功
+                    this.BeginInvoke(new EventHandler(delegate
+                    {
+                        this.checkBox_ryDevice[(Device.RelayProtocol.Cmd_r)cmd].Checked = true;
+                    }));
+                }
+                else
+                {
+                    // 继电器设备自检失败
+                    MessageBox.Show("继电器设备自检失败！");
+                    this.BeginInvoke(new EventHandler(delegate
+                    {
+                        this.Close();
+                    }));
+                    return;
+                }
+                System.Threading.Thread.Sleep(1000);
+            }
+            Debug.WriteLine("ryDevice.SelfCheckOneByOne true OK");
+
+            // 继电器设备自检 - 关闭继电器
+            for (int cmd = 8; cmd >= 0; cmd--)
+            {
+                Device.RelayProtocol.Err_r err = deviceAll.ryDevice.SelfCheckOneByOne((Device.RelayProtocol.Cmd_r)cmd, false);
+                if (err == Device.RelayProtocol.Err_r.NoError)
+                {
+                    // 自检成功
+                    this.BeginInvoke(new EventHandler(delegate
+                    {
+                        this.checkBox_ryDevice[(Device.RelayProtocol.Cmd_r)cmd].Checked = false;
+                    }));
+                }
+                else
+                {
+                    // 继电器设备自检失败
+                    MessageBox.Show("继电器设备自检失败！");
+                    this.BeginInvoke(new EventHandler(delegate
+                    {
+                        this.Close();
+                    }));
+                    return;
+                }
+                System.Threading.Thread.Sleep(1000);
+            }
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "继电器设备自检成功!";
+            }));
+            Debug.WriteLine("ryDevice.SelfCheckOneByOne false OK");
+            System.Threading.Thread.Sleep(2000);
+
+
+            // 传感器设备自检
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_fluc.Text = "传感器设备自检中...";
+            }));
+            if (deviceAll.srDevice.SelfCheck() != true)
+            {
+                // 传感器设备自检失败
+                MessageBox.Show("传感器设备自检失败！");
+                this.BeginInvoke(new EventHandler(delegate
+                {
+                    this.Close();
+                }));
+                return;
+            }
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                this.label_controlState.Text = "设备自检成功!";
+                this.label_fluc.Text = "传感器设备自检成功!";
+            }));
+            Debug.WriteLine("srDevice.SelfCheck ok");
+            System.Threading.Thread.Sleep(2000);
+
+
+            // 自检成功
+            Utils.Logger.Sys("设备自检成功，系统开始运行...");
+            Utils.Logger.Op("设备自检成功，系统开始运行...");
+            //Utils.Logger.TempData("系统开始运行...");
+
+
+            // 初始化主界面中的显示相
+            InitMainFormShow();
+            Debug.WriteLine("InitMainFormShow() ok");
+
+            // 注册事件处理函数
+            RegisterEventHandler();
+            Debug.WriteLine("RegisterEventHandler() ok");
+
+            // 主槽控温表 / 辅槽控温表 开始读取参数
+            // wghou 20180105
+            // 暂时先不开始读取温度，等待自检
+            deviceAll.tpTemperatureUpdateTimer.Start();
+            Debug.WriteLine("deviceAll.tpTemperatureUpdateTimer.Start() ok");
+
+            // 启用主界面所有按键
+            SelfChkDisableControl(true);
+
+            return;
+        }
+
+        void SelfChkDisableControl(bool status)
+        {
+            this.BeginInvoke(new EventHandler(delegate
+            {
+                // 参数设置按钮
+                this.checkBox_paramM.Enabled = status;
+                this.checkBox_paramS.Enabled = status;
+
+                // 自动按键
+                this.checkBox_auto.Enabled = status;
+
+                // 手动按键
+                this.checkBox_man.Enabled = status;
+
+                // 继电器按键
+                foreach (Device.RelayProtocol.Cmd_r cmd in Enum.GetValues(typeof(Device.RelayProtocol.Cmd_r)))
+                {
+                    this.checkBox_ryDevice[cmd].Enabled = status;
+                }
+            }));
         }
     }
 }

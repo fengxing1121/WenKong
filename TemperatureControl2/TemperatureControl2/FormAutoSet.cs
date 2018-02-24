@@ -41,7 +41,7 @@ namespace TemperatureControl2
             InitializeComponent();
             devicesAll = dev;
             paramMTextBox[0] = textBox_tpSetM;
-            paramMTextBox[1] = textBox_tpAdjustM;
+            paramMTextBox[1] = null;
             paramMTextBox[2] = textBox_advanceM;
             paramMTextBox[3] = textBox_fuzzyM;
             paramMTextBox[4] = textBox_ratioM;
@@ -49,7 +49,7 @@ namespace TemperatureControl2
             paramMTextBox[6] = textBox_powerM;
 
             paramSTextBox[0] = textBox_tpSetS;
-            paramSTextBox[1] = textBox_tpAdjustS;
+            paramSTextBox[1] = null;
             paramSTextBox[2] = textBox_advanceS;
             paramSTextBox[3] = textBox_fuzzyS;
             paramSTextBox[4] = textBox_ratioS;
@@ -143,7 +143,7 @@ namespace TemperatureControl2
             index.DataPropertyName = "Index";
             tpName.DataPropertyName = "TpName";
             tpSet.DataPropertyName = "TemptSet";
-            tpAdjust.DataPropertyName = "TempAdjust";
+            //tpAdjust.DataPropertyName = "TempAdjust";
             advance.DataPropertyName = "Advance";
             fuzzy.DataPropertyName = "Fuzzy";
             ratio.DataPropertyName = "Ratio";
@@ -276,7 +276,7 @@ namespace TemperatureControl2
             // 输入窗口的默认数值
             devicesAll.tpDeviceM.tpParam.CopyTo(paramMCache, 0);
             devicesAll.tpDeviceS.tpParam.CopyTo(paramSCache, 0);
-            for (int i = 1;i<7;i++)
+            for (int i = 2;i<7;i++)
             {
                 if(i<3)
                 {
@@ -521,6 +521,14 @@ namespace TemperatureControl2
             // 主槽参数
             for(int i = 0;i<7;i++)
             {
+                // 跳过温度修订值，其值设为 0
+                if (i == 1)
+                {
+                    paramMCache[1] = 0;
+                    continue;
+                }
+
+                // 将相应的参数加入到 paramMCache 中
                 if(float.TryParse(this.paramMTextBox[i].Text, out valuef))
                 {
                     paramMCache[i] = valuef;
@@ -541,6 +549,14 @@ namespace TemperatureControl2
             // 辅槽参数
             for (int i = 0; i < 7; i++)
             {
+                // 跳过温度修订值，其值设为 0
+                if (i == 1)
+                {
+                    paramMCache[1] = 0;
+                    continue;
+                }
+
+
                 if (float.TryParse(this.paramSTextBox[i].Text, out valuef))
                 {
                     paramSCache[i] = valuef;
@@ -662,6 +678,14 @@ namespace TemperatureControl2
                     // 将参数写入到文本框中
                     for (int i = 0; i < 7; i++)
                     {
+                        // 跳过温度修订值，其值设为 0
+                        if (i == 1)
+                        {
+                            //paramMCache[1] = 0;
+                            continue;
+                        }
+
+
                         if (i < 3)
                         {
                             paramMTextBox[i].Text = paramMCache[i].ToString("0.000");
@@ -856,10 +880,7 @@ namespace TemperatureControl2
                         }
                     }
 
-                    // 数据库中温度修正值始终为 0
-                    parm[1] = 0;
-
-                    for (int i = 1; i < 7; i++)
+                    for (int i = 2; i < 7; i++)
                     {
                         paramMTextBox[i].Text = (parm[i] / tpSet.Count).ToString();
                     }
@@ -884,7 +905,7 @@ namespace TemperatureControl2
                         }
                     }
 
-                    for (int i = 1; i < 7; i++)
+                    for (int i = 2; i < 7; i++)
                     {
                         paramSTextBox[i].Text = (parm[i] / tpSet.Count).ToString();
                     }
@@ -1199,17 +1220,17 @@ namespace TemperatureControl2
             dataGridView1.ClearSelection();
         }
 
-        private void textBox_tpAdjust_Enter(object sender, EventArgs e)
-        {
-            if (tx != null)
-            {
-                tx.BackColor = System.Drawing.SystemColors.Control;
-            }
+        //private void textBox_tpAdjust_Enter(object sender, EventArgs e)
+        //{
+        //    if (tx != null)
+        //    {
+        //        tx.BackColor = System.Drawing.SystemColors.Control;
+        //    }
 
-            tx = this.textBox_tpAdjustM;
-            tx.BackColor = System.Drawing.SystemColors.Window;
-            dataGridView1.ClearSelection();
-        }
+        //    tx = this.textBox_tpAdjustM;
+        //    tx.BackColor = System.Drawing.SystemColors.Window;
+        //    dataGridView1.ClearSelection();
+        //}
 
         private void textBox_advance_Enter(object sender, EventArgs e)
         {
@@ -1284,17 +1305,17 @@ namespace TemperatureControl2
             dataGridView1.ClearSelection();
         }
 
-        private void textBox_tpAdjustS_Enter(object sender, EventArgs e)
-        {
-            if (tx != null)
-            {
-                tx.BackColor = System.Drawing.SystemColors.Control;
-            }
+        //private void textBox_tpAdjustS_Enter(object sender, EventArgs e)
+        //{
+        //    if (tx != null)
+        //    {
+        //        tx.BackColor = System.Drawing.SystemColors.Control;
+        //    }
 
-            tx = this.textBox_tpAdjustS;
-            tx.BackColor = System.Drawing.SystemColors.Window;
-            dataGridView1.ClearSelection();
-        }
+        //    tx = this.textBox_tpAdjustS;
+        //    tx.BackColor = System.Drawing.SystemColors.Window;
+        //    dataGridView1.ClearSelection();
+        //}
 
         private void textBox_advanceS_Enter(object sender, EventArgs e)
         {

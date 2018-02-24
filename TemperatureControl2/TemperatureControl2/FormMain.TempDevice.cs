@@ -204,7 +204,7 @@ namespace TemperatureControl2
             {
                 // 更新主界面的温度设定值
                 this.label_tempSetM.Text = deviceAll.tpDeviceM.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
-                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.0000") + "℃";
+                this.label_tempSetS.Text = deviceAll.tpDeviceS.tpParam[(int)Device.TempProtocol.Cmd_t.TempSet].ToString("0.00") + "℃";
             }));
         }
     }
