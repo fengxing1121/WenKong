@@ -1,0 +1,12 @@
+﻿1 - 在 Device.Devices 中，当执行 controlFlowSchedule(true) 函数时，执行其中的某操作流程，例如 TempUpStep()，当 currentState.stateChanged == true，即首次进入该状态，应设置相应的继电器（开关）状态。
+问题 - 如果此时继电器状态设置失败，会通过 Device.RelayDevice.UpdateStatusToDevice() 中的事件触发函数 StatusUpdateToDeviceEvent(err) 在主界面中弹出对话框，提示错误。那么，还需要其他操作吗？是否需要暂时停止自动流程的执行？？
+
+2 - 同样的问题，在高级 autoStart 状态下，需要向温控设备写入 param 参数，如果出现错误，也只是在主界面中弹出了对话框，提示错误。还需要执行其他操作吗？是否需要暂时停止自动流程的执行？
+
+3 - 在 Device.Devices.TpTemperatureUpdateTimer_Elapsed() 定时器事件处理函数中，当从硬件设备读取数据失败时，首先会通知主界面提示错误信息，其次，会跳过 controlFlowSchedule(true) 函数，即不执行自动控温流程。
+问题 - 这样处理是否合适？
+
+4 - 在控温流程中，如果满足 3 分钟波动度小于 0.0005f ，则从控温状态进入稳定状态（见 TempControlStep()），2 分钟后，如果温度波动度满足条件（小于 0.0005f），则测量，如果不满足，则再等 2 分钟（即继续停留在稳定状态）（见 TempStableStep()）。
+问题 - 这种设计流程可以吗？是否需要支持人工设置相应的参数，比如 3分钟 2分钟 以及0.0005f
+
+5 - 所有流程执行完成后，进入 State.Finish 状态，则触发 Device.Devices.FlowControlFinishEvent 事件，通知主界面执行相应的操作，具体的操作应该是什么？？
