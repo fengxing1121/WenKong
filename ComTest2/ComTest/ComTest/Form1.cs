@@ -275,6 +275,7 @@ namespace ComTest
         {
             this.label_FlucPlusM.Text = ((this.hScrollBar_FlucPlusM.Value - 50) * 0.001).ToString();
             lock (tmLocker) { tmParam.FlucPlus = (float)((this.hScrollBar_FlucPlusM.Value - 50) * 0.001); }
+            this.label_FlucM.Text = (tmParam.Fluc + tmParam.FlucPlus).ToString();
         }
 
 
@@ -314,6 +315,7 @@ namespace ComTest
         {
             this.label_FlucPlusS.Text = ((this.hScrollBar_FlucPlusS.Value - 50) * 0.001).ToString();
             lock (tsLocker) { tsParam.FlucPlus = (float)((this.hScrollBar_FlucPlusS.Value - 50) * 0.001); }
+            this.label_FlucS.Text = (tsParam.Fluc + tsParam.FlucPlus).ToString();
         }
 
         private void hScrollBar_Sr_ValueChanged(object sender, EventArgs e)

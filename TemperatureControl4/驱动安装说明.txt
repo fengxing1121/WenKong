@@ -1,0 +1,11 @@
+安装驱动以确保C#中连接excel和access
+电脑配置：win7 x64
+Microsoft office 专业增强版 2016
+数据库文件 DataBase/TempSet.mdb
+数据文件 Logs/Data/数据.xls
+
+Access 相关驱动：
+AccessDatabaseEngine.exe
+
+excel 相关驱动：
+MDAC_TYP.EXE

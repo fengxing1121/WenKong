@@ -63,8 +63,26 @@
             this.button_debug = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.pictureBox_elect = new System.Windows.Forms.PictureBox();
+            this.pictureBox_mainHeat = new System.Windows.Forms.PictureBox();
+            this.pictureBox_subHeat = new System.Windows.Forms.PictureBox();
+            this.pictureBox_subCool = new System.Windows.Forms.PictureBox();
+            this.pictureBox_subCircle = new System.Windows.Forms.PictureBox();
+            this.pictureBox_mainCoolF = new System.Windows.Forms.PictureBox();
+            this.pictureBox_subCoolF = new System.Windows.Forms.PictureBox();
+            this.pictureBox_waterIn = new System.Windows.Forms.PictureBox();
+            this.pictureBox_waterOut = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_elect)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_mainHeat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subHeat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCool)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCircle)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_mainCoolF)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCoolF)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_waterIn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_waterOut)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox_elect
@@ -78,6 +96,7 @@
             this.checkBox_elect.Text = "总电源";
             this.checkBox_elect.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_elect.UseVisualStyleBackColor = true;
+            this.checkBox_elect.CheckedChanged += new System.EventHandler(this.checkBox_elect_CheckedChanged);
             this.checkBox_elect.Click += new System.EventHandler(this.checkBox_elect_Click);
             // 
             // checkBox_auto
@@ -132,6 +151,7 @@
             this.checkBox_mainHeat.Text = "主槽控温";
             this.checkBox_mainHeat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_mainHeat.UseVisualStyleBackColor = true;
+            this.checkBox_mainHeat.CheckedChanged += new System.EventHandler(this.checkBox_mainHeat_CheckedChanged);
             this.checkBox_mainHeat.Click += new System.EventHandler(this.checkBox_mainHeat_Click);
             // 
             // checkBox_mainCoolF
@@ -145,6 +165,7 @@
             this.checkBox_mainCoolF.Text = "主槽快冷";
             this.checkBox_mainCoolF.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_mainCoolF.UseVisualStyleBackColor = true;
+            this.checkBox_mainCoolF.CheckedChanged += new System.EventHandler(this.checkBox_mainCoolF_CheckedChanged);
             this.checkBox_mainCoolF.Click += new System.EventHandler(this.checkBox_mainCoolF_Click);
             // 
             // checkBox_subHeat
@@ -158,6 +179,7 @@
             this.checkBox_subHeat.Text = "辅槽控温";
             this.checkBox_subHeat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subHeat.UseVisualStyleBackColor = true;
+            this.checkBox_subHeat.CheckedChanged += new System.EventHandler(this.checkBox_subHeat_CheckedChanged);
             this.checkBox_subHeat.Click += new System.EventHandler(this.checkBox_subHeat_Click);
             // 
             // checkBox_subCoolF
@@ -171,6 +193,7 @@
             this.checkBox_subCoolF.Text = "辅槽快冷";
             this.checkBox_subCoolF.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCoolF.UseVisualStyleBackColor = true;
+            this.checkBox_subCoolF.CheckedChanged += new System.EventHandler(this.checkBox_subCoolF_CheckedChanged);
             this.checkBox_subCoolF.Click += new System.EventHandler(this.checkBox_subCoolF_Click);
             // 
             // checkBox_subCool
@@ -184,6 +207,7 @@
             this.checkBox_subCool.Text = "辅槽制冷";
             this.checkBox_subCool.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCool.UseVisualStyleBackColor = true;
+            this.checkBox_subCool.CheckedChanged += new System.EventHandler(this.checkBox_subCool_CheckedChanged);
             this.checkBox_subCool.Click += new System.EventHandler(this.checkBox_subCool_Click);
             // 
             // checkBox_waterIn
@@ -197,6 +221,7 @@
             this.checkBox_waterIn.Text = "海水进";
             this.checkBox_waterIn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_waterIn.UseVisualStyleBackColor = true;
+            this.checkBox_waterIn.CheckedChanged += new System.EventHandler(this.checkBox_waterIn_CheckedChanged);
             this.checkBox_waterIn.Click += new System.EventHandler(this.checkBox_waterIn_Click);
             // 
             // checkBox_subCircle
@@ -210,6 +235,7 @@
             this.checkBox_subCircle.Text = "辅槽循环";
             this.checkBox_subCircle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_subCircle.UseVisualStyleBackColor = true;
+            this.checkBox_subCircle.CheckedChanged += new System.EventHandler(this.checkBox_subCircle_CheckedChanged);
             this.checkBox_subCircle.Click += new System.EventHandler(this.checkBox_subCircle_Click);
             // 
             // checkBox_waterOut
@@ -223,6 +249,7 @@
             this.checkBox_waterOut.Text = "海水出";
             this.checkBox_waterOut.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_waterOut.UseVisualStyleBackColor = true;
+            this.checkBox_waterOut.CheckedChanged += new System.EventHandler(this.checkBox_waterOut_CheckedChanged);
             this.checkBox_waterOut.Click += new System.EventHandler(this.checkBox_waterOut_Click);
             // 
             // checkBox_curveM
@@ -446,12 +473,102 @@
             this.button_debug.UseVisualStyleBackColor = true;
             this.button_debug.Click += new System.EventHandler(this.button_debug_Click);
             // 
+            // pictureBox_elect
+            // 
+            this.pictureBox_elect.Location = new System.Drawing.Point(521, 252);
+            this.pictureBox_elect.Name = "pictureBox_elect";
+            this.pictureBox_elect.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_elect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_elect.TabIndex = 61;
+            this.pictureBox_elect.TabStop = false;
+            // 
+            // pictureBox_mainHeat
+            // 
+            this.pictureBox_mainHeat.Location = new System.Drawing.Point(521, 394);
+            this.pictureBox_mainHeat.Name = "pictureBox_mainHeat";
+            this.pictureBox_mainHeat.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_mainHeat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_mainHeat.TabIndex = 62;
+            this.pictureBox_mainHeat.TabStop = false;
+            // 
+            // pictureBox_subHeat
+            // 
+            this.pictureBox_subHeat.Location = new System.Drawing.Point(521, 465);
+            this.pictureBox_subHeat.Name = "pictureBox_subHeat";
+            this.pictureBox_subHeat.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_subHeat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_subHeat.TabIndex = 63;
+            this.pictureBox_subHeat.TabStop = false;
+            // 
+            // pictureBox_subCool
+            // 
+            this.pictureBox_subCool.Location = new System.Drawing.Point(521, 536);
+            this.pictureBox_subCool.Name = "pictureBox_subCool";
+            this.pictureBox_subCool.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_subCool.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_subCool.TabIndex = 64;
+            this.pictureBox_subCool.TabStop = false;
+            // 
+            // pictureBox_subCircle
+            // 
+            this.pictureBox_subCircle.Location = new System.Drawing.Point(521, 607);
+            this.pictureBox_subCircle.Name = "pictureBox_subCircle";
+            this.pictureBox_subCircle.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_subCircle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_subCircle.TabIndex = 65;
+            this.pictureBox_subCircle.TabStop = false;
+            // 
+            // pictureBox_mainCoolF
+            // 
+            this.pictureBox_mainCoolF.Location = new System.Drawing.Point(744, 394);
+            this.pictureBox_mainCoolF.Name = "pictureBox_mainCoolF";
+            this.pictureBox_mainCoolF.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_mainCoolF.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_mainCoolF.TabIndex = 66;
+            this.pictureBox_mainCoolF.TabStop = false;
+            // 
+            // pictureBox_subCoolF
+            // 
+            this.pictureBox_subCoolF.Location = new System.Drawing.Point(744, 465);
+            this.pictureBox_subCoolF.Name = "pictureBox_subCoolF";
+            this.pictureBox_subCoolF.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_subCoolF.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_subCoolF.TabIndex = 67;
+            this.pictureBox_subCoolF.TabStop = false;
+            // 
+            // pictureBox_waterIn
+            // 
+            this.pictureBox_waterIn.Location = new System.Drawing.Point(744, 536);
+            this.pictureBox_waterIn.Name = "pictureBox_waterIn";
+            this.pictureBox_waterIn.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_waterIn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_waterIn.TabIndex = 68;
+            this.pictureBox_waterIn.TabStop = false;
+            // 
+            // pictureBox_waterOut
+            // 
+            this.pictureBox_waterOut.Location = new System.Drawing.Point(744, 607);
+            this.pictureBox_waterOut.Name = "pictureBox_waterOut";
+            this.pictureBox_waterOut.Size = new System.Drawing.Size(30, 12);
+            this.pictureBox_waterOut.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox_waterOut.TabIndex = 69;
+            this.pictureBox_waterOut.TabStop = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(973, 684);
+            this.Controls.Add(this.pictureBox_waterOut);
+            this.Controls.Add(this.pictureBox_waterIn);
+            this.Controls.Add(this.pictureBox_subCoolF);
+            this.Controls.Add(this.pictureBox_mainCoolF);
+            this.Controls.Add(this.pictureBox_subCircle);
+            this.Controls.Add(this.pictureBox_subCool);
+            this.Controls.Add(this.pictureBox_subHeat);
+            this.Controls.Add(this.pictureBox_mainHeat);
+            this.Controls.Add(this.pictureBox_elect);
             this.Controls.Add(this.button_debug);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
@@ -487,12 +604,21 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TemperatureControl";
+            this.Text = "自动控温程序";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_elect)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_mainHeat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subHeat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCool)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCircle)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_mainCoolF)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_subCoolF)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_waterIn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_waterOut)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -532,6 +658,15 @@
         private System.Windows.Forms.Button button_debug;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.PictureBox pictureBox_elect;
+        private System.Windows.Forms.PictureBox pictureBox_mainHeat;
+        private System.Windows.Forms.PictureBox pictureBox_subHeat;
+        private System.Windows.Forms.PictureBox pictureBox_subCool;
+        private System.Windows.Forms.PictureBox pictureBox_subCircle;
+        private System.Windows.Forms.PictureBox pictureBox_mainCoolF;
+        private System.Windows.Forms.PictureBox pictureBox_subCoolF;
+        private System.Windows.Forms.PictureBox pictureBox_waterIn;
+        private System.Windows.Forms.PictureBox pictureBox_waterOut;
     }
 }
 

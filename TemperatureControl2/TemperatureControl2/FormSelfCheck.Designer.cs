@@ -273,7 +273,7 @@
             this.MinimizeBox = false;
             this.Name = "FormSelfCheck";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FormSelfCheck";
+            this.Text = "温控设备自检";
             this.Shown += new System.EventHandler(this.FormSelfCheck_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

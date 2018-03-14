@@ -519,13 +519,13 @@ namespace ComTest
                     tsParam.PhaseCount++;
                     if (tsParam.PhaseCount >= 20) tsParam.PhaseCount = 0;
 
-                    float fluc = tsParam.Fluc * (float)Math.Sin(3.1415 * tsParam.PhaseCount / 10) / 2;
+                    float fluc = (tsParam.Fluc + tsParam.FlucPlus) * (float)Math.Sin(3.1415 * tsParam.PhaseCount / 10) / 2;
 
                     // 如果稳定，则波动度为零
                     //if (tsParam.Steady) fluc = 0;
 
                     // 最终的显示值 = 当前温度值 + 附加温度值 + 计算波动度 + 附加波动度
-                    float val = tsParam.CurTemp + tsParam.CurTempPlus + fluc + tsParam.FlucPlus;
+                    float val = tsParam.CurTemp + tsParam.CurTempPlus + fluc;
 
                     // 界面显示的当前温度值为 curTemp + 波动度
                     this.BeginInvoke(new EventHandler(delegate { this.label_CurTempS.Text = val.ToString("0.000"); }));
@@ -666,13 +666,13 @@ namespace ComTest
                     tmParam.PhaseCount++;
                     if (tmParam.PhaseCount >= 30) tmParam.PhaseCount = 0;
 
-                    float fluc = tmParam.Fluc * (float)Math.Sin(3.1415 * tmParam.PhaseCount / 15) / 2;
+                    float fluc = (tmParam.Fluc + tmParam.FlucPlus) * (float)Math.Sin(3.1415 * tmParam.PhaseCount / 15) / 2;
 
                     // 如果稳定，则波动度为零
                     //if (tmParam.Steady) fluc = 0;
 
                     // 最终的显示值 = 当前温度值 + 附加温度值 + 计算波动度 + 附加波动度
-                    float val = tmParam.CurTemp + tmParam.CurTempPlus + fluc + tmParam.FlucPlus;
+                    float val = tmParam.CurTemp + tmParam.CurTempPlus + fluc;
 
                     // 界面显示值 - 当前温度值 = curTemp + 波动度
                     this.BeginInvoke(new EventHandler(delegate { this.label_CurTempM.Text = val.ToString("0.0000"); }));

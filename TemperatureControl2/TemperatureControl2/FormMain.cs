@@ -20,6 +20,9 @@ namespace TemperatureControl2
         Bitmap mBmp;
         private bool flp = false;
         private Timer timPic = new Timer();
+
+        Bitmap mBmpRelayRed;
+        Bitmap mBmpRelayGreen;
         
         public FormMain()
         {
@@ -40,6 +43,24 @@ namespace TemperatureControl2
                 checkBox_ryDevice.Add(Device.RelayProtocol.Cmd_r.WaterOut, checkBox_waterOut);
             }
             catch { }
+
+
+            // 用于继电器的指示灯
+            mBmpRelayRed = new Bitmap(this.pictureBox_elect.Width, pictureBox_elect.Height);
+            Graphics mGhpRed = Graphics.FromImage(mBmpRelayRed);
+            mGhpRed.Clear(Color.Red);
+            mBmpRelayGreen = new Bitmap(this.pictureBox_elect.Width, pictureBox_elect.Height);
+            Graphics mGhpGreen = Graphics.FromImage(mBmpRelayGreen);
+            mGhpGreen.Clear(Color.Green);
+            this.pictureBox_elect.Image = mBmpRelayRed;
+            this.pictureBox_mainHeat.Image = mBmpRelayRed;
+            this.pictureBox_subHeat.Image = mBmpRelayRed;
+            this.pictureBox_subCool.Image = mBmpRelayRed;
+            this.pictureBox_subCircle.Image = mBmpRelayRed;
+            this.pictureBox_mainCoolF.Image = mBmpRelayRed;
+            this.pictureBox_subCoolF.Image = mBmpRelayRed;
+            this.pictureBox_waterIn.Image = mBmpRelayRed;
+            this.pictureBox_waterOut.Image = mBmpRelayRed;
         }
 
 
@@ -66,6 +87,31 @@ namespace TemperatureControl2
                 return;
             }
             Utils.Logger.Sys("设备端口配置成功!");
+
+            // wghou20180224
+            FormSelfCheck fm = new FormSelfCheck(deviceAll);
+            DialogResult rt = fm.ShowDialog();
+            if (rt != DialogResult.OK)
+            {
+                //MessageBox.Show("设备自检错误！");
+                Debug.WriteLine("自检错误！");
+                this.Close();
+                return;
+            }
+
+            Utils.Logger.Sys("设备自检成功，系统开始运行...");
+            Utils.Logger.Op("设备自检成功，系统开始运行...");
+            //Utils.Logger.TempData("系统开始运行...");
+
+
+            // 初始化主界面中的显示相
+            InitMainFormShow();
+
+            // 注册事件处理函数
+            RegisterEventHandler();
+
+            deviceAll.tpTemperatureUpdateTimer.Start();
+            // end wghou20180224
 
 
             // 闪烁灯
@@ -131,7 +177,7 @@ namespace TemperatureControl2
                     this.checkBox_ryDevice[cmd].Checked = deviceAll.ryDevice.ryStatus[(int)cmd];
                 }
                 // 启用总电源开关
-                this.checkBox_elect.Enabled = true;
+                //this.checkBox_elect.Enabled = true;
                 // 打开总电源开关
                 this.checkBox_elect.Checked = true;
                 deviceAll.ryDevice.ryStatusToSet[(int)Device.RelayProtocol.Cmd_r.Elect] = this.checkBox_elect.Checked;
@@ -203,10 +249,11 @@ namespace TemperatureControl2
         /// <param name="e"></param>
         private void FormMain_Shown(object sender, EventArgs e)
         {
-            backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
-            timer1.Interval = 200;
-            timer1.Tick += Timer1_Tick;
-            timer1.Start();
+            // wghou 20180224
+            //backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
+            //timer1.Interval = 200;
+            //timer1.Tick += Timer1_Tick;
+            //timer1.Start();
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
@@ -456,5 +503,112 @@ namespace TemperatureControl2
             }));
         }
 
+        private void checkBox_elect_CheckedChanged(object sender, EventArgs e)
+        {
+            if(this.checkBox_elect.Checked == true)
+            {
+                this.pictureBox_elect.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_elect.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_mainHeat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_mainHeat.Checked == true)
+            {
+                this.pictureBox_mainHeat.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_mainHeat.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_subHeat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_subHeat.Checked == true)
+            {
+                this.pictureBox_subHeat.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_subHeat.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_subCool_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_subCool.Checked == true)
+            {
+                this.pictureBox_subCool.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_subCool.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_subCircle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_subCircle.Checked == true)
+            {
+                this.pictureBox_subCircle.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_subCircle.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_mainCoolF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_mainCoolF.Checked == true)
+            {
+                this.pictureBox_mainCoolF.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_mainCoolF.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_subCoolF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_subCoolF.Checked == true)
+            {
+                this.pictureBox_subCoolF.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_subCoolF.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_waterIn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_waterIn.Checked == true)
+            {
+                this.pictureBox_waterIn.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_waterIn.Image = mBmpRelayRed;
+            }
+        }
+
+        private void checkBox_waterOut_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.checkBox_waterOut.Checked == true)
+            {
+                this.pictureBox_waterOut.Image = mBmpRelayGreen;
+            }
+            else
+            {
+                this.pictureBox_waterOut.Image = mBmpRelayRed;
+            }
+        }
     }
 }

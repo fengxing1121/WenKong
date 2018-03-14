@@ -1,0 +1,69 @@
+﻿1、继电器设备
+
+通信协议部分由 RelayProtocol 类实现。
+包括串口初始化 / 设置函数 internal bool SetPort(string portName); 发送指令函数 internal Err_r SendData(Cmd_r cmd, bool status); ( 函数调用返回错误状态 )
+类内定义了指令代码 Cmd_r 以及设备错误代码 Err_t
+
+设备的信息 / 状态 / 操作 等由 RelayDevice 类实现。
+包括各继电器状态 ryStatus[] ；设备初始化函数 public void InitRelayDevice(bool init); 设备状态更新函数 public void UpdateStatusToDevice();
+
+使用方法：
+1）初始化设备 InitRelayDevice()
+2）将新的继电器状态写入 RelayDevice.ryStatusToSet[] 中，再调用设备状态更新函数 UpdateStatusToDevice() 将新的继电器状态写入硬件
+
+错误及错误处理：
+（待完成）
+思路：通过发生错误时触发相应的事件，依据不同的错误类型，做相应的处理。事件处理函数可以在主界面 MainForm 中注册。
+
+2、温控设备
+
+通信协议部分由 TempProtocol 类实现。
+包括串口初始化 / 设置函数 internal bool SetPort(string portName); 写入参数函数 internal Err_t SendData(Cmd_t cmd, float val); 读取参数函数 internal Err_t ReadData(Cmd_t cmd, out float val); ( 函数调用返回错误状态 )
+
+设备信息 / 状态 / 操作 等由 TempDevice 类实现。
+包括 温控设备硬件参数 tpParam[] ; 温度波动值 tpFluc ; 功率显示值 tpPowerShow ; 温度值列表 temperatures ; 
+还包括 设备初始化函数 public void InitTempDevice(bool init) ; 向下位机写入参数函数 public void UpdateParamToDevice() ; 从下位机读取参数函数 public void UpdateParamFromDevice() ;
+以及 从下位机读取温度值函数 public void GetTemperatureShow( out float val) ; 从下位机读取功率值函数  public void GetPowerShow( out float val) ; 计算波动度函数 public bool GetFluc(int count, out float fluctuation) ;
+
+事件：
+ParamUpdatedToDeviceEvent; 向下位机写入参数完成后触发，事件包含错误信息
+ParamUpdatedFromDeviceEvent; 从下位机读取参数完成后触发，事件包含错误信息
+
+使用方法：
+1）初始化设备 InitTempDevice()
+2）从下位机读取参数，调用 UpdateParamFromDevice() 函数，将设备参数从下位机读取到 TempDevice.tpParam[] 中，函数执行完成会触发事件 ParamUpdateFromDeviceEvent。
+在 MainForm 中注册事件处理函数 ，如果未发生错误，则读取 TempDevice.tpParam[] 的值，更新到窗口界面
+3）向下位机写入参数，先将参数写入 TempDevice.tpParamToSet[] 中，再调用 UpdateparamToDevice() 函数，如果 tpParamToSet[] 与 tpParam[] 的值不相等，则将该参数写入到下位机
+4）从下位机读取温度显示值，直接调用 GetTemperatureShow( out float val ); 读取温度显示值，并将新读取到的值加入到 TempDevice.temperatures 列表中
+5）从下位机读取功率显示值，直接调用 GetPowerShow( out float val); 读取温度显示值
+6）计算温度波动值，调用 bool GetFluc(int count, out float fluctuation) 计算前 count 个温度值的波动
+
+错误及错误处理：
+（待完成）
+思路：通过发生错误时触发相应的事件，依据不同的错误类型，做相应的处理。事件处理函数可以在主界面 MainForm 中注册。
+
+
+3、总体设备
+
+所有设备（包括继电器设备 / 温控设备 等）都包括在 Devices 类中。
+
+Devices 类包括了
+		public RelayDevice ryDevice = new RelayDevice();	// 继电器设备
+        public TempDevice tpDeviceM = new TempDevice();		// 主槽控温设备
+        public TempDevice tpDeviceS = new TempDevice();		// 辅槽控温设备
+还包括定时器 tpTemperatureUpdateTimer; 用于每隔一段时间更新温控设备的温度值、功率值等，并触发一个自定义事件（该事件可以用于通知主窗口更新温度显示值等）
+以及 设置主槽 / 辅槽控温设备温度 / 功率读取定时器函数 startTemperatureUpdateM(); / startTemperatureUpdateS();
+
+使用方法：
+1）定义该类的实例，用于实现 TempDevice 以及 RelayDevice 类的功能
+2）注册计时器更新温度事件 TpTemperatureUpdateTimerEvent; 这样在每次定时器函数执行结束后，都可以执行该事件处理函数，用于 MainForm 更新温度值等参数
+3）通过 设置主槽 / 辅槽控温设备温度 / 功率读取定时器函数 startTemperatureUpdateM(); / startTemperatureUpdateS(); 来打开 / 关闭定时器
+
+（待完成）
+自动控制流程操作
+思路：定义一个状态列表 controlFlowList<StateFlow>; 列表中包含了自动控制过程中设备应处于的各个状态 State, 该状态下温度设定值 stateTemp, 该状态的持续时间 stateTime 等
+设备状态 State 包括了升温 / 控温 / 稳定 / 测量 / 降温 / 完成 / 开始 等；
+通过主界面 MainForm 设定状态列表中各状态的先后次序；
+在 Devices.Timer 定时器函数中，通过判断 currentStete 做出相应的处理和判断，完成不同的操作流程
+
+
